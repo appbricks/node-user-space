@@ -7,7 +7,6 @@ import { ActionTester } from '@appbricks/test-utils';
 
 import { 
   DeviceIDPayload,
-  DevicePayload,
   DELETE_DEVICE 
 } from '../../action';
 
@@ -28,13 +27,18 @@ it('deletes a device', async () => {
 
   const deviceID = '9bb6399-6c7a-4cd5-a536-5a4d74482020'; // bob's device #2
 
-  mockProvider.setLoggedInUser('bob');
-  const device = mockProvider.user!.devices!.deviceUsers!
-    .find(deviceUser => deviceUser!.device!.deviceID == deviceID)!.device!;
+  mockProvider.setLoggedInUser('bob');  
+  expect(mockProvider.user!.devices!.deviceUsers!
+    .find(deviceUser => deviceUser!.device!.deviceID == deviceID)
+  ).toBeDefined();
 
   actionTester.expectAction(DELETE_DEVICE, <DeviceIDPayload>{ deviceID })
-    .success<DevicePayload>({ device });
+    .success();
 
   dispatch.userspaceService!.deleteDevice(deviceID);
   await actionTester.done();
+
+  expect(mockProvider.user!.devices!.deviceUsers!
+    .find(deviceUser => deviceUser!.device!.deviceID == deviceID)
+  ).toBeUndefined();
 });

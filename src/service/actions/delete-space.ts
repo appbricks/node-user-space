@@ -12,7 +12,6 @@ import {
 import Provider from '../provider';
 import { 
   SpaceIDPayload,
-  SpacePayload,
   DELETE_SPACE,
 } from '../action';
 import { UserSpaceStateProps } from '../state';
@@ -27,7 +26,7 @@ export const deleteSpaceEpic = (csProvider: Provider): Epic => {
     DELETE_SPACE, 
     async (action, state$) => {
       const space = await csProvider.deleteSpace(action.payload!.spaceID);
-      return createFollowUpAction<SpacePayload>(action, SUCCESS, { space });
+      return createFollowUpAction(action, SUCCESS);
     }
   );
 }

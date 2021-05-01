@@ -12,7 +12,6 @@ import {
 import Provider from '../provider';
 import { 
   DeviceIDPayload,
-  DevicePayload,
   DELETE_DEVICE,
 } from '../action';
 import { UserSpaceStateProps } from '../state';
@@ -26,8 +25,8 @@ export const deleteDeviceEpic = (csProvider: Provider): Epic => {
   return serviceEpic<DeviceIDPayload, UserSpaceStateProps>(
     DELETE_DEVICE, 
     async (action, state$) => {
-      const device = await csProvider.deleteDevice(action.payload!.deviceID);
-      return createFollowUpAction<DevicePayload>(action, SUCCESS, { device });
+      await csProvider.deleteDevice(action.payload!.deviceID);
+      return createFollowUpAction(action, SUCCESS);
     }
   );
 }
