@@ -42,6 +42,14 @@ export default class UserSpaceService {
     this.csProvider = provider;
   }
 
+  static stateProps<S extends state.UserSpaceStateProps, C extends state.UserSpaceStateProps>(
+    state: S, ownProps?: C): state.UserSpaceStateProps {
+
+    return {
+      userspace: state.userspace
+    };
+  }
+
   static dispatchProps<C extends state.UserSpaceStateProps>(
     dispatch: redux.Dispatch<redux.Action>, ownProps?: C): action.UserSpaceActionProps {
 
@@ -100,14 +108,6 @@ export default class UserSpaceService {
           dispatch({type: undefined})
       }
     }
-  }
-
-  static stateProps<S extends state.UserSpaceStateProps, C extends state.UserSpaceStateProps>(
-    state: S, ownProps?: C): state.UserSpaceStateProps {
-
-    return {
-      userspace: state.userspace
-    };
   }
 
   epics(): Epic[] {
