@@ -163,7 +163,6 @@ export default class MockProvider implements ProviderInterface {
     }
     
     let deleteAt = this.devices.findIndex(device => device.deviceID == deviceID);
-    const deletedDevice = this.devices[deleteAt];
     this.devices.splice(deleteAt, 1);
 
     this.deviceUsers.forEach((deviceUser, index) => {
@@ -276,7 +275,6 @@ export default class MockProvider implements ProviderInterface {
     }
     
     let deleteAt = this.spaces.findIndex(space => space.spaceID == spaceID);
-    const deletedSpace = this.spaces[deleteAt];
     this.spaces.splice(deleteAt, 1);
 
     this.spaceUsers.forEach((spaceUser, index) => {
@@ -288,13 +286,11 @@ export default class MockProvider implements ProviderInterface {
     this.users.forEach(user => {
       user.spaces!.spaceUsers!.forEach((spaceUser, index) => {
         if (spaceUser!.space!.spaceID == spaceID) {
-          this.spaceUsers.splice(index, 1);
-          user.devices!.totalCount!--;
+          user.spaces!.spaceUsers!.splice(index, 1);
+          user.spaces!.totalCount!--;
         }
       });
     });
-    
-    return deletedSpace!;
   }
 
   async acceptSpaceUserInvitation(spaceID: string) {
