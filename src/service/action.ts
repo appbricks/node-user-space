@@ -1,15 +1,18 @@
 import * as redux from 'redux';
 
 import {
+  UserSearchConnection,
   Device,
   DeviceUser,
   Space,
   SpaceUser,
-  UserSearchConnection
+  Cursor
 } from '../model/types';
 
 export interface UserSearchPayload {
-  namePrefix: string
+  namePrefix: string,
+  limit?: number,
+  cursor?: Cursor
 };
 
 export interface UserSearchResultPayload {

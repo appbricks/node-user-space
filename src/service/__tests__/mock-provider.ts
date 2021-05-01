@@ -1,14 +1,15 @@
 import ProviderInterface from '../provider';
 
 import {
+  UserSearchConnection,
+  UserSearchItem,
   User,
   Device,
   DeviceUser,
   UserAccessStatus,
   Space,
   SpaceUser,
-  UserSearchConnection,
-  UserSearchItem
+  Cursor
 } from '../../model/types';
 
 import { UserSpaceActionProps } from '../action';
@@ -77,7 +78,7 @@ export default class MockProvider implements ProviderInterface {
     expect(this.user).toBeDefined();
   }
 
-  userSearch(namePrefix: string) {
+  async userSearch(namePrefix: string, limit?: number, cursor?: Cursor) {
 
     const users = this.users
       .filter(user => user.userName!.startsWith(namePrefix))
@@ -96,13 +97,12 @@ export default class MockProvider implements ProviderInterface {
     }
   }
 
-  getUserDevices() {
-    return <Device[]>this.user!.devices!.deviceUsers!
-      .filter(deviceUser => deviceUser!.status == UserAccessStatus.active)
-      .map(deviceUser => deviceUser!.device);
+  async getUserDevices() {
+    return <DeviceUser[]>this.user!.devices!.deviceUsers!
+      .filter(deviceUser => deviceUser!.status == UserAccessStatus.active);
   }
 
-  getDeviceAccessRequests(deviceID: string) {
+  async getDeviceAccessRequests(deviceID: string) {
     const deviceUser = this.user!.devices!.deviceUsers!
       .find(deviceUser => deviceUser!.isOwner && deviceUser!.device!.deviceID == deviceID);
     if (!deviceUser) {
@@ -113,7 +113,7 @@ export default class MockProvider implements ProviderInterface {
       .filter(deviceUser => deviceUser!.status == UserAccessStatus.pending);
   }
 
-  activateDeviceUser(deviceID: string, userID: string) {
+  async activateDeviceUser(deviceID: string, userID: string) {
     const deviceUser = this.user!.devices!.deviceUsers!
       .find(deviceUser => deviceUser!.isOwner && deviceUser!.device!.deviceID == deviceID);
     if (!deviceUser) {
@@ -130,7 +130,7 @@ export default class MockProvider implements ProviderInterface {
     return deviceUserToActivate;
   }
 
-  deleteDeviceUser(deviceID: string, userID: string) {
+  async deleteDeviceUser(deviceID: string, userID: string) {
     const deviceUser = this.user!.devices!.deviceUsers!
       .find(deviceUser => deviceUser!.isOwner && deviceUser!.device!.deviceID == deviceID);
     if (!deviceUser) {
@@ -155,7 +155,7 @@ export default class MockProvider implements ProviderInterface {
     return deletedDeviceUser!;
   }
 
-  deleteDevice(deviceID: string) {
+  async deleteDevice(deviceID: string) {
     const deviceUser = this.user!.devices!.deviceUsers!
       .find(deviceUser => deviceUser!.isOwner && deviceUser!.device!.deviceID == deviceID);
     if (!deviceUser) {
@@ -175,27 +175,24 @@ export default class MockProvider implements ProviderInterface {
     this.users.forEach(user => {
       user.devices!.deviceUsers!.forEach((deviceUser, index) => {
         if (deviceUser!.device!.deviceID == deviceID) {
-          this.deviceUsers.splice(index, 1);
+          user.devices!.deviceUsers!.splice(index, 1);
           user.devices!.totalCount!--;
         }
       });
     });
-    
-    return deletedDevice!;
   }
 
-  getUserSpaces() {
-    return <Space[]>this.user!.spaces!.spaceUsers!
+  async getUserSpaces() {
+    return <SpaceUser[]>this.user!.spaces!.spaceUsers!
       .filter(spaceUser => spaceUser!.status == UserAccessStatus.active)
-      .map(spaceUser => spaceUser!.space);
   }
 
-  getSpaceInvitations() {
+  async getSpaceInvitations() {
     return <SpaceUser[]>this.user!.spaces!.spaceUsers!
       .filter(spaceUser => spaceUser!.status == UserAccessStatus.pending);
   }
 
-  inviteSpaceUser(spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) {
+  async inviteSpaceUser(spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) {
     const spaceOwner = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
     if (!spaceOwner) {
@@ -229,7 +226,7 @@ export default class MockProvider implements ProviderInterface {
     return spaceUserInvite;
   }
 
-  deactivateSpaceUser(spaceID: string, userID: string) {
+  async deactivateSpaceUser(spaceID: string, userID: string) {
     const spaceUser = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
     if (!spaceUser) {
@@ -246,7 +243,7 @@ export default class MockProvider implements ProviderInterface {
     return spaceUserToDeactivate;
   }
 
-  deleteSpaceUser(spaceID: string, userID: string) {
+  async deleteSpaceUser(spaceID: string, userID: string) {
     const spaceUser = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
     if (!spaceUser) {
@@ -271,7 +268,7 @@ export default class MockProvider implements ProviderInterface {
     return deletedSpaceUser!;
   }
 
-  deleteSpace(spaceID: string) {
+  async deleteSpace(spaceID: string) {
     const spaceUser = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
     if (!spaceUser) {
@@ -300,7 +297,7 @@ export default class MockProvider implements ProviderInterface {
     return deletedSpace!;
   }
 
-  acceptSpaceUserInvitation(spaceID: string) {
+  async acceptSpaceUserInvitation(spaceID: string) {
     const spaceUserInvitation = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.space!.spaceID == spaceID && spaceUser!.status == UserAccessStatus.pending);
     if (!spaceUserInvitation) {
@@ -311,7 +308,7 @@ export default class MockProvider implements ProviderInterface {
     return spaceUserInvitation;
   }
 
-  leaveSpaceUser(spaceID: string) {
+  async leaveSpaceUser(spaceID: string) {
     const spaceUser = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.space!.spaceID == spaceID);
     if (!spaceUser) {
@@ -322,11 +319,11 @@ export default class MockProvider implements ProviderInterface {
     return spaceUser;    
   }
 
-  getUserApps() {
+  async getUserApps() {
     return [];
   }
 
-  getAppInvitations() {
+  async getAppInvitations() {
     return [];
   }
 }

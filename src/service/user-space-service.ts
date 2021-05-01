@@ -9,6 +9,8 @@ import {
   Logger,
 } from '@appbricks/utils';
 
+import { Cursor } from '../model/types';
+
 import Provider from './provider';
 
 import * as state from './state';
@@ -46,8 +48,8 @@ export default class UserSpaceService {
     return {
       userspaceService: {
         // user lookup actions
-        userSearch: (namePrefix: string) => 
-          userSearchAction(dispatch, namePrefix),
+        userSearch: (namePrefix: string, limit?: number, cursor?: Cursor) => 
+          userSearchAction(dispatch, namePrefix, limit, cursor),
 
         // device owner actions
         getUserDevices: () => 

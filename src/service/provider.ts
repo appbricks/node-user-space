@@ -5,7 +5,8 @@ import {
   Space,
   SpaceUser,
   App,
-  AppUser
+  AppUser,
+  Cursor
 } from '../model/types';
 
 /**
@@ -24,92 +25,92 @@ export default interface Provider {
    * Looks up users with names that start
    * with the given prefix.
    */
-  userSearch(namePrefix: string): UserSearchConnection;
+  userSearch(namePrefix: string, limit?: number, cursor?: Cursor): Promise<UserSearchConnection>;
 
   /**
    * Returns list of devices the current
    * logged in user has access to.
    */
-  getUserDevices(): Device[];
+  getUserDevices(): Promise<DeviceUser[]>;
 
   /**
    * Returns list of device access requests
    * logged in user has recieved for his/her
    * owned devices.
    */
-  getDeviceAccessRequests(deviceID: string): DeviceUser[];
+  getDeviceAccessRequests(deviceID: string): Promise<DeviceUser[]>;
 
   /**
    * Activates the owned device for use by
    * the given user that requested access to
    * the it.
    */
-  activateDeviceUser(deviceID: string, userID: string): DeviceUser;
+  activateDeviceUser(deviceID: string, userID: string): Promise<DeviceUser>;
 
   /**
    * Deletes the given user from the device.
    */
-  deleteDeviceUser(deviceID: string, userID: string): DeviceUser;
+  deleteDeviceUser(deviceID: string, userID: string): Promise<DeviceUser>;
 
   /**
    * Deletes the given device
    */
-  deleteDevice(deviceID: string): Device;
+  deleteDevice(deviceID: string): Promise<void>;
 
   /**
    * Returns list of spaces the current
    * logged in user can connect to.
    */
-  getUserSpaces(): Space[];
+  getUserSpaces(): Promise<SpaceUser[]>;
 
   /**
    * Returns list of space invitations the
    * logged in user has received.
    */
-  getSpaceInvitations(): SpaceUser[];
+  getSpaceInvitations(): Promise<SpaceUser[]>;
 
   /**
    * Remove user's access to the given space.
    */
-  deactivateSpaceUser(spaceID: string, userID: string): SpaceUser;
+  deactivateSpaceUser(spaceID: string, userID: string): Promise<SpaceUser>;
 
   /**
    * Remove user's access to the given space.
    */
-  deleteSpaceUser(spaceID: string, userID: string): SpaceUser;
+  deleteSpaceUser(spaceID: string, userID: string): Promise<SpaceUser>;
 
   /**
    * Deletes the give space and all user
    * associations.
    */
-  deleteSpace(spaceID: string): Space;
+  deleteSpace(spaceID: string): Promise<void>;
 
   /**
    * Invite the a user to a space owned by
    * the logged in user
    */
-  inviteSpaceUser(spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean): SpaceUser;
+  inviteSpaceUser(spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean): Promise<SpaceUser>;
 
   /**
    * Accepts the invitation to the given
    * space.
    */
-  acceptSpaceUserInvitation(spaceID: string): SpaceUser;
+  acceptSpaceUserInvitation(spaceID: string): Promise<SpaceUser>;
 
   /**
    * Leaves given space
    */
-  leaveSpaceUser(spaceID: string): SpaceUser;
+  leaveSpaceUser(spaceID: string): Promise<SpaceUser>;
 
   /**
    * Returns list of apps the current
    * logged in user can connect and use.
    */
-  getUserApps(): App[];
+  getUserApps(): Promise<App[]>;
 
   /**
    * Returns list of apps invitations the 
    * logged in user has received.
    */
-  getAppInvitations(): AppUser[];
+  getAppInvitations(): Promise<AppUser[]>;
 }

@@ -3,11 +3,25 @@
 // this is an auto generated file. This will be overwritten
 
 export const userSearch = /* GraphQL */ `
-  query UserSearch($filter: TableUsersFilterInput) {
-    userSearch(filter: $filter) {
+  query UserSearch(
+    $filter: TableUsersFilterInput!
+    $limit: Int
+    $next: CursorInput
+  ) {
+    userSearch(filter: $filter, limit: $limit, next: $next) {
       pageInfo {
         hasNextPage
         hasPreviousePage
+        cursor {
+          index
+          nextTokens
+        }
+      }
+      edges {
+        node {
+          userID
+          userName
+        }
       }
       totalCount
       users {
@@ -29,10 +43,36 @@ export const getUser = /* GraphQL */ `
       certificate
       certificateRequest
       devices {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        deviceUsers {
+          isOwner
+          status
+          wireguardPublicKey
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
+        }
       }
       spaces {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        spaceUsers {
+          isOwner
+          isAdmin
+          isEgressNode
+          status
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
+          lastConnectDeviceID
+        }
       }
       universalConfig
     }
@@ -47,6 +87,9 @@ export const getDevice = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        users {
+          totalCount
+        }
       }
       user {
         userID
@@ -57,6 +100,12 @@ export const getDevice = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -77,6 +126,12 @@ export const getSpace = /* GraphQL */ `
         recipe
         iaas
         region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
         lastSeen
       }
       user {
@@ -88,6 +143,12 @@ export const getSpace = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -97,7 +158,14 @@ export const getSpace = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        appUsers {
+          lastAccessTime
+        }
       }
       lastConnectTime
       lastConnectDeviceID
@@ -113,6 +181,9 @@ export const getDeviceAccessRequests = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        users {
+          totalCount
+        }
       }
       user {
         userID
@@ -123,6 +194,12 @@ export const getDeviceAccessRequests = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -143,6 +220,12 @@ export const getSpaceInvitations = /* GraphQL */ `
         recipe
         iaas
         region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
         lastSeen
       }
       user {
@@ -154,6 +237,12 @@ export const getSpaceInvitations = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -163,7 +252,14 @@ export const getSpaceInvitations = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        appUsers {
+          lastAccessTime
+        }
       }
       lastConnectTime
       lastConnectDeviceID

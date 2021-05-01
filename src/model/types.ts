@@ -212,6 +212,11 @@ export type TableStringFilterInput = {
   beginsWith?: string | null,
 };
 
+export type CursorInput = {
+  index: number,
+  nextTokens: Array< string | null >,
+};
+
 export type UserSearchConnection = {
   __typename: "UserSearchConnection",
   pageInfo?: PageInfo,
@@ -249,11 +254,50 @@ export type UpdateUserKeyMutation = {
     certificateRequest?: string | null,
     devices?:  {
       __typename: "DeviceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      deviceUsers?:  Array< {
+        __typename: "DeviceUser",
+        isOwner?: boolean | null,
+        status?: UserAccessStatus | null,
+        wireguardPublicKey?: string | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
+      } | null > | null,
     } | null,
     spaces?:  {
       __typename: "SpaceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      spaceUsers?:  Array< {
+        __typename: "SpaceUser",
+        isOwner?: boolean | null,
+        isAdmin?: boolean | null,
+        // User's that are neither owners or admin can
+        // connect to the space and access only apps
+        // they are allowed to access. If this flag
+        // is set then they can also use the space
+        // as the egress node for internet access.
+        isEgressNode?: boolean | null,
+        status?: UserAccessStatus | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
+        lastConnectDeviceID?: string | null,
+      } | null > | null,
     } | null,
     // A user's universal config is an encrypted
     // document containing metadata of all spaces the
@@ -275,6 +319,29 @@ export type AddDeviceMutation = {
     idKey: string,
     deviceUser:  {
       __typename: "DeviceUser",
+      device?:  {
+        __typename: "Device",
+        deviceID: string,
+        deviceName: string,
+        publicKey?: string | null,
+        certificate?: string | null,
+        certificateRequest?: string | null,
+      } | null,
+      user?:  {
+        __typename: "User",
+        userID: string,
+        userName: string,
+        emailAddress?: string | null,
+        mobilePhone?: string | null,
+        confirmed?: boolean | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        certificateRequest?: string | null,
+        // A user's universal config is an encrypted
+        // document containing metadata of all spaces the
+        // user owns.
+        universalConfig?: string | null,
+      } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
       wireguardPublicKey?: string | null,
@@ -301,6 +368,10 @@ export type AddDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
     } | null,
     user?:  {
       __typename: "User",
@@ -312,6 +383,14 @@ export type AddDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -342,6 +421,10 @@ export type ActivateDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
     } | null,
     user?:  {
       __typename: "User",
@@ -353,6 +436,14 @@ export type ActivateDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -383,7 +474,23 @@ export type UpdateDeviceKeyMutation = {
     certificateRequest?: string | null,
     users?:  {
       __typename: "DeviceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      deviceUsers?:  Array< {
+        __typename: "DeviceUser",
+        isOwner?: boolean | null,
+        status?: UserAccessStatus | null,
+        wireguardPublicKey?: string | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
+      } | null > | null,
     } | null,
   } | null,
 };
@@ -407,6 +514,10 @@ export type UpdateDeviceUserKeyMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
     } | null,
     user?:  {
       __typename: "User",
@@ -418,6 +529,14 @@ export type UpdateDeviceUserKeyMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -451,6 +570,10 @@ export type DeleteDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
     } | null,
     user?:  {
       __typename: "User",
@@ -462,6 +585,14 @@ export type DeleteDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -501,6 +632,30 @@ export type AddSpaceMutation = {
     idKey: string,
     spaceUser:  {
       __typename: "SpaceUser",
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName: string,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        lastSeen?: number | null,
+      } | null,
+      user?:  {
+        __typename: "User",
+        userID: string,
+        userName: string,
+        emailAddress?: string | null,
+        mobilePhone?: string | null,
+        confirmed?: boolean | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        certificateRequest?: string | null,
+        // A user's universal config is an encrypted
+        // document containing metadata of all spaces the
+        // user owns.
+        universalConfig?: string | null,
+      } | null,
       isOwner?: boolean | null,
       isAdmin?: boolean | null,
       // User's that are neither owners or admin can
@@ -512,6 +667,10 @@ export type AddSpaceMutation = {
       status?: UserAccessStatus | null,
       bytesUploaded?: number | null,
       bytesDownloaded?: number | null,
+      accessList?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
       lastConnectTime?: number | null,
       lastConnectDeviceID?: string | null,
     },
@@ -536,6 +695,14 @@ export type InviteSpaceUserMutation = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -548,6 +715,14 @@ export type InviteSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -566,7 +741,18 @@ export type InviteSpaceUserMutation = {
     bytesDownloaded?: number | null,
     accessList?:  {
       __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
     } | null,
     lastConnectTime?: number | null,
     lastConnectDeviceID?: string | null,
@@ -589,6 +775,14 @@ export type AcceptSpaceUserInvitationMutation = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -601,6 +795,14 @@ export type AcceptSpaceUserInvitationMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -619,7 +821,18 @@ export type AcceptSpaceUserInvitationMutation = {
     bytesDownloaded?: number | null,
     accessList?:  {
       __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
     } | null,
     lastConnectTime?: number | null,
     lastConnectDeviceID?: string | null,
@@ -642,6 +855,14 @@ export type LeaveSpaceUserMutation = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -654,6 +875,14 @@ export type LeaveSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -672,7 +901,18 @@ export type LeaveSpaceUserMutation = {
     bytesDownloaded?: number | null,
     accessList?:  {
       __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
     } | null,
     lastConnectTime?: number | null,
     lastConnectDeviceID?: string | null,
@@ -696,6 +936,14 @@ export type DeactivateSpaceUserMutation = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -708,6 +956,14 @@ export type DeactivateSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -726,7 +982,18 @@ export type DeactivateSpaceUserMutation = {
     bytesDownloaded?: number | null,
     accessList?:  {
       __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
     } | null,
     lastConnectTime?: number | null,
     lastConnectDeviceID?: string | null,
@@ -750,6 +1017,14 @@ export type DeleteSpaceUserMutation = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -762,6 +1037,14 @@ export type DeleteSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -780,7 +1063,18 @@ export type DeleteSpaceUserMutation = {
     bytesDownloaded?: number | null,
     accessList?:  {
       __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
     } | null,
     lastConnectTime?: number | null,
     lastConnectDeviceID?: string | null,
@@ -798,7 +1092,9 @@ export type DeleteSpaceMutation = {
 };
 
 export type UserSearchQueryVariables = {
-  filter?: TableUsersFilterInput | null,
+  filter?: TableUsersFilterInput,
+  limit?: number | null,
+  next?: CursorInput | null,
 };
 
 export type UserSearchQuery = {
@@ -812,7 +1108,26 @@ export type UserSearchQuery = {
       hasNextPage: boolean,
       // When paginating backwards, are there more items?
       hasPreviousePage: boolean,
+      // Cursor used for pagination
+      cursor?:  {
+        __typename: "Cursor",
+        // The next page token index. To move to the next
+        // page, cursor does not need to be updated. To move
+        // to the prev page simply decrement the index by 2.
+        index: number,
+        // The token to use to retrieve the next page for a
+        // given index
+        nextTokens: Array< string | null >,
+      } | null,
     },
+    edges?:  Array< {
+      __typename: "UserSearchEdge",
+      node:  {
+        __typename: "UserSearchItem",
+        userID: string,
+        userName: string,
+      },
+    } | null > | null,
     totalCount?: number | null,
     users?:  Array< {
       __typename: "UserSearchItem",
@@ -836,11 +1151,50 @@ export type GetUserQuery = {
     certificateRequest?: string | null,
     devices?:  {
       __typename: "DeviceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      deviceUsers?:  Array< {
+        __typename: "DeviceUser",
+        isOwner?: boolean | null,
+        status?: UserAccessStatus | null,
+        wireguardPublicKey?: string | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
+      } | null > | null,
     } | null,
     spaces?:  {
       __typename: "SpaceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      spaceUsers?:  Array< {
+        __typename: "SpaceUser",
+        isOwner?: boolean | null,
+        isAdmin?: boolean | null,
+        // User's that are neither owners or admin can
+        // connect to the space and access only apps
+        // they are allowed to access. If this flag
+        // is set then they can also use the space
+        // as the egress node for internet access.
+        isEgressNode?: boolean | null,
+        status?: UserAccessStatus | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
+        lastConnectDeviceID?: string | null,
+      } | null > | null,
     } | null,
     // A user's universal config is an encrypted
     // document containing metadata of all spaces the
@@ -865,6 +1219,10 @@ export type GetDeviceQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
     } | null,
     user?:  {
       __typename: "User",
@@ -876,6 +1234,14 @@ export type GetDeviceQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -906,6 +1272,14 @@ export type GetSpaceQuery = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -918,6 +1292,14 @@ export type GetSpaceQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -936,7 +1318,18 @@ export type GetSpaceQuery = {
     bytesDownloaded?: number | null,
     accessList?:  {
       __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
     } | null,
     lastConnectTime?: number | null,
     lastConnectDeviceID?: string | null,
@@ -959,6 +1352,10 @@ export type GetDeviceAccessRequestsQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
     } | null,
     user?:  {
       __typename: "User",
@@ -970,6 +1367,14 @@ export type GetDeviceAccessRequestsQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -996,6 +1401,14 @@ export type GetSpaceInvitationsQuery = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -1008,6 +1421,14 @@ export type GetSpaceInvitationsQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
@@ -1026,7 +1447,18 @@ export type GetSpaceInvitationsQuery = {
     bytesDownloaded?: number | null,
     accessList?:  {
       __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
       totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
     } | null,
     lastConnectTime?: number | null,
     lastConnectDeviceID?: string | null,

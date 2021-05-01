@@ -14,10 +14,36 @@ export const updateUserKey = /* GraphQL */ `
       certificate
       certificateRequest
       devices {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        deviceUsers {
+          isOwner
+          status
+          wireguardPublicKey
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
+        }
       }
       spaces {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        spaceUsers {
+          isOwner
+          isAdmin
+          isEgressNode
+          status
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
+          lastConnectDeviceID
+        }
       }
       universalConfig
     }
@@ -36,6 +62,24 @@ export const addDevice = /* GraphQL */ `
     ) {
       idKey
       deviceUser {
+        device {
+          deviceID
+          deviceName
+          publicKey
+          certificate
+          certificateRequest
+        }
+        user {
+          userID
+          userName
+          emailAddress
+          mobilePhone
+          confirmed
+          publicKey
+          certificate
+          certificateRequest
+          universalConfig
+        }
         isOwner
         status
         wireguardPublicKey
@@ -55,6 +99,9 @@ export const addDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        users {
+          totalCount
+        }
       }
       user {
         userID
@@ -65,6 +112,12 @@ export const addDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -85,6 +138,9 @@ export const activateDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        users {
+          totalCount
+        }
       }
       user {
         userID
@@ -95,6 +151,12 @@ export const activateDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -115,7 +177,19 @@ export const updateDeviceKey = /* GraphQL */ `
       certificate
       certificateRequest
       users {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        deviceUsers {
+          isOwner
+          status
+          wireguardPublicKey
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
+        }
       }
     }
   }
@@ -137,6 +211,9 @@ export const updateDeviceUserKey = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        users {
+          totalCount
+        }
       }
       user {
         userID
@@ -147,6 +224,12 @@ export const updateDeviceUserKey = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -167,6 +250,9 @@ export const deleteDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        users {
+          totalCount
+        }
       }
       user {
         userID
@@ -177,6 +263,12 @@ export const deleteDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -210,12 +302,34 @@ export const addSpace = /* GraphQL */ `
     ) {
       idKey
       spaceUser {
+        space {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          lastSeen
+        }
+        user {
+          userID
+          userName
+          emailAddress
+          mobilePhone
+          confirmed
+          publicKey
+          certificate
+          certificateRequest
+          universalConfig
+        }
         isOwner
         isAdmin
         isEgressNode
         status
         bytesUploaded
         bytesDownloaded
+        accessList {
+          totalCount
+        }
         lastConnectTime
         lastConnectDeviceID
       }
@@ -241,6 +355,12 @@ export const inviteSpaceUser = /* GraphQL */ `
         recipe
         iaas
         region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
         lastSeen
       }
       user {
@@ -252,6 +372,12 @@ export const inviteSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -261,7 +387,14 @@ export const inviteSpaceUser = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        appUsers {
+          lastAccessTime
+        }
       }
       lastConnectTime
       lastConnectDeviceID
@@ -277,6 +410,12 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         recipe
         iaas
         region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
         lastSeen
       }
       user {
@@ -288,6 +427,12 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -297,7 +442,14 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        appUsers {
+          lastAccessTime
+        }
       }
       lastConnectTime
       lastConnectDeviceID
@@ -313,6 +465,12 @@ export const leaveSpaceUser = /* GraphQL */ `
         recipe
         iaas
         region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
         lastSeen
       }
       user {
@@ -324,6 +482,12 @@ export const leaveSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -333,7 +497,14 @@ export const leaveSpaceUser = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        appUsers {
+          lastAccessTime
+        }
       }
       lastConnectTime
       lastConnectDeviceID
@@ -349,6 +520,12 @@ export const deactivateSpaceUser = /* GraphQL */ `
         recipe
         iaas
         region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
         lastSeen
       }
       user {
@@ -360,6 +537,12 @@ export const deactivateSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -369,7 +552,14 @@ export const deactivateSpaceUser = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        appUsers {
+          lastAccessTime
+        }
       }
       lastConnectTime
       lastConnectDeviceID
@@ -385,6 +575,12 @@ export const deleteSpaceUser = /* GraphQL */ `
         recipe
         iaas
         region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
         lastSeen
       }
       user {
@@ -396,6 +592,12 @@ export const deleteSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -405,7 +607,14 @@ export const deleteSpaceUser = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
         totalCount
+        appUsers {
+          lastAccessTime
+        }
       }
       lastConnectTime
       lastConnectDeviceID
