@@ -6,11 +6,11 @@ import {
 import { ActionTester } from '@appbricks/test-utils';
 
 import { 
-  Device,
-  UserAccessStatus
+  DeviceUser,
+  UserAccessStatus 
 } from '../../../model/types';
 import { 
-  DevicesPayload,
+  DeviceUsersPayload,
   GET_USER_DEVICES 
 } from '../../action';
 
@@ -30,12 +30,11 @@ const { dispatch, mockProvider } = initServiceDispatch(actionTester);
 it('dispatches an action to retrieve the logged in user tom\'s devices', async () => {
 
   mockProvider.setLoggedInUser('tom');
-  const devices = <Device[]>mockProvider.user!.devices!.deviceUsers!
-    .filter(deviceUser => deviceUser!.status == UserAccessStatus.active)
-    .map(deviceUsers => deviceUsers!.device);
+  const deviceUsers = <DeviceUser[]>mockProvider.user!.devices!.deviceUsers!
+    .filter(deviceUser => deviceUser!.status == UserAccessStatus.active);
 
   actionTester.expectAction(GET_USER_DEVICES)
-    .success<DevicesPayload>({ devices });
+    .success<DeviceUsersPayload>({ deviceUsers });
 
   dispatch.userspaceService!.getUserDevices();
   await actionTester.done();
@@ -44,12 +43,11 @@ it('dispatches an action to retrieve the logged in user tom\'s devices', async (
 it('dispatches an action to retrieve the logged in user bob\'s devices', async () => {
   
   mockProvider.setLoggedInUser('bob');
-  const devices = <Device[]>mockProvider.user!.devices!.deviceUsers!
-    .filter(deviceUser => deviceUser!.status == UserAccessStatus.active)
-    .map(deviceUsers => deviceUsers!.device);
+  const deviceUsers = <DeviceUser[]>mockProvider.user!.devices!.deviceUsers!
+    .filter(deviceUser => deviceUser!.status == UserAccessStatus.active);
 
   actionTester.expectAction(GET_USER_DEVICES)
-    .success<DevicesPayload>({ devices });
+    .success<DeviceUsersPayload>({ deviceUsers });
 
   dispatch.userspaceService!.getUserDevices();
   await actionTester.done();

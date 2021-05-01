@@ -11,7 +11,7 @@ import {
 
 import Provider from '../provider';
 import { 
-  SpacesPayload,
+  SpaceUsersPayload,
   GET_USER_SPACES,
 } from '../action';
 
@@ -24,8 +24,8 @@ export const getUserSpacesEpic = (csProvider: Provider): Epic => {
   return serviceEpic(
     GET_USER_SPACES, 
     async (action, state$) => {
-      const spaces = await csProvider.getUserSpaces();
-      return createFollowUpAction<SpacesPayload>(action, SUCCESS, { spaces });
+      const spaceUsers = await csProvider.getUserSpaces();
+      return createFollowUpAction<SpaceUsersPayload>(action, SUCCESS, { spaceUsers });
     }
   );
 }

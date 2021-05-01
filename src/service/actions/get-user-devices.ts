@@ -11,7 +11,7 @@ import {
 
 import Provider from '../provider';
 import { 
-  DevicesPayload,
+  DeviceUsersPayload,
   GET_USER_DEVICES,
 } from '../action';
 
@@ -24,8 +24,8 @@ export const getUserDevicesEpic = (csProvider: Provider): Epic => {
   return serviceEpic(
     GET_USER_DEVICES, 
     async (action, state$) => {
-      const devices = await csProvider.getUserDevices();
-      return createFollowUpAction<DevicesPayload>(action, SUCCESS, { devices });
+      const deviceUsers = await csProvider.getUserDevices();
+      return createFollowUpAction<DeviceUsersPayload>(action, SUCCESS, { deviceUsers });
     }
   );
 }

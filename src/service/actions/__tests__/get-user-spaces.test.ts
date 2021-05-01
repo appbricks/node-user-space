@@ -6,11 +6,11 @@ import {
 import { ActionTester } from '@appbricks/test-utils';
 
 import { 
-  Space,
+  SpaceUser,
   UserAccessStatus
 } from '../../../model/types';
 import { 
-  SpacesPayload,
+  SpaceUsersPayload,
   GET_USER_SPACES 
 } from '../../action';
 
@@ -30,12 +30,11 @@ const { dispatch, mockProvider } = initServiceDispatch(actionTester);
 it('dispatches an action to retrieve the logged in user tom\'s spaces', async () => {
 
   mockProvider.setLoggedInUser('tom');
-  const spaces = <Space[]>mockProvider.user!.spaces!.spaceUsers!
-    .filter(spaceUser => spaceUser!.status == UserAccessStatus.active)
-    .map(spaceUser => spaceUser!.space);
+  const spaceUsers = <SpaceUser[]>mockProvider.user!.spaces!.spaceUsers!
+    .filter(spaceUser => spaceUser!.status == UserAccessStatus.active);
 
   actionTester.expectAction(GET_USER_SPACES)
-    .success<SpacesPayload>({ spaces });
+    .success<SpaceUsersPayload>({ spaceUsers });
 
   dispatch.userspaceService!.getUserSpaces();
   await actionTester.done();
@@ -44,12 +43,11 @@ it('dispatches an action to retrieve the logged in user tom\'s spaces', async ()
 it('dispatches an action to retrieve the logged in user bob\'s spaces', async () => {
   
   mockProvider.setLoggedInUser('bob');
-  const spaces = <Space[]>mockProvider.user!.spaces!.spaceUsers!
-    .filter(spaceUser => spaceUser!.status == UserAccessStatus.active)
-    .map(spaceUser => spaceUser!.space);
+  const spaceUsers = <SpaceUser[]>mockProvider.user!.spaces!.spaceUsers!
+    .filter(spaceUser => spaceUser!.status == UserAccessStatus.active);
 
   actionTester.expectAction(GET_USER_SPACES)
-    .success<SpacesPayload>({ spaces });
+    .success<SpaceUsersPayload>({ spaceUsers });
 
   dispatch.userspaceService!.getUserSpaces();
   await actionTester.done();
