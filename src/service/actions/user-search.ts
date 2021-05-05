@@ -9,8 +9,6 @@ import {
   serviceEpic 
 } from '@appbricks/utils';
 
-import { Cursor } from '../../model/types';
-
 import Provider from '../provider';
 import { 
   UserSearchPayload,
@@ -20,15 +18,16 @@ import {
 import { UserSpaceStateProps } from '../state';
 
 export const userSearchAction = 
-  (dispatch: redux.Dispatch<redux.Action>, namePrefix: string, limit?: number, cursor?: Cursor) => 
-    dispatch(createAction(USER_SEARCH, <UserSearchPayload>{ namePrefix, limit, cursor }));
+  (dispatch: redux.Dispatch<redux.Action>, namePrefix: string, limit?: number) => 
+    dispatch(createAction(USER_SEARCH, <UserSearchPayload>{ namePrefix, limit }));
 
 export const userSearchEpic = (csProvider: Provider): Epic => {
 
   return serviceEpic<UserSearchPayload, UserSpaceStateProps>(
     USER_SEARCH, 
     async (action, state$) => {
-      const userSearchResult = await csProvider.userSearch(action.payload!.namePrefix);
+      const payload = action.payload!;
+      const userSearchResult = await csProvider.userSearch(payload.namePrefix, payload.limit, payload.cursor);
       return createFollowUpAction<UserSearchResultPayload>(action, SUCCESS, { userSearchResult });
     }
   );
