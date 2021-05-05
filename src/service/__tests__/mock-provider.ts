@@ -9,7 +9,8 @@ import {
   UserAccessStatus,
   Space,
   SpaceUser,
-  Cursor
+  CursorInput,
+  PageInfo
 } from '../../model/types';
 
 import { UserSpaceActionProps } from '../action';
@@ -31,6 +32,7 @@ export const initServiceDispatch = (
   const authService = new UserSpaceService(mockProvider)
 
   const dispatch = testActionDispatcher<UserSpaceActionProps>(
+    'userspace',
     actionTester,
     authService.epics(),
     dispatch => {
@@ -78,7 +80,7 @@ export default class MockProvider implements ProviderInterface {
     expect(this.user).toBeDefined();
   }
 
-  async userSearch(namePrefix: string, limit?: number, cursor?: Cursor) {
+  async userSearch(namePrefix: string, limit?: number, cursor?: CursorInput) {
 
     const users = this.users
       .filter(user => user.userName!.startsWith(namePrefix))
@@ -90,10 +92,46 @@ export default class MockProvider implements ProviderInterface {
         }
       );
 
+    let pageInfo = <PageInfo>{
+      __typename: 'PageInfo',
+      hasPreviousePage: false,
+      hasNextPage: false,
+      cursor: {
+        __typename: "Cursor",
+        index: -1,
+        nextTokens: []
+      }
+    }
+
+    let currToken = 0;
+    let nextToken = users.length;
+
+    if (limit) {
+      if (cursor && cursor.index >= 0) {
+        currToken = parseInt(<string>cursor!.nextTokens[cursor.index], 10);
+        nextToken = currToken + limit;
+        
+        pageInfo.cursor!.index = cursor!.index;
+        pageInfo.cursor!.nextTokens = cursor!.nextTokens;  
+
+        pageInfo.cursor!.index++;
+        if (pageInfo.cursor!.index == pageInfo.cursor!.nextTokens.length) {
+          pageInfo.cursor!.nextTokens.push(nextToken.toString());        
+        }
+      } else {
+        nextToken = limit;
+        pageInfo.cursor!.index = 0;
+        pageInfo.cursor!.nextTokens = [ nextToken.toString() ];
+      }
+      pageInfo.hasPreviousePage = (pageInfo.cursor!.index > 0);
+      pageInfo.hasNextPage = nextToken < users.length;
+    }
+
     return <UserSearchConnection>{     
       __typename: "UserSearchConnection",
-      totalCount: users.length,
-      users
+      totalCount: Math.min(users.length, nextToken) - currToken,
+      users: users.slice(currToken, nextToken),
+      pageInfo
     }
   }
 
@@ -172,12 +210,14 @@ export default class MockProvider implements ProviderInterface {
     });
 
     this.users.forEach(user => {
-      user.devices!.deviceUsers!.forEach((deviceUser, index) => {
-        if (deviceUser!.device!.deviceID == deviceID) {
-          user.devices!.deviceUsers!.splice(index, 1);
-          user.devices!.totalCount!--;
-        }
-      });
+      if (user.devices) {
+        user.devices.deviceUsers!.forEach((deviceUser, index) => {
+          if (deviceUser!.device!.deviceID == deviceID) {
+            user.devices!.deviceUsers!.splice(index, 1);
+            user.devices!.totalCount!--;
+          }
+        });
+      }
     });
   }
 
@@ -284,12 +324,14 @@ export default class MockProvider implements ProviderInterface {
     });
 
     this.users.forEach(user => {
-      user.spaces!.spaceUsers!.forEach((spaceUser, index) => {
-        if (spaceUser!.space!.spaceID == spaceID) {
-          user.spaces!.spaceUsers!.splice(index, 1);
-          user.spaces!.totalCount!--;
-        }
-      });
+      if (user.spaces) {
+        user.spaces.spaceUsers!.forEach((spaceUser, index) => {
+          if (spaceUser!.space!.spaceID == spaceID) {
+            user.spaces!.spaceUsers!.splice(index, 1);
+            user.spaces!.totalCount!--;
+          }
+        });
+      }
     });
   }
 
@@ -357,6 +399,46 @@ function loadMockData() {
     publicKey: 'deb\'s public key',
     certificate: 'deb\'s certificate',
     certificateRequest: 'deb\'s certificate request'
+  }, {
+    __typename: 'User',
+    userID: 'c18d325c-c0f1-4ba3-8898-026b48eb9bdc',
+    userName: 'debbie',
+    emailAddress: 'debbie@acme.com',
+    mobilePhone: '+19787778899',
+    confirmed: true,
+    publicKey: 'debbie\'s public key',
+    certificate: 'debbie\'s certificate',
+    certificateRequest: 'debbie\'s certificate request'
+  }, {
+    __typename: 'User',
+    userID: 'e745d48e-d9ba-4277-9d9e-fc13197eff38',
+    userName: 'denny',
+    emailAddress: 'denny@acme.com',
+    mobilePhone: '+19787778899',
+    confirmed: true,
+    publicKey: 'denny\'s public key',
+    certificate: 'denny\'s certificate',
+    certificateRequest: 'denny\'s certificate request'
+  }, {
+    __typename: 'User',
+    userID: '1ade82fc-750e-433c-aa30-4c5764ff02fb',
+    userName: 'darren',
+    emailAddress: 'darren@acme.com',
+    mobilePhone: '+19787778899',
+    confirmed: true,
+    publicKey: 'darren\'s public key',
+    certificate: 'darren\'s certificate',
+    certificateRequest: 'darren\'s certificate request'
+  }, {
+    __typename: 'User',
+    userID: '8e0a1535-bf9e-4548-8602-ce3b0f619734',
+    userName: 'danny',
+    emailAddress: 'danny@acme.com',
+    mobilePhone: '+19787778899',
+    confirmed: true,
+    publicKey: 'danny\'s public key',
+    certificate: 'danny\'s certificate',
+    certificateRequest: 'danny\'s certificate request'
   } ];
   
   const devices: Device[] = [ {

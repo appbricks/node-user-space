@@ -1,12 +1,10 @@
 import { 
   UserSearchConnection,
-  Device,
   DeviceUser,
-  Space,
   SpaceUser,
   App,
   AppUser,
-  Cursor
+  CursorInput
 } from '../model/types';
 
 /**
@@ -25,7 +23,7 @@ export default interface Provider {
    * Looks up users with names that start
    * with the given prefix.
    */
-  userSearch(namePrefix: string, limit?: number, cursor?: Cursor): Promise<UserSearchConnection>;
+  userSearch(namePrefix: string, limit?: number, cursor?: CursorInput): Promise<UserSearchConnection>;
 
   /**
    * Returns list of devices the current

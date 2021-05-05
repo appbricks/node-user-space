@@ -13,7 +13,7 @@ import {
   User,
   DeviceUser,
   SpaceUser,
-  Cursor
+  CursorInput
 } from '../../../model/types';
 
 import {
@@ -43,7 +43,7 @@ export default class Provider implements ProviderInterface {
     this.logger = new Logger('AwsUserSpaceProvider');
   }
 
-  async userSearch(namePrefix: string, limit?: number, cursor?: Cursor) {
+  async userSearch(namePrefix: string, limit?: number, cursor?: CursorInput) {
         
     const userSearchQuery = /* GraphQL */ `
       query UserSearch(

@@ -6,13 +6,13 @@ import {
   DeviceUser,
   Space,
   SpaceUser,
-  Cursor
+  CursorInput
 } from '../model/types';
 
 export interface UserSearchPayload {
   namePrefix: string,
   limit?: number,
-  cursor?: Cursor
+  cursor?: CursorInput
 };
 
 export interface UserSearchResultPayload {
@@ -83,7 +83,9 @@ export interface AppIDPayload {
 // User-Space dispatch function props
 export interface UserSpaceActionProps {
   userspaceService?: {
-    userSearch: (namePrefix: string) => redux.Action
+    userSearch: (namePrefix: string, limit?: number) => redux.Action
+    userSearchPagePrev: ()=> redux.Action
+    userSearchPageNext: ()=> redux.Action
 
     // device owner actions
     getUserDevices: () => redux.Action
@@ -118,6 +120,8 @@ export interface UserSpaceActionProps {
 // User-Space action types
 
 export const USER_SEARCH = 'userspace/USER_SEARCH';
+export const USER_SEARCH_PAGE_PREV = 'userspace/USER_SEARCH_PAGE_PREV';
+export const USER_SEARCH_PAGE_NEXT = 'userspace/USER_SEARCH_PAGE_NEXT';
 
 export const GET_USER_DEVICES = 'userspace/GET_USER_DEVICES';
 export const GET_DEVICE_ACCESS_REQUESTS = 'userspace/GET_DEVICE_ACCESS_REQUESTS';
