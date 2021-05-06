@@ -8,7 +8,9 @@ import { ActionTester } from '@appbricks/test-utils';
 import { 
   SpaceIDPayload,
   SpaceUserPayload,
-  LEAVE_SPACE 
+  SpaceUsersPayload,
+  LEAVE_SPACE,
+  GET_USER_SPACES
 } from '../../action';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
@@ -17,7 +19,7 @@ import { initServiceDispatch } from '../../__tests__/mock-provider';
 if (process.env.DEBUG) {
   setLogLevel(LOG_LEVEL_TRACE);
 }
-const logger = new Logger('delete-space.test');
+const logger = new Logger('leave-space.test');
 
 // test reducer validates action flows
 const actionTester = new ActionTester(logger);
@@ -34,7 +36,14 @@ it('leaves a space', async () => {
 
   actionTester.expectAction(LEAVE_SPACE, <SpaceIDPayload>{ spaceID })
     .success<SpaceUserPayload>({ spaceUser });
+  actionTester.expectAction(GET_USER_SPACES)
+    .success<SpaceUsersPayload>(undefined, (counter, state, action) => {
+      expect(action.payload!.spaceUsers).toBeDefined();
+      return state;
+    });
 
   dispatch.userspaceService!.leaveSpace(spaceID);
   await actionTester.done();
+
+  expect(actionTester.actionCounter).toEqual(2);
 });

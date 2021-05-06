@@ -2,11 +2,12 @@ import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
 import { 
+  NOOP,
   SUCCESS,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpic 
+  serviceEpicFanOut 
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -14,6 +15,8 @@ import {
   DeviceUserIDPayload,
   DeviceUserPayload,
   ACTIVATE_USER_ON_DEVICE,
+  GET_USER_DEVICES,
+  GET_DEVICE_ACCESS_REQUESTS
 } from '../action';
 import { UserSpaceStateProps } from '../state';
 
@@ -23,11 +26,32 @@ export const activateUserOnDeviceAction =
 
 export const activateUserOnDeviceEpic = (csProvider: Provider): Epic => {
 
-  return serviceEpic<DeviceUserIDPayload, UserSpaceStateProps>(
+  return serviceEpicFanOut<DeviceUserIDPayload, UserSpaceStateProps>(
     ACTIVATE_USER_ON_DEVICE, 
-    async (action, state$) => {
-      const deviceUser = await csProvider.activateDeviceUser(action.payload!.deviceID, action.payload!.userID!);
-      return createFollowUpAction<DeviceUserPayload>(action, SUCCESS, { deviceUser });
+    {
+      activateUserOnDevice: async (action, state$, callSync) => {
+        const deviceUser = await csProvider.activateDeviceUser(action.payload!.deviceID, action.payload!.userID!);
+        return createFollowUpAction<DeviceUserPayload>(action, SUCCESS, { deviceUser });
+      },
+      getDeviceAccessRequests: async (action, state$, callSync) => {
+        // wait for activation service call to complete
+        let dependsAction = await callSync['activateUserOnDevice'];
+        if (dependsAction.type == SUCCESS) {
+          const deviceUser = (<DeviceUserPayload>dependsAction.payload!).deviceUser;
+          return createAction(GET_DEVICE_ACCESS_REQUESTS, <DeviceUserIDPayload>{ deviceID: deviceUser.device!.deviceID });
+        } else {
+          return createAction(NOOP);
+        }
+      },
+      getUserDevices: async (action, state$, callSync) => {
+        // wait for activation service call to complete
+        let dependsAction = await callSync['activateUserOnDevice'];
+        if (dependsAction.type == SUCCESS) {
+          return createAction(GET_USER_DEVICES);
+        } else {
+          return createAction(NOOP);
+        }
+      }
     }
   );
 }

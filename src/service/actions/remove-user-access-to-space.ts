@@ -2,11 +2,12 @@ import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
 import { 
+  NOOP,
   SUCCESS,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpic 
+  serviceEpicFanOut 
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -14,6 +15,7 @@ import {
   SpaceUserIDPayload,
   SpaceUserPayload,
   REMOVE_USER_ACCESS_TO_SPACE,
+  GET_USER_SPACES
 } from '../action';
 import { UserSpaceStateProps } from '../state';
 
@@ -23,11 +25,22 @@ export const removeUserAccessToSpaceAction =
 
 export const removeUserAccessToSpaceEpic = (csProvider: Provider): Epic => {
 
-  return serviceEpic<SpaceUserIDPayload, UserSpaceStateProps>(
+  return serviceEpicFanOut<SpaceUserIDPayload, UserSpaceStateProps>(
     REMOVE_USER_ACCESS_TO_SPACE, 
-    async (action, state$) => {
-      const spaceUser = await csProvider.deactivateSpaceUser(action.payload!.spaceID, action.payload!.userID!);
-      return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
+    {
+      removeUserAccessToSpace: async (action, state$, callSync) => {
+        const spaceUser = await csProvider.deactivateSpaceUser(action.payload!.spaceID, action.payload!.userID!);
+        return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
+      },
+      getUserSpaces: async (action, state$, callSync) => {
+        // wait for activation service call to complete
+        let dependsAction = await callSync['removeUserAccessToSpace'];
+        if (dependsAction.type == SUCCESS) {
+          return createAction(GET_USER_SPACES);
+        } else {
+          return createAction(NOOP);
+        }
+      }
     }
   );
 }

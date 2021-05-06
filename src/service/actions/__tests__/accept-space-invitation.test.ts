@@ -12,7 +12,10 @@ import {
 import { 
   SpaceIDPayload,
   SpaceUserPayload,
-  ACCEPT_SPACE_INVITATION 
+  SpaceUsersPayload,
+  ACCEPT_SPACE_INVITATION,
+  GET_SPACE_INVITATIONS,
+  GET_USER_SPACES
 } from '../../action';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
@@ -39,9 +42,19 @@ it('accept an invitation to connect to a space', async () => {
 
   actionTester.expectAction(ACCEPT_SPACE_INVITATION, <SpaceIDPayload>{ spaceID })
     .success<SpaceUserPayload>({ spaceUser });
-
+  actionTester.expectAction(GET_SPACE_INVITATIONS)
+    .success<SpaceUsersPayload>(undefined, (counter, state, action) => {
+      expect(action.payload!.spaceUsers).toBeDefined();
+      return state;
+    });
+  actionTester.expectAction(GET_USER_SPACES)
+    .success<SpaceUsersPayload>(undefined, (counter, state, action) => {
+      expect(action.payload!.spaceUsers).toBeDefined();
+      return state;
+    });
   dispatch.userspaceService!.acceptSpaceInvitation(spaceID);
   await actionTester.done();
 
+  expect(actionTester.actionCounter).toEqual(3);
   expect(spaceUser.status).toEqual(UserAccessStatus.active);
 });

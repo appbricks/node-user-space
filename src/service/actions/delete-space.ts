@@ -3,16 +3,18 @@ import { Epic } from 'redux-observable';
 
 import { 
   SUCCESS,
+  NOOP,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpic 
+  serviceEpicFanOut 
 } from '@appbricks/utils';
 
 import Provider from '../provider';
 import { 
   SpaceIDPayload,
   DELETE_SPACE,
+  GET_USER_SPACES
 } from '../action';
 import { UserSpaceStateProps } from '../state';
 
@@ -22,11 +24,21 @@ export const deleteSpaceAction =
 
 export const deleteSpaceEpic = (csProvider: Provider): Epic => {
 
-  return serviceEpic<SpaceIDPayload, UserSpaceStateProps>(
+  return serviceEpicFanOut<SpaceIDPayload, UserSpaceStateProps>(
     DELETE_SPACE, 
-    async (action, state$) => {
-      const space = await csProvider.deleteSpace(action.payload!.spaceID);
-      return createFollowUpAction(action, SUCCESS);
+    {
+      deleteSpace: async (action, state$, callSync) => {
+        const space = await csProvider.deleteSpace(action.payload!.spaceID);
+        return createFollowUpAction(action, SUCCESS);
+      },
+      getUserSpaces: async (action, state$, callSync) => {
+        let dependsAction = await callSync['deleteSpace'];
+        if (dependsAction.type == SUCCESS) {
+          return createAction(GET_USER_SPACES);
+        } else {
+          return createAction(NOOP);
+        }
+      }
     }
   );
 }

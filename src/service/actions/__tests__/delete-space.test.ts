@@ -7,7 +7,9 @@ import { ActionTester } from '@appbricks/test-utils';
 
 import { 
   SpaceIDPayload,
-  DELETE_SPACE 
+  SpaceUsersPayload,
+  DELETE_SPACE,
+  GET_USER_SPACES
 } from '../../action';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
@@ -34,10 +36,16 @@ it('deletes a space', async () => {
 
   actionTester.expectAction(DELETE_SPACE, <SpaceIDPayload>{ spaceID })
     .success();
+  actionTester.expectAction(GET_USER_SPACES)
+    .success<SpaceUsersPayload>(undefined, (counter, state, action) => {
+      expect(action.payload!.spaceUsers).toBeDefined();
+      return state;
+    });
 
   dispatch.userspaceService!.deleteSpace(spaceID);
   await actionTester.done();
 
+  expect(actionTester.actionCounter).toEqual(2);
   expect(mockProvider.user!.spaces!.spaceUsers!
     .find(spaceUser => spaceUser!.space!.spaceID == spaceID)
   ).toBeUndefined();

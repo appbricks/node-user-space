@@ -12,7 +12,9 @@ import {
 import { 
   SpaceUserIDPayload,
   SpaceUserPayload,
-  REMOVE_USER_ACCESS_TO_SPACE 
+  SpaceUsersPayload,
+  REMOVE_USER_ACCESS_TO_SPACE,
+  GET_USER_SPACES
 } from '../../action';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
@@ -42,8 +44,15 @@ it('removes a user\'s access to a space', async () => {
 
   actionTester.expectAction(REMOVE_USER_ACCESS_TO_SPACE, <SpaceUserIDPayload>{ spaceID, userID })
     .success<SpaceUserPayload>({ spaceUser });
+  actionTester.expectAction(GET_USER_SPACES)
+    .success<SpaceUsersPayload>(undefined, (counter, state, action) => {
+      expect(action.payload!.spaceUsers).toBeDefined();
+      return state;
+    });
 
   dispatch.userspaceService!.removeUserAccessToSpace(spaceID, userID);
   await actionTester.done();
+  
+  expect(actionTester.actionCounter).toEqual(2);
   expect(spaceUser.status).toEqual(UserAccessStatus.inactive);
 });

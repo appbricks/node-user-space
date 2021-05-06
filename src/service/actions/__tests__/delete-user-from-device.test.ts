@@ -9,7 +9,10 @@ import { DeviceUser } from '../../../model/types';
 import { 
   DeviceUserIDPayload,
   DeviceUserPayload,
-  DELETE_USER_FROM_DEVICE 
+  DeviceUsersPayload,  
+  DELETE_USER_FROM_DEVICE,
+  GET_USER_DEVICES,
+  GET_DEVICE_ACCESS_REQUESTS
 } from '../../action';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
@@ -38,7 +41,19 @@ it('deletes a user from a device', async () => {
 
   actionTester.expectAction(DELETE_USER_FROM_DEVICE, <DeviceUserIDPayload>{ deviceID, userID })
     .success<DeviceUserPayload>({ deviceUser });
-
+  actionTester.expectAction(GET_USER_DEVICES)
+    .success<DeviceUsersPayload>(undefined, (counter, state, action) => {
+      expect(action.payload!.deviceUsers).toBeDefined();
+      return state;
+    });
+  actionTester.expectAction<DeviceUserIDPayload>(GET_DEVICE_ACCESS_REQUESTS, { deviceID })
+    .success<DeviceUsersPayload>(undefined, (counter, state, action) => {
+      expect(action.payload!.deviceUsers).toBeDefined();
+      return state;
+    });
+    
   dispatch.userspaceService!.deleteUserFromDevice(deviceID, userID);
   await actionTester.done();
+
+  expect(actionTester.actionCounter).toEqual(3);
 });

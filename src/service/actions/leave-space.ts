@@ -2,11 +2,12 @@ import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
 import { 
+  NOOP,
   SUCCESS,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpic 
+  serviceEpicFanOut 
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -14,6 +15,7 @@ import {
   SpaceIDPayload,
   SpaceUserPayload,
   LEAVE_SPACE,
+  GET_USER_SPACES
 } from '../action';
 import { UserSpaceStateProps } from '../state';
 
@@ -23,11 +25,21 @@ export const leaveSpaceAction =
 
 export const leaveSpaceEpic = (csProvider: Provider): Epic => {
 
-  return serviceEpic<SpaceIDPayload, UserSpaceStateProps>(
+  return serviceEpicFanOut<SpaceIDPayload, UserSpaceStateProps>(
     LEAVE_SPACE, 
-    async (action, state$) => {
-      const spaceUser = await csProvider.leaveSpaceUser(action.payload!.spaceID);
-      return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
+    {
+      leaveSpace: async (action, state$, callSync) => {
+        const spaceUser = await csProvider.leaveSpaceUser(action.payload!.spaceID);
+        return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
+      },
+      getUserSpaces: async (action, state$, callSync) => {
+        let dependsAction = await callSync['leaveSpace'];
+        if (dependsAction.type == SUCCESS) {
+          return createAction(GET_USER_SPACES);
+        } else {
+          return createAction(NOOP);
+        }
+      }
     }
   );
 }
