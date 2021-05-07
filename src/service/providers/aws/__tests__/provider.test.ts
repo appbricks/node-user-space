@@ -95,6 +95,10 @@ const provider = new Provider();
 // fail if the expected dataset is not the
 // same in the backend.
 
+const tester1 = {
+  userID: 'c821adc0-7bd0-41b6-a84a-ea609f6a34bc',
+  userName: 'tester1'
+};
 const tester2 = {
   userID: '122d2f43-175f-410d-b3ee-9d93ba9cef2f',
   userName: 'tester2'
@@ -138,22 +142,13 @@ it('retrieves a user\'s devices', async () => {
             totalCount: 3,
             deviceUsers: [
               {
-                user: {
-                  userID: 'c821adc0-7bd0-41b6-a84a-ea609f6a34bc',
-                  userName: 'tester1'
-                }
+                user: tester1
               },
               {
-                user: {
-                  userID: '122d2f43-175f-410d-b3ee-9d93ba9cef2f',
-                  userName: 'tester2'
-                }
+                user: tester2
               },
               {
-                user: {
-                  userID: 'd68aef57-74db-450f-a6b2-d83285afc78c',
-                  userName: 'tester3'
-                }
+                user: tester3
               }
             ]
           }
@@ -168,10 +163,7 @@ it('retrieves a user\'s devices', async () => {
             totalCount: 1,
             deviceUsers: [
               {
-                user: {
-                  userID: 'c821adc0-7bd0-41b6-a84a-ea609f6a34bc',
-                  userName: 'tester1'
-                }
+                user: tester1
               }
             ]
           }
@@ -197,7 +189,7 @@ it('retrieves device access requests for user\'s device', async () => {
 it('approves an access request for a device', async () => {
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
-  expect(await provider.activateDeviceUser(device1.deviceID!, 'd68aef57-74db-450f-a6b2-d83285afc78c'))
+  expect(await provider.activateDeviceUser(device1.deviceID!, tester3.userID))
     .toEqual(
       {
         device: {
@@ -235,10 +227,7 @@ it('deletes a users\'s device', async () => {
             totalCount: 1,
             deviceUsers: [
               {
-                user: {
-                  userID: 'c821adc0-7bd0-41b6-a84a-ea609f6a34bc',
-                  userName: 'tester1'
-                }
+                user: tester1
               }
             ]
           }
