@@ -100,6 +100,7 @@ export interface UserSpaceActionProps {
     getUserSpaces: () => redux.Action
     inviteUserToSpace: (spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) => redux.Action
     removeUserAccessToSpace: (spaceID: string, userID: string) => redux.Action
+    deleteUserFromSpace: (spaceID: string, userID: string) => redux.Action
     deleteSpace: (spaceID: string) => redux.Action
     subscribeUserSpaceTelemetry: (spaceID: string) => redux.Action
     unsubscribeUserSpaceTelemetry: (spaceID: string) => redux.Action
@@ -133,6 +134,7 @@ export const GET_USER_DEVICE_TELEMETRY = 'userspace/GET_USER_DEVICE_TELEMETRY';
 export const GET_USER_SPACES = 'userspace/GET_USER_SPACES';
 export const INVITE_USER_TO_SPACE = 'userspace/INVITE_USER_TO_SPACE';
 export const REMOVE_USER_ACCESS_TO_SPACE = 'userspace/REMOVE_USER_ACCESS_TO_SPACE';
+export const DELETE_USER_FROM_SPACE = 'userspace/DELETE_USER_FROM_SPACE';
 export const DELETE_SPACE = 'userspace/DELETE_SPACE';
 export const GET_USER_SPACE_TELEMETRY = 'userspace/GET_USER_SPACE_TELEMETRY';
 
