@@ -1,5 +1,5 @@
 {
-  "name": "@appbricks/node-user-space",
+  "name": "@appbricks/user-space",
   "version": "0.0.1",
   "description": "MyCloudSpace User-Space client module",
   "main": "lib/index.js",
