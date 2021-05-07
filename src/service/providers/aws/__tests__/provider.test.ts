@@ -132,12 +132,50 @@ it('retrieves a user\'s devices', async () => {
       {
         isOwner: true,
         status: 'active',
-        device: device1
+        device: {
+          ...device1,
+          users: {
+            totalCount: 3,
+            deviceUsers: [
+              {
+                user: {
+                  userID: 'c821adc0-7bd0-41b6-a84a-ea609f6a34bc',
+                  userName: 'tester1'
+                }
+              },
+              {
+                user: {
+                  userID: '122d2f43-175f-410d-b3ee-9d93ba9cef2f',
+                  userName: 'tester2'
+                }
+              },
+              {
+                user: {
+                  userID: 'd68aef57-74db-450f-a6b2-d83285afc78c',
+                  userName: 'tester3'
+                }
+              }
+            ]
+          }
+        }
       },
       {
         isOwner: true,
         status: 'active',
-        device: device2
+        device: {
+          ...device2,
+          users: {
+            totalCount: 1,
+            deviceUsers: [
+              {
+                user: {
+                  userID: 'c821adc0-7bd0-41b6-a84a-ea609f6a34bc',
+                  userName: 'tester1'
+                }
+              }
+            ]
+          }
+        }
       }
     ]);
 });
@@ -191,7 +229,20 @@ it('deletes a users\'s device', async () => {
       {
         isOwner: true,
         status: 'active',
-        device: device2
+        device: {
+          ...device2,
+          users: {
+            totalCount: 1,
+            deviceUsers: [
+              {
+                user: {
+                  userID: 'c821adc0-7bd0-41b6-a84a-ea609f6a34bc',
+                  userName: 'tester1'
+                }
+              }
+            ]
+          }
+        }
       }
     ]);
 });
@@ -349,7 +400,7 @@ it('deletes a user\'s space', async () => {
     ]);
 });
 
-// create a test data
+// create test data
 beforeAll(async() => {
 
   try {

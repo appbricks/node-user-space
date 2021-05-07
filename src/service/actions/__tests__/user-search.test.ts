@@ -3,10 +3,7 @@ import {
   LOG_LEVEL_TRACE, 
   setLogLevel, 
 } from '@appbricks/utils';
-import { 
-  ActionTester,
-  store
-} from '@appbricks/test-utils';
+import { ActionTester } from '@appbricks/test-utils';
 
 import { 
   UserSearchItem,

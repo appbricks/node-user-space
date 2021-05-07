@@ -32,7 +32,7 @@ const { dispatch, mockProvider } = initServiceDispatch(actionTester);
 
 it('removes a user\'s access to a space', async () => {
 
-  const spaceID = 'd83b7d95-5681-427d-a65a-5d8a868d72e9'; // toms's apace #2
+  const spaceID = 'd83b7d95-5681-427d-a65a-5d8a868d72e9'; // toms's space #2
   const userID = '95e579be-a365-4268-bed0-17df80ef3dce'; // deb
 
   mockProvider.setLoggedInUser('tom');

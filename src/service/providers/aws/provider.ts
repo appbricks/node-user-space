@@ -1,9 +1,9 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { GraphQLResult } from '@aws-amplify/api-graphql';
 
-import { 
-  Logger, 
-  Error 
+import {
+  Logger,
+  Error
 } from '@appbricks/utils';
 
 import ProviderInterface from '../../provider';
@@ -33,7 +33,7 @@ import {
 } from '../../constants';
 
 /**
- * AWS AppSync User-Space API provider. 
+ * AWS AppSync User-Space API provider.
  */
 export default class Provider implements ProviderInterface {
 
@@ -44,14 +44,14 @@ export default class Provider implements ProviderInterface {
   }
 
   async userSearch(namePrefix: string, limit?: number, cursor?: CursorInput) {
-        
+
     const userSearchQuery = /* GraphQL */ `
       query UserSearch(
         $namePrefix: String!
         $limit: Int
         $next: CursorInput
       ) {
-        userSearch(filter: {userName: {beginsWith: $namePrefix}}, limit: $limit, next: $next) {          
+        userSearch(filter: {userName: {beginsWith: $namePrefix}}, limit: $limit, next: $next) {
           pageInfo {
             hasNextPage
             hasPreviousePage
@@ -75,7 +75,7 @@ export default class Provider implements ProviderInterface {
       }`;
 
     try {
-      const result = <GraphQLResult<{ userSearch: UserSearchConnection }>> 
+      const result = <GraphQLResult<{ userSearch: UserSearchConnection }>>
         await API.graphql(
           graphqlOperation(userSearchQuery, { namePrefix, limit, cursor })
         );
@@ -105,8 +105,17 @@ export default class Provider implements ProviderInterface {
               status
               device {
                 deviceID
-                deviceName                
+                deviceName
                 certificate
+                users {
+                  totalCount
+                  deviceUsers {
+                    user {
+                      userID
+                      userName
+                    }
+                  }
+                }
               }
             }
           }
@@ -143,9 +152,9 @@ export default class Provider implements ProviderInterface {
           }
         }
       }`;
-    
+
     try {
-      const result = <GraphQLResult<{ getDeviceAccessRequests: DeviceUser[] }>> 
+      const result = <GraphQLResult<{ getDeviceAccessRequests: DeviceUser[] }>>
         await API.graphql(
           graphqlOperation(getDeviceAccessRequests, { deviceID })
         );
@@ -181,7 +190,7 @@ export default class Provider implements ProviderInterface {
       }`;
 
     try {
-      const result = <GraphQLResult<{ activateDeviceUser: DeviceUser }>> 
+      const result = <GraphQLResult<{ activateDeviceUser: DeviceUser }>>
         await API.graphql(
           graphqlOperation(activateDeviceUser, { deviceID, userID })
         );
@@ -200,7 +209,7 @@ export default class Provider implements ProviderInterface {
   }
 
   async deleteDeviceUser(deviceID: string, userID: string) {
-    
+
     const deleteDeviceUser = /* GraphQL */ `
       mutation DeleteDeviceUser($deviceID: ID!, $userID: ID!) {
         deleteDeviceUser(deviceID: $deviceID, userID: $userID) {
@@ -217,7 +226,7 @@ export default class Provider implements ProviderInterface {
       }`;
 
     try {
-      const result = <GraphQLResult<{ deleteDeviceUser: DeviceUser }>> 
+      const result = <GraphQLResult<{ deleteDeviceUser: DeviceUser }>>
         await API.graphql(
           graphqlOperation(deleteDeviceUser, { deviceID, userID })
         );
@@ -236,14 +245,14 @@ export default class Provider implements ProviderInterface {
   }
 
   async deleteDevice(deviceID: string) {
-    
+
     const deleteDevice = /* GraphQL */ `
       mutation DeleteDevice($deviceID: ID!) {
         deleteDevice(deviceID: $deviceID)
       }`;
 
     try {
-      const result = <GraphQLResult<{ deleteDevice: string[] }>> 
+      const result = <GraphQLResult<{ deleteDevice: string[] }>>
         await API.graphql(
           graphqlOperation(deleteDevice, { deviceID })
         );
@@ -330,7 +339,7 @@ export default class Provider implements ProviderInterface {
           status
         }
       }`;
-  
+
     try {
       const result = <GraphQLResult<{ inviteSpaceUser: SpaceUser }>>
         await API.graphql(
@@ -405,7 +414,7 @@ export default class Provider implements ProviderInterface {
           }
         }
       }`;
-      
+
     try {
       const result = <GraphQLResult<{ deleteSpaceUser: SpaceUser }>>
         await API.graphql(
@@ -433,7 +442,7 @@ export default class Provider implements ProviderInterface {
       }`;
 
       try {
-        const result = <GraphQLResult<{ deleteSpace: string[] }>> 
+        const result = <GraphQLResult<{ deleteSpace: string[] }>>
           await API.graphql(
             graphqlOperation(deleteSpace, { spaceID })
           );
@@ -465,7 +474,7 @@ export default class Provider implements ProviderInterface {
           isEgressNode
         }
       }`;
-    
+
     try {
       const result = <GraphQLResult<{ getSpaceInvitations: SpaceUser[] }>>
         await API.graphql(
@@ -520,7 +529,7 @@ export default class Provider implements ProviderInterface {
       throw new Error(ERROR_ACCEPT_SPACE_USER_INVITATION, error);
     }
   }
-  
+
   async leaveSpaceUser(spaceID: string) {
 
     const leaveSpaceUser = /* GraphQL */ `
@@ -570,7 +579,7 @@ export default class Provider implements ProviderInterface {
       this.logger.error(`${apiName} API response return error: `, result.errors);
       return new Error(errorType, 'error returned from API');
     } else {
-      this.logger.debug(`${apiName} API return no data: `, result);
+      this.logger.debug(`${apiName} API returned no data: `, result);
       return new Error(errorType, 'no data');
     }
   }

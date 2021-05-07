@@ -9,7 +9,9 @@ import {
   Logger,
 } from '@appbricks/utils';
 
-import { Cursor } from '../model/types';
+import { 
+  UserSearchItem
+} from '../model/types';
 
 import Provider from './provider';
 
@@ -40,6 +42,7 @@ import {
   GET_DEVICE_ACCESS_REQUESTS,
   ACTIVATE_USER_ON_DEVICE,
   DELETE_USER_FROM_DEVICE,
+  DELETE_USER_FROM_SPACE,
   DELETE_DEVICE,
   GET_USER_DEVICE_TELEMETRY,
   GET_USER_SPACES,
@@ -67,6 +70,7 @@ import { getUserSpacesAction, getUserSpacesEpic } from './actions/get-user-space
 import { getSpaceInvitationsAction, getSpaceInvitationsEpic } from './actions/get-space-invitations';
 import { inviteUserToSpaceAction, inviteUserToSpaceEpic } from './actions/invite-user-to-space';
 import { removeUserAccessToSpaceAction, removeUserAccessToSpaceEpic } from './actions/remove-user-access-to-space';
+import { deleteUserFromSpaceAction, deleteUserFromSpaceEpic } from './actions/delete-user-from-space';
 import { deleteSpaceAction, deleteSpaceEpic } from './actions/delete-space';
 import { acceptSpaceInvitationAction, acceptSpaceInvitationEpic } from './actions/accept-space-invitation';
 import { leaveSpaceAction, leaveSpaceEpic } from './actions/leave-space';
@@ -111,6 +115,7 @@ export default class UserSpaceService {
       .add(GET_DEVICE_ACCESS_REQUESTS)
       .add(ACTIVATE_USER_ON_DEVICE)
       .add(DELETE_USER_FROM_DEVICE)
+      .add(DELETE_USER_FROM_SPACE)
       .add(DELETE_DEVICE)
       .add(GET_USER_DEVICE_TELEMETRY)
       .add(GET_USER_SPACES)
@@ -168,6 +173,8 @@ export default class UserSpaceService {
           getUserSpacesAction(dispatch),
         inviteUserToSpace: (spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) =>
           inviteUserToSpaceAction(dispatch, spaceID, userID, isAdmin, isEgressNode),
+        deleteUserFromSpace: (spaceID: string, userID: string) => 
+          deleteUserFromSpaceAction(dispatch, spaceID, userID),
         removeUserAccessToSpace: (spaceID: string, userID: string) => 
           removeUserAccessToSpaceAction(dispatch, spaceID, userID),
         deleteSpace: (spaceID: string) => 
@@ -212,6 +219,7 @@ export default class UserSpaceService {
       getSpaceInvitationsEpic(this.csProvider),
       inviteUserToSpaceEpic(this.csProvider),
       removeUserAccessToSpaceEpic(this.csProvider),
+      deleteUserFromSpaceEpic(this.csProvider),
       deleteSpaceEpic(this.csProvider),
       acceptSpaceInvitationEpic(this.csProvider),
       leaveSpaceEpic(this.csProvider),
@@ -240,8 +248,61 @@ export default class UserSpaceService {
     action: Action<UserSpacePayload>
   ): UserSpaceState {
 
-    return {
-      status: []
-    };
+    let relatedAction = action.meta.relatedAction!;
+
+    switch (relatedAction.type) {
+      case USER_SEARCH: {
+        const searchArgs = <UserSearchPayload>relatedAction.payload!; 
+        const searchResult = <UserSearchResultPayload>action.payload!;
+
+        return {
+          ...state,
+          userSearchResult: {
+            result: <UserSearchItem[]>searchResult.userSearchResult.users,
+
+            searchPrefix: searchArgs.namePrefix,
+            limit: searchArgs.limit!,
+            pageInfo: searchResult.userSearchResult.pageInfo!
+          }
+        }
+      }
+      case GET_USER_DEVICES: {
+        const userDevices = (<DeviceUsersPayload>action.payload!).deviceUsers;
+        
+        return {
+          ...state,
+          userDevices
+        }
+      }
+      case GET_DEVICE_ACCESS_REQUESTS: {
+        const deviceID = (<DeviceIDPayload>relatedAction.payload!).deviceID;
+        const deviceUsers = (<DeviceUsersPayload>action.payload!).deviceUsers;
+
+        const deviceAccessRequests = state.deviceAccessRequests || {};
+        deviceAccessRequests[deviceID] = deviceUsers;
+        return {
+          ...state,
+          deviceAccessRequests
+        }
+      }
+      case GET_USER_SPACES: {
+        const userSpaces = (<SpaceUsersPayload>action.payload!).spaceUsers;
+
+        return {
+          ...state,
+          userSpaces
+        }
+      }
+      case GET_SPACE_INVITATIONS: {
+        const spaceInvitations = (<SpaceUsersPayload>action.payload!).spaceUsers;
+
+        return {
+          ...state,
+          spaceInvitations
+        }
+      }
+    }
+
+    return state;
   }
 }

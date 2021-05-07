@@ -21,10 +21,11 @@ export interface UserSpaceState extends State {
     pageInfo: PageInfo
   }
 
-  devices?: Device[] 
-  deviceAccessRequests?: DeviceUser[]
+  // logged in users device list
+  userDevices?: DeviceUser[] 
+  deviceAccessRequests?: { [ deviceID: string ]: DeviceUser[] }
 
-  spaces?: Space[]
+  userSpaces?: SpaceUser[]
   spaceInvitations?: SpaceUser[]
 };
 
@@ -35,4 +36,5 @@ export interface UserSpaceStateProps {
 
 export const initialUserSpaceState = (): UserSpaceState => 
   <UserSpaceState>{
+    status: []
   };
