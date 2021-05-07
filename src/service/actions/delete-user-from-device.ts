@@ -32,15 +32,6 @@ export const deleteUserFromDeviceEpic = (csProvider: Provider): Epic => {
         const deviceUser = await csProvider.deleteDeviceUser(action.payload!.deviceID, action.payload!.userID!);
         return createFollowUpAction<DeviceUserPayload>(action, SUCCESS, { deviceUser });
       },
-      getUserDevices: async (action, state$, callSync) => {
-        // wait for activation service call to complete
-        let dependsAction = await callSync['deleteUserFromDevice'];
-        if (dependsAction.type == SUCCESS) {
-          return createAction(GET_USER_DEVICES);
-        } else {
-          return createAction(NOOP);
-        }
-      },
       getDeviceAccessRequests: async (action, state$, callSync) => {
         // wait for activation service call to complete
         let dependsAction = await callSync['deleteUserFromDevice'];
@@ -51,6 +42,15 @@ export const deleteUserFromDeviceEpic = (csProvider: Provider): Epic => {
           return createAction(NOOP);
         }
       },
+      getUserDevices: async (action, state$, callSync) => {
+        // wait for activation service call to complete
+        let dependsAction = await callSync['deleteUserFromDevice'];
+        if (dependsAction.type == SUCCESS) {
+          return createAction(GET_USER_DEVICES);
+        } else {
+          return createAction(NOOP);
+        }
+      }
     }
   );
 }
