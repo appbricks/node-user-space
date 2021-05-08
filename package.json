@@ -1,6 +1,6 @@
 {
   "name": "@appbricks/user-space",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "MyCloudSpace User-Space client module",
   "main": "lib/index.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "lint-fix": "eslint . --ext .ts --quiet --fix",
     "codegen": "PAGER= aws appsync get-introspection-schema --api-id $API_ID --format JSON schema.json && amplify codegen && rm schema.json",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "publish": "tsc && npm publish --access public"
   },
   "repository": {
     "type": "git",
