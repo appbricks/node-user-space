@@ -130,6 +130,7 @@ export type Space = {
   region?: string | null,
   apps?: SpaceAppsConnection,
   users?: SpaceUsersConnection,
+  status?: SpaceStatus | null,
   lastSeen?: number | null,
 };
 
@@ -176,6 +177,15 @@ export type AppUser = {
   user?: User,
   lastAccessTime?: number | null,
 };
+
+export enum SpaceStatus {
+  undeployed = "undeployed",
+  running = "running",
+  shutdown = "shutdown",
+  pending = "pending",
+  unknown = "unknown",
+}
+
 
 export type WireguardKey = {
   wireguardPublicKey?: string | null,
@@ -639,6 +649,7 @@ export type AddSpaceMutation = {
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
+        status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
       user?:  {
@@ -703,6 +714,7 @@ export type InviteSpaceUserMutation = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -783,6 +795,7 @@ export type AcceptSpaceUserInvitationMutation = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -863,6 +876,7 @@ export type LeaveSpaceUserMutation = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -944,6 +958,7 @@ export type DeactivateSpaceUserMutation = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -1025,6 +1040,7 @@ export type DeleteSpaceUserMutation = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -1280,6 +1296,7 @@ export type GetSpaceQuery = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
     user?:  {
@@ -1409,6 +1426,7 @@ export type GetSpaceInvitationsQuery = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
     user?:  {

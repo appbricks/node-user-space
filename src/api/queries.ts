@@ -132,6 +132,7 @@ export const getSpace = /* GraphQL */ `
         users {
           totalCount
         }
+        status
         lastSeen
       }
       user {
@@ -226,6 +227,7 @@ export const getSpaceInvitations = /* GraphQL */ `
         users {
           totalCount
         }
+        status
         lastSeen
       }
       user {

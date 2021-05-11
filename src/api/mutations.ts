@@ -308,6 +308,7 @@ export const addSpace = /* GraphQL */ `
           recipe
           iaas
           region
+          status
           lastSeen
         }
         user {
@@ -361,6 +362,7 @@ export const inviteSpaceUser = /* GraphQL */ `
         users {
           totalCount
         }
+        status
         lastSeen
       }
       user {
@@ -416,6 +418,7 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         users {
           totalCount
         }
+        status
         lastSeen
       }
       user {
@@ -471,6 +474,7 @@ export const leaveSpaceUser = /* GraphQL */ `
         users {
           totalCount
         }
+        status
         lastSeen
       }
       user {
@@ -526,6 +530,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
         users {
           totalCount
         }
+        status
         lastSeen
       }
       user {
@@ -581,6 +586,7 @@ export const deleteSpaceUser = /* GraphQL */ `
         users {
           totalCount
         }
+        status
         lastSeen
       }
       user {
