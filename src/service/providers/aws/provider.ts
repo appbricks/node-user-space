@@ -39,8 +39,11 @@ export default class Provider implements ProviderInterface {
 
   private logger: Logger;
 
-  constructor() {
+  private api: typeof API;
+
+  constructor(api?: typeof API) {
     this.logger = new Logger('AwsUserSpaceProvider');
+    this.api = api || API;
   }
 
   async userSearch(namePrefix: string, limit?: number, cursor?: CursorInput) {
@@ -76,7 +79,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ userSearch: UserSearchConnection }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(userSearchQuery, { namePrefix, limit, cursor })
         );
       if (result.data) {
@@ -124,7 +127,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ getUser: User }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(getUser)
         );
       if (result.data) {
@@ -155,7 +158,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ getDeviceAccessRequests: DeviceUser[] }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(getDeviceAccessRequests, { deviceID })
         );
       if (result.data) {
@@ -191,7 +194,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ activateDeviceUser: DeviceUser }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(activateDeviceUser, { deviceID, userID })
         );
       if (result.data) {
@@ -227,7 +230,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ deleteDeviceUser: DeviceUser }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(deleteDeviceUser, { deviceID, userID })
         );
       if (result.data) {
@@ -253,7 +256,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ deleteDevice: string[] }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(deleteDevice, { deviceID })
         );
       if (result.data) {
@@ -293,7 +296,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ getUser: User }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(getUser)
         );
       if (result.data) {
@@ -342,7 +345,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ inviteSpaceUser: SpaceUser }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(inviteSpaceUser, {
             spaceID,
             userID,
@@ -382,7 +385,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ deactivateSpaceUser: SpaceUser }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(deactivateSpaceUser, { spaceID, userID })
         );
       if (result.data) {
@@ -417,7 +420,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ deleteSpaceUser: SpaceUser }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(deleteSpaceUser, { spaceID, userID })
         );
       if (result.data) {
@@ -443,7 +446,7 @@ export default class Provider implements ProviderInterface {
 
       try {
         const result = <GraphQLResult<{ deleteSpace: string[] }>>
-          await API.graphql(
+          await this.api.graphql(
             graphqlOperation(deleteSpace, { spaceID })
           );
         if (result.data) {
@@ -477,7 +480,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ getSpaceInvitations: SpaceUser[] }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(getSpaceInvitations)
         );
       if (result.data) {
@@ -513,7 +516,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ acceptSpaceUserInvitation: SpaceUser }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(acceptSpaceUserInvitation, { spaceID })
         );
       if (result.data) {
@@ -549,7 +552,7 @@ export default class Provider implements ProviderInterface {
 
     try {
       const result = <GraphQLResult<{ leaveSpaceUser: SpaceUser }>>
-        await API.graphql(
+        await this.api.graphql(
           graphqlOperation(leaveSpaceUser, { spaceID })
         );
       if (result.data) {

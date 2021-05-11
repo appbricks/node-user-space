@@ -1,25 +1,18 @@
 jest.setTimeout(120000);
 
 import {
-  User,
   Device,
-  DeviceUser,
   Space,
-  SpaceUser,
   TableUsersFilterInput,
   UserSearchQuery,
   AddDeviceMutation,
   AddDeviceMutationVariables,
-  AddDeviceUserMutation,
   AddDeviceUserMutationVariables,
   AddSpaceMutation,
   AddSpaceMutationVariables
 } from '../../../../model/types';
 
-import {
-  userSearch,
-  getDeviceAccessRequests,
-} from '../../../../api/queries';
+import { userSearch } from '../../../../api/queries';
 import {
   addDevice,
   addDeviceUser,
