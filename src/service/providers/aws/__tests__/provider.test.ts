@@ -251,7 +251,7 @@ it('invites users and takes them through the space association lifecycle', async
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   // trim space fields
-  const space = (({ recipe, iaas, region, lastSeen, ...s }) => s)(space2);
+  const space = (({ recipe, iaas, region, status, lastSeen, ...s }) => s)(space2);
 
   expect(await provider.inviteSpaceUser(space.spaceID!, tester2.userID!, true, true))
     .toEqual({
@@ -278,7 +278,7 @@ it('invites users and takes them through the space association lifecycle', async
   await Auth.signIn('tester2', '@ppBr!cks2020');
   expect(await provider.getSpaceInvitations())
     .toEqual([{
-      space: (({ lastSeen, ...s }) => s)(space2),
+      space: (({ status, lastSeen, ...s }) => s)(space2),
       isAdmin: true,
       isEgressNode: true,
     }]);
@@ -294,7 +294,7 @@ it('invites users and takes them through the space association lifecycle', async
     ]);
   expect(await provider.getSpaceInvitations())
     .toEqual([{
-      space: (({ lastSeen, ...s }) => s)(space2),
+      space: (({ status, lastSeen, ...s }) => s)(space2),
       isAdmin: false,
       isEgressNode: true,
     }]);
@@ -330,7 +330,7 @@ it('deactivates a user associated with a space', async () => {
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   // trim space fields
-  const space = (({ recipe, iaas, region, lastSeen, ...s }) => s)(space2);
+  const space = (({ recipe, iaas, region, status, lastSeen, ...s }) => s)(space2);
 
   expect(await provider.deactivateSpaceUser(space.spaceID!, tester2.userID))
     .toEqual({
@@ -353,7 +353,7 @@ it('deletes a user associated with a space', async () => {
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   // trim space fields
-  const space = (({ recipe, iaas, region, lastSeen, ...s }) => s)(space2);
+  const space = (({ recipe, iaas, region, status, lastSeen, ...s }) => s)(space2);
 
   expect(await provider.deleteSpaceUser(space.spaceID!, tester2.userID))
     .toEqual({

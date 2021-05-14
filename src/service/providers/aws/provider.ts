@@ -287,6 +287,7 @@ export default class Provider implements ProviderInterface {
                 recipe
                 iaas
                 region
+                status
                 lastSeen
               }
             }
