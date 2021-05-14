@@ -8,8 +8,7 @@
     "lint-fix": "eslint . --ext .ts --quiet --fix",
     "codegen": "PAGER= aws appsync get-introspection-schema --api-id $API_ID --format JSON schema.json && amplify codegen && rm schema.json",
     "build": "tsc",
-    "test": "jest",
-    "publish": "tsc && npm publish"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
