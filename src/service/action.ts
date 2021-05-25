@@ -84,8 +84,9 @@ export interface AppIDPayload {
 export interface UserSpaceActionProps {
   userspaceService?: {
     userSearch: (namePrefix: string, limit?: number) => redux.Action
-    userSearchPagePrev: ()=> redux.Action
-    userSearchPageNext: ()=> redux.Action
+    userSearchPagePrev: () => redux.Action
+    userSearchPageNext: () => redux.Action
+    clearUserSearchResults: ()=> redux.Action
 
     // device owner actions
     getUserDevices: () => redux.Action
@@ -99,6 +100,7 @@ export interface UserSpaceActionProps {
     // space owner actions
     getUserSpaces: () => redux.Action
     inviteUserToSpace: (spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) => redux.Action
+    grantUserAccessToSpace: (spaceID: string, userID: string) => redux.Action
     removeUserAccessToSpace: (spaceID: string, userID: string) => redux.Action
     deleteUserFromSpace: (spaceID: string, userID: string) => redux.Action
     deleteSpace: (spaceID: string) => redux.Action
@@ -123,6 +125,7 @@ export interface UserSpaceActionProps {
 export const USER_SEARCH = 'userspace/USER_SEARCH';
 export const USER_SEARCH_PAGE_PREV = 'userspace/USER_SEARCH_PAGE_PREV';
 export const USER_SEARCH_PAGE_NEXT = 'userspace/USER_SEARCH_PAGE_NEXT';
+export const CLEAR_USER_SEARCH_RESULTS = 'userspace/CLEAR_USER_SEARCH_RESULTS';
 
 export const GET_USER_DEVICES = 'userspace/GET_USER_DEVICES';
 export const GET_DEVICE_ACCESS_REQUESTS = 'userspace/GET_DEVICE_ACCESS_REQUESTS';
@@ -133,6 +136,7 @@ export const GET_USER_DEVICE_TELEMETRY = 'userspace/GET_USER_DEVICE_TELEMETRY';
 
 export const GET_USER_SPACES = 'userspace/GET_USER_SPACES';
 export const INVITE_USER_TO_SPACE = 'userspace/INVITE_USER_TO_SPACE';
+export const GRANT_USER_ACCESS_TO_SPACE = 'userspace/GRANT_USER_ACCESS_TO_SPACE';
 export const REMOVE_USER_ACCESS_TO_SPACE = 'userspace/REMOVE_USER_ACCESS_TO_SPACE';
 export const DELETE_USER_FROM_SPACE = 'userspace/DELETE_USER_FROM_SPACE';
 export const DELETE_SPACE = 'userspace/DELETE_SPACE';

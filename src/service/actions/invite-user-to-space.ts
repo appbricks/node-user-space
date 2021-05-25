@@ -2,11 +2,12 @@ import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
 import { 
+  NOOP,
   SUCCESS,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpic 
+  serviceEpicFanOut 
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -14,6 +15,7 @@ import {
   SpaceInvitationPayload,
   SpaceUserPayload,
   INVITE_USER_TO_SPACE,
+  GET_USER_SPACES
 } from '../action';
 import { UserSpaceStateProps } from '../state';
 
@@ -23,12 +25,23 @@ export const inviteUserToSpaceAction =
 
 export const inviteUserToSpaceEpic = (csProvider: Provider): Epic => {
 
-  return serviceEpic<SpaceInvitationPayload, UserSpaceStateProps>(
+  return serviceEpicFanOut<SpaceInvitationPayload, UserSpaceStateProps>(
     INVITE_USER_TO_SPACE, 
-    async (action, state$) => {
-      const args = action.payload!;
-      const spaceUser = await csProvider.inviteSpaceUser(args.spaceID, args.userID, args.isAdmin, args.isEgressNode);
-      return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
+    {
+      inviteUserToSpace: async (action, state$, callSync) => {
+        const args = action.payload!;
+        const spaceUser = await csProvider.inviteSpaceUser(args.spaceID, args.userID, args.isAdmin, args.isEgressNode);
+        return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
+      },
+      getUserSpaces: async (action, state$, callSync) => {
+        // wait for invite service call to complete
+        let dependsAction = await callSync['inviteUserToSpace'];
+        if (dependsAction.type == SUCCESS) {
+          return createAction(GET_USER_SPACES);
+        } else {
+          return createAction(NOOP);
+        }
+      }
     }
   );
 }

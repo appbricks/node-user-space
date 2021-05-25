@@ -9,6 +9,10 @@ import {
   PageInfo
 } from '../model/types';
 
+import {
+  SpaceUserListItem
+} from '../model/lists';
+
 // User Space state type
 export interface UserSpaceState extends State {
   
@@ -22,10 +26,11 @@ export interface UserSpaceState extends State {
   }
 
   // logged in users device list
-  userDevices?: DeviceUser[] 
-  deviceAccessRequests?: { [ deviceID: string ]: DeviceUser[] }
+  userDevices: DeviceUser[] 
+  deviceAccessRequests: { [ deviceID: string ]: DeviceUser[] }
 
-  userSpaces?: SpaceUser[]
+  userSpaces: SpaceUser[]
+  spaceUsers: { [spaceID: string]: SpaceUserListItem[] }
   spaceInvitations?: SpaceUser[]
 };
 
@@ -36,5 +41,12 @@ export interface UserSpaceStateProps {
 
 export const initialUserSpaceState = (): UserSpaceState => 
   <UserSpaceState>{
-    status: []
+    status: [],
+
+    userDevices: [],
+    deviceAccessRequests: {},
+
+    userSpaces: [],
+    spaceUsers: {},
+    spaceInvitations: [],
   };

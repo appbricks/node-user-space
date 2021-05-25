@@ -20,6 +20,7 @@ import {
 import {
   UserSpaceActionProps,
   USER_SEARCH,
+  CLEAR_USER_SEARCH_RESULTS,
   GET_USER_DEVICES,
   GET_DEVICE_ACCESS_REQUESTS,
   ACTIVATE_USER_ON_DEVICE,
@@ -29,6 +30,7 @@ import {
   GET_USER_DEVICE_TELEMETRY,
   GET_USER_SPACES,
   INVITE_USER_TO_SPACE,
+  GRANT_USER_ACCESS_TO_SPACE,
   REMOVE_USER_ACCESS_TO_SPACE,
   DELETE_SPACE,
   GET_USER_SPACE_TELEMETRY,
@@ -138,6 +140,12 @@ it('searches a list of users', async () => {
   );
   dispatch.userspaceService!.userSearch('d');
   await stateTester.done();
+
+  stateTester.expectState(3);
+  dispatch.userspaceService!.clearUserSearchResults();
+  await stateTester.done();
+
+  expect(getState().userSearchResult).toBeUndefined();
 });
 
 it('retrieves a users list of devices', async () => {
@@ -258,15 +266,39 @@ it('retrieves a users list of spaces', async () => {
     (counter, state, status) => {
       const userSpaces = <SpaceUser[]>mockProvider.user!.spaces!.spaceUsers!
         .filter(spaceUser => spaceUser!.status == UserAccessStatus.active);
-  
+
       expect(state.userSpaces).toEqual(userSpaces);
+      expect(state.spaceUsers).toEqual(
+        {
+          'd83b7d95-5681-427d-a65a-5d8a868d72e9': [
+            {
+              userID: 'd12935f9-55b3-4514-8346-baaf99d6e6fa',
+              userName: 'bob',
+              fullName: '',
+              status: 'pending',
+              bytesUploaded: '0 bytes',
+              bytesDownloaded: '0 bytes',
+              lastConnectTime: 'never'
+            },
+            {
+              userID: '95e579be-a365-4268-bed0-17df80ef3dce',
+              userName: 'deb',
+              fullName: '',
+              status: 'active',
+              bytesUploaded: '3.2 MiB',
+              bytesDownloaded: '4.6 MiB',
+              lastConnectTime: '5/19/2021 16:53:18 EDT'
+            }
+          ]
+        }
+      );
     }
   );
   dispatch.userspaceService!.getUserSpaces();
   await stateTester.done();
 });
 
-it('retrieves a space invitations for a user and accepts an invitation and leaves a space', async () => {
+it('retrieves space invitations for user, accepts an invitation and leaves a space', async () => {
   mockProvider.setLoggedInUser('tom');
 
   stateTester.expectStateTest(GET_SPACE_INVITATIONS, ActionResult.pending);
@@ -332,7 +364,7 @@ it('retrieves a space invitations for a user and accepts an invitation and leave
   await stateTester.done();
 });
 
-it('removes a user from a space', async () => {
+it('removes a user\'s access to a space and then restores that user\'s access', async () => {
   mockProvider.setLoggedInUser('tom');
 
   const spaceID = 'd83b7d95-5681-427d-a65a-5d8a868d72e9'; // tom's space #1
@@ -367,6 +399,23 @@ it('removes a user from a space', async () => {
     }
   );
   dispatch.userspaceService!.removeUserAccessToSpace(spaceID, userID);
+  await stateTester.done();
+
+  stateTester.expectStateTest(GRANT_USER_ACCESS_TO_SPACE, ActionResult.pending);
+  stateTester.expectStateTest(GRANT_USER_ACCESS_TO_SPACE, ActionResult.success);
+  stateTester.expectStateTest(GET_USER_SPACES, ActionResult.pending);
+  stateTester.expectStateTest(
+    GET_USER_SPACES, ActionResult.success,
+    (counter, state, status) => {
+      const debsSpaceAccess = state.userSpaces!
+        .find(userSpace => userSpace.space!.spaceID == spaceID)!.space!.users!.spaceUsers!
+        .find(userSpace => userSpace!.user!.userID == userID)
+      
+      expect(debsSpaceAccess).toBeTruthy();
+      expect(debsSpaceAccess!.status).toEqual(UserAccessStatus.active);
+    }
+  );
+  dispatch.userspaceService!.grantUserAccessToSpace(spaceID, userID);
   await stateTester.done();
 });
 

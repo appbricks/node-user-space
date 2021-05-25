@@ -3,6 +3,7 @@ jest.setTimeout(120000);
 import {
   Device,
   Space,
+  SpaceUser,
   TableUsersFilterInput,
   UserSearchQuery,
   AddDeviceMutation,
@@ -232,7 +233,7 @@ it('deletes a users\'s device', async () => {
 it('retrieves a user\'s spaces', async () => {
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
-  expect(await provider.getUserSpaces())
+  expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
       {
         isOwner: true,
@@ -284,7 +285,7 @@ it('invites users and takes them through the space association lifecycle', async
     }]);
 
   await Auth.signIn('tester3', '@ppBr1cks2O20');
-  expect(await provider.getUserSpaces())
+  expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
       {
         isOwner: false,
@@ -303,7 +304,7 @@ it('invites users and takes them through the space association lifecycle', async
       space,
       user: tester3
     });
-  expect(await provider.getUserSpaces())
+  expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
       {
         isOwner: false,
@@ -316,7 +317,7 @@ it('invites users and takes them through the space association lifecycle', async
       space,
       user: tester3
     });
-  expect(await provider.getUserSpaces())
+  expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
       {
         isOwner: false,
@@ -327,11 +328,11 @@ it('invites users and takes them through the space association lifecycle', async
 });
 
 it('deactivates a user associated with a space', async () => {
-  await Auth.signIn('tester1', '@ppBr!cks2020');
 
   // trim space fields
   const space = (({ recipe, iaas, region, status, lastSeen, ...s }) => s)(space2);
 
+  await Auth.signIn('tester1', '@ppBr!cks2020');
   expect(await provider.deactivateSpaceUser(space.spaceID!, tester2.userID))
     .toEqual({
       space,
@@ -339,7 +340,7 @@ it('deactivates a user associated with a space', async () => {
     });
   
   await Auth.signIn('tester2', '@ppBr!cks2020');
-  expect(await provider.getUserSpaces())
+  expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
       {
         isOwner: false,
@@ -347,6 +348,29 @@ it('deactivates a user associated with a space', async () => {
         space: space2
       }
     ]);
+});
+
+it('activates a user associated with a space', async () => {
+
+  // trim space fields
+  const space = (({ recipe, iaas, region, status, lastSeen, ...s }) => s)(space2);
+
+  await Auth.signIn('tester1', '@ppBr!cks2020');
+  expect(await provider.activateSpaceUser(space.spaceID!, tester2.userID))
+    .toEqual({
+      space,
+      user: tester2
+    });
+  
+  await Auth.signIn('tester2', '@ppBr!cks2020');
+  expect(trimSpaceUsers(await provider.getUserSpaces()))
+    .toEqual([
+      {
+        isOwner: false,
+        status: 'active',
+        space: space2
+      }
+    ]);  
 });
 
 it('deletes a user associated with a space', async () => {
@@ -362,7 +386,7 @@ it('deletes a user associated with a space', async () => {
     });
   
   await Auth.signIn('tester2', '@ppBr!cks2020');
-  expect(await provider.getUserSpaces())
+  expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([]);
 });
 
@@ -372,7 +396,7 @@ it('deletes a user\'s space', async () => {
   await provider.deleteSpace(space1.spaceID!);
   
   // expect only remaining space
-  expect(await provider.getUserSpaces())
+  expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
       {
         isOwner: true,
@@ -466,3 +490,9 @@ afterAll(async () => {
 });
 
 const trimSpaceProps = (space: Space) => <Space>{ spaceID: space.spaceID, spaceName: space.spaceName };
+
+const trimSpaceUsers = (spaceUsers: SpaceUser[]) => 
+  spaceUsers.map(spaceUser => ({ 
+    ...spaceUser,
+    space: (({ users, ...s }) => s)(<Space>spaceUser.space), 
+  }));

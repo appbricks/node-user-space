@@ -24,6 +24,7 @@ import {
   ERROR_DELETE_DEVICE_USER,
   ERROR_GET_USER_SPACES,
   ERROR_INVITE_SPACE_USER,
+  ERROR_ACTIVATE_SPACE_USER,
   ERROR_DEACTIVATE_SPACE_USER,
   ERROR_DELETE_SPACE_USER,
   ERROR_DELETE_SPACE,
@@ -48,13 +49,15 @@ export default class Provider implements ProviderInterface {
 
   async userSearch(namePrefix: string, limit?: number, cursor?: CursorInput) {
 
+    this.logger.debug('User search query - namePrefix, limit, cursor:', namePrefix, limit, cursor);
+
     const userSearchQuery = /* GraphQL */ `
       query UserSearch(
         $namePrefix: String!
         $limit: Int
-        $next: CursorInput
+        $cursor: CursorInput
       ) {
-        userSearch(filter: {userName: {beginsWith: $namePrefix}}, limit: $limit, next: $next) {
+        userSearch(filter: {userName: {beginsWith: $namePrefix}}, limit: $limit, next: $cursor) {
           pageInfo {
             hasNextPage
             hasPreviousePage
@@ -289,6 +292,22 @@ export default class Provider implements ProviderInterface {
                 region
                 status
                 lastSeen
+                users {
+                  spaceUsers {
+                    user {
+                      userID
+                      userName
+                    }
+                    isOwner
+                    isAdmin
+                    isEgressNode
+                    status
+                    bytesUploaded
+                    bytesDownloaded
+                    lastConnectTime
+                    lastConnectDeviceID
+                  }
+                }
               }
             }
           }
@@ -365,6 +384,41 @@ export default class Provider implements ProviderInterface {
     } catch (error) {
       this.logger.error('inviteSpaceUser API call returned error: ', error);
       throw new Error(ERROR_INVITE_SPACE_USER, error);
+    }
+  }
+
+  async activateSpaceUser(spaceID: string, userID: string) {
+
+    const activateSpaceUser = /* GraphQL */ `
+      mutation ActivateSpaceUser($spaceID: ID!, $userID: ID!) {
+        activateSpaceUser(spaceID: $spaceID, userID: $userID)  {
+          space {
+            spaceID
+            spaceName
+          }
+          user {
+            userID
+            userName
+          }
+        }
+      }`;
+
+    try {
+      const result = <GraphQLResult<{ activateSpaceUser: SpaceUser }>>
+        await this.api.graphql(
+          graphqlOperation(activateSpaceUser, { spaceID, userID })
+        );
+      if (result.data) {
+        const spaceUser = <SpaceUser>result.data.activateSpaceUser;
+        this.logger.debug('Activated user access to space:', spaceUser);
+        return spaceUser;
+      } else {
+        throw this.handleErrorResponse(result, ERROR_ACTIVATE_SPACE_USER, 'activateSpaceUser')
+      }
+
+    } catch (error) {
+      this.logger.error('activateSpaceUser API call returned error: ', error);
+      throw new Error(ERROR_ACTIVATE_SPACE_USER, error);
     }
   }
 

@@ -403,65 +403,9 @@ export const inviteSpaceUser = /* GraphQL */ `
     }
   }
 `;
-export const acceptSpaceUserInvitation = /* GraphQL */ `
-  mutation AcceptSpaceUserInvitation($spaceID: ID!) {
-    acceptSpaceUserInvitation(spaceID: $spaceID) {
-      space {
-        spaceID
-        spaceName
-        recipe
-        iaas
-        region
-        apps {
-          totalCount
-        }
-        users {
-          totalCount
-        }
-        status
-        lastSeen
-      }
-      user {
-        userID
-        userName
-        emailAddress
-        mobilePhone
-        confirmed
-        publicKey
-        certificate
-        certificateRequest
-        devices {
-          totalCount
-        }
-        spaces {
-          totalCount
-        }
-        universalConfig
-      }
-      isOwner
-      isAdmin
-      isEgressNode
-      status
-      bytesUploaded
-      bytesDownloaded
-      accessList {
-        pageInfo {
-          hasNextPage
-          hasPreviousePage
-        }
-        totalCount
-        appUsers {
-          lastAccessTime
-        }
-      }
-      lastConnectTime
-      lastConnectDeviceID
-    }
-  }
-`;
-export const leaveSpaceUser = /* GraphQL */ `
-  mutation LeaveSpaceUser($spaceID: ID!) {
-    leaveSpaceUser(spaceID: $spaceID) {
+export const activateSpaceUser = /* GraphQL */ `
+  mutation ActivateSpaceUser($spaceID: ID!, $userID: ID!) {
+    activateSpaceUser(spaceID: $spaceID, userID: $userID) {
       space {
         spaceID
         spaceName
@@ -630,5 +574,117 @@ export const deleteSpaceUser = /* GraphQL */ `
 export const deleteSpace = /* GraphQL */ `
   mutation DeleteSpace($spaceID: ID!) {
     deleteSpace(spaceID: $spaceID)
+  }
+`;
+export const acceptSpaceUserInvitation = /* GraphQL */ `
+  mutation AcceptSpaceUserInvitation($spaceID: ID!) {
+    acceptSpaceUserInvitation(spaceID: $spaceID) {
+      space {
+        spaceID
+        spaceName
+        recipe
+        iaas
+        region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
+      user {
+        userID
+        userName
+        emailAddress
+        mobilePhone
+        confirmed
+        publicKey
+        certificate
+        certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
+        universalConfig
+      }
+      isOwner
+      isAdmin
+      isEgressNode
+      status
+      bytesUploaded
+      bytesDownloaded
+      accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        appUsers {
+          lastAccessTime
+        }
+      }
+      lastConnectTime
+      lastConnectDeviceID
+    }
+  }
+`;
+export const leaveSpaceUser = /* GraphQL */ `
+  mutation LeaveSpaceUser($spaceID: ID!) {
+    leaveSpaceUser(spaceID: $spaceID) {
+      space {
+        spaceID
+        spaceName
+        recipe
+        iaas
+        region
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
+      user {
+        userID
+        userName
+        emailAddress
+        mobilePhone
+        confirmed
+        publicKey
+        certificate
+        certificateRequest
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
+        universalConfig
+      }
+      isOwner
+      isAdmin
+      isEgressNode
+      status
+      bytesUploaded
+      bytesDownloaded
+      accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        appUsers {
+          lastAccessTime
+        }
+      }
+      lastConnectTime
+      lastConnectDeviceID
+    }
   }
 `;

@@ -1,4 +1,5 @@
 export * from './model/types';
+export * from './model/lists';
 
 export * from './service/constants';
 
@@ -14,6 +15,7 @@ export {
   GET_USER_SPACES,
   INVITE_USER_TO_SPACE,
   REMOVE_USER_ACCESS_TO_SPACE,
+  GRANT_USER_ACCESS_TO_SPACE,
   DELETE_SPACE,
   GET_USER_SPACE_TELEMETRY,
   GET_SPACE_INVITATIONS,
@@ -25,7 +27,7 @@ export {
 } from './service/action';
 
 export { UserSpaceActionProps } from './service/action';
-export { UserSpaceStateProps} from './service/state';
+export { UserSpaceState, UserSpaceStateProps } from './service/state';
 
 import UserSpaceService from './service/user-space-service';
 import AwsProvider from './service/providers/aws/provider'

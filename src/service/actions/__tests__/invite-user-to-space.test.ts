@@ -12,7 +12,9 @@ import {
 import { 
   SpaceInvitationPayload,
   SpaceUserPayload,
-  INVITE_USER_TO_SPACE 
+  SpaceUsersPayload,
+  INVITE_USER_TO_SPACE,
+  GET_USER_SPACES
 } from '../../action';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
@@ -50,6 +52,11 @@ it('invite a user to a space owned by the logged in user', async () => {
         return state;
       }
     );
+  actionTester.expectAction(GET_USER_SPACES)
+    .success<SpaceUsersPayload>(undefined, (counter, state, action) => {
+      expect(action.payload!.spaceUsers).toBeDefined();
+      return state;
+    });
 
   dispatch.userspaceService!.inviteUserToSpace(spaceID, userID, false, true);
   await actionTester.done();
@@ -59,5 +66,6 @@ it('invite a user to a space owned by the logged in user', async () => {
       .space!.users!.spaceUsers!
         .find(spaceUser => spaceUser!.user!.userID == userID);
 
+  expect(actionTester.actionCounter).toEqual(2);
   expect(spaceUserInvitation).toEqual(spaceUser);
 });

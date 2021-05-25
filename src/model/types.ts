@@ -771,95 +771,15 @@ export type InviteSpaceUserMutation = {
   } | null,
 };
 
-export type AcceptSpaceUserInvitationMutationVariables = {
+export type ActivateSpaceUserMutationVariables = {
   spaceID?: string,
+  userID?: string,
 };
 
-export type AcceptSpaceUserInvitationMutation = {
-  // Accept the invitation for the logged in user
-  // to connect and use space services
-  acceptSpaceUserInvitation?:  {
-    __typename: "SpaceUser",
-    space?:  {
-      __typename: "Space",
-      spaceID: string,
-      spaceName: string,
-      recipe?: string | null,
-      iaas?: string | null,
-      region?: string | null,
-      apps?:  {
-        __typename: "SpaceAppsConnection",
-        totalCount?: number | null,
-      } | null,
-      users?:  {
-        __typename: "SpaceUsersConnection",
-        totalCount?: number | null,
-      } | null,
-      status?: SpaceStatus | null,
-      lastSeen?: number | null,
-    } | null,
-    user?:  {
-      __typename: "User",
-      userID: string,
-      userName: string,
-      emailAddress?: string | null,
-      mobilePhone?: string | null,
-      confirmed?: boolean | null,
-      publicKey?: string | null,
-      certificate?: string | null,
-      certificateRequest?: string | null,
-      devices?:  {
-        __typename: "DeviceUsersConnection",
-        totalCount?: number | null,
-      } | null,
-      spaces?:  {
-        __typename: "SpaceUsersConnection",
-        totalCount?: number | null,
-      } | null,
-      // A user's universal config is an encrypted
-      // document containing metadata of all spaces the
-      // user owns.
-      universalConfig?: string | null,
-    } | null,
-    isOwner?: boolean | null,
-    isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
-    // connect to the space and access only apps
-    // they are allowed to access. If this flag
-    // is set then they can also use the space
-    // as the egress node for internet access.
-    isEgressNode?: boolean | null,
-    status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
-    accessList?:  {
-      __typename: "AppUsersConnection",
-      pageInfo:  {
-        __typename: "PageInfo",
-        // When paginating forwards, are there more items?
-        hasNextPage: boolean,
-        // When paginating backwards, are there more items?
-        hasPreviousePage: boolean,
-      },
-      totalCount?: number | null,
-      appUsers?:  Array< {
-        __typename: "AppUser",
-        lastAccessTime?: number | null,
-      } | null > | null,
-    } | null,
-    lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
-  } | null,
-};
-
-export type LeaveSpaceUserMutationVariables = {
-  spaceID?: string,
-};
-
-export type LeaveSpaceUserMutation = {
-  // Deactivates the current logged in user's
-  // access to the given space
-  leaveSpaceUser?:  {
+export type ActivateSpaceUserMutation = {
+  // Activates a space user in the space owned
+  // by the logged in user
+  activateSpaceUser?:  {
     __typename: "SpaceUser",
     space?:  {
       __typename: "Space",
@@ -1105,6 +1025,168 @@ export type DeleteSpaceMutation = {
   // Deletes an owned space. Returns userIDs of
   // all associated users deleted as a result.
   deleteSpace?: Array< string | null > | null,
+};
+
+export type AcceptSpaceUserInvitationMutationVariables = {
+  spaceID?: string,
+};
+
+export type AcceptSpaceUserInvitationMutation = {
+  // Accept the invitation for the logged in user
+  // to connect and use space services
+  acceptSpaceUserInvitation?:  {
+    __typename: "SpaceUser",
+    space?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      userID: string,
+      userName: string,
+      emailAddress?: string | null,
+      mobilePhone?: string | null,
+      confirmed?: boolean | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      // A user's universal config is an encrypted
+      // document containing metadata of all spaces the
+      // user owns.
+      universalConfig?: string | null,
+    } | null,
+    isOwner?: boolean | null,
+    isAdmin?: boolean | null,
+    // User's that are neither owners or admin can
+    // connect to the space and access only apps
+    // they are allowed to access. If this flag
+    // is set then they can also use the space
+    // as the egress node for internet access.
+    isEgressNode?: boolean | null,
+    status?: UserAccessStatus | null,
+    bytesUploaded?: number | null,
+    bytesDownloaded?: number | null,
+    accessList?:  {
+      __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
+    } | null,
+    lastConnectTime?: number | null,
+    lastConnectDeviceID?: string | null,
+  } | null,
+};
+
+export type LeaveSpaceUserMutationVariables = {
+  spaceID?: string,
+};
+
+export type LeaveSpaceUserMutation = {
+  // Deactivates the current logged in user's
+  // access to the given space
+  leaveSpaceUser?:  {
+    __typename: "SpaceUser",
+    space?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      userID: string,
+      userName: string,
+      emailAddress?: string | null,
+      mobilePhone?: string | null,
+      confirmed?: boolean | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      certificateRequest?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      // A user's universal config is an encrypted
+      // document containing metadata of all spaces the
+      // user owns.
+      universalConfig?: string | null,
+    } | null,
+    isOwner?: boolean | null,
+    isAdmin?: boolean | null,
+    // User's that are neither owners or admin can
+    // connect to the space and access only apps
+    // they are allowed to access. If this flag
+    // is set then they can also use the space
+    // as the egress node for internet access.
+    isEgressNode?: boolean | null,
+    status?: UserAccessStatus | null,
+    bytesUploaded?: number | null,
+    bytesDownloaded?: number | null,
+    accessList?:  {
+      __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
+    } | null,
+    lastConnectTime?: number | null,
+    lastConnectDeviceID?: string | null,
+  } | null,
 };
 
 export type UserSearchQueryVariables = {

@@ -34,7 +34,7 @@ export const acceptSpaceInvitationEpic = (csProvider: Provider): Epic => {
         return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
       },
       getSpaceInvitations: async (action, state$, callSync) => {
-        // wait for activation service call to complete
+        // wait for accept service call to complete
         let dependsAction = await callSync['acceptSpaceInvitation'];
         if (dependsAction.type == SUCCESS) {
           return createAction(GET_SPACE_INVITATIONS);
@@ -43,7 +43,7 @@ export const acceptSpaceInvitationEpic = (csProvider: Provider): Epic => {
         }
       },
       getUserSpaces: async (action, state$, callSync) => {
-        // wait for activation service call to complete
+        // wait for accept service call to complete
         let dependsAction = await callSync['acceptSpaceInvitation'];
         if (dependsAction.type == SUCCESS) {
           return createAction(GET_USER_SPACES);

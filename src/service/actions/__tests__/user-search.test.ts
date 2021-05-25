@@ -15,7 +15,8 @@ import {
   UserSearchResultPayload,
   USER_SEARCH,
   USER_SEARCH_PAGE_PREV,
-  USER_SEARCH_PAGE_NEXT
+  USER_SEARCH_PAGE_NEXT,
+  CLEAR_USER_SEARCH_RESULTS
 } from '../../action';
 import {
   UserSpaceState
@@ -227,5 +228,9 @@ it('searches users matching a prefix with pagination and handles errors', async 
     });
 
   dispatch.userspaceService!.userSearchPagePrev();
+  await actionTester.done();
+
+  actionTester.expectAction(CLEAR_USER_SEARCH_RESULTS);
+  dispatch.userspaceService!.clearUserSearchResults();
   await actionTester.done();
 });

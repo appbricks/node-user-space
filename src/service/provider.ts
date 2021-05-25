@@ -68,6 +68,11 @@ export default interface Provider {
   getSpaceInvitations(): Promise<SpaceUser[]>;
 
   /**
+   * Activate user's access to the given space.
+   */
+  activateSpaceUser(spaceID: string, userID: string): Promise<SpaceUser>;
+
+  /**
    * Remove user's access to the given space.
    */
   deactivateSpaceUser(spaceID: string, userID: string): Promise<SpaceUser>;

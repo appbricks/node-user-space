@@ -265,6 +265,23 @@ export default class MockProvider implements ProviderInterface {
     return spaceUserInvite;
   }
 
+  async activateSpaceUser(spaceID: string, userID: string): Promise<SpaceUser> {
+    const spaceUser = this.user!.spaces!.spaceUsers!
+      .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
+    if (!spaceUser) {
+      throw new Error(`user does not own a space with ID ${spaceID}`);
+    }
+
+    const spaceUserToDeactivate = spaceUser.space!.users!.spaceUsers!
+      .find(spaceUser => spaceUser!.user!.userID == userID);
+    if (!spaceUserToDeactivate) {
+      throw new Error(`user with ID ${userID} is not associated with space with ID ${spaceID}`);
+    }
+    
+    spaceUserToDeactivate.status = UserAccessStatus.active;
+    return spaceUserToDeactivate;
+  }
+
   async deactivateSpaceUser(spaceID: string, userID: string) {
     const spaceUser = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
@@ -683,9 +700,9 @@ function loadMockData() {
     isAdmin: true,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastConnectTime: 0,
+    bytesUploaded: 9833378,
+    bytesDownloaded: 387393,
+    lastConnectTime: 1621457397783,
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
@@ -695,9 +712,9 @@ function loadMockData() {
     isAdmin: true,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastConnectTime: 0,
+    bytesUploaded: 33939,
+    bytesDownloaded: 33834,
+    lastConnectTime: 1621457410097,
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
@@ -707,9 +724,9 @@ function loadMockData() {
     isAdmin: true,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastConnectTime: 0,
+    bytesUploaded: 98333388,
+    bytesDownloaded: 89333484,
+    lastConnectTime: 1621457266813,
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
@@ -731,9 +748,9 @@ function loadMockData() {
     isAdmin: false,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastConnectTime: 0,
+    bytesUploaded: 8239884,
+    bytesDownloaded: 2389343,
+    lastConnectTime: 1621457740350,
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
@@ -755,9 +772,9 @@ function loadMockData() {
     isAdmin: false,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastConnectTime: 0,
+    bytesUploaded: 3388393,
+    bytesDownloaded: 4857729,
+    lastConnectTime: 1621457598241,
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
