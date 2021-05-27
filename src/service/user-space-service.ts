@@ -265,7 +265,8 @@ export default class UserSpaceService {
       state,
       action,
       this.serviceRequests,
-      this.reduceServiceResponse.bind(this)
+      this.reduceServiceResponse.bind(this),
+      initialUserSpaceState.bind(this)
     );
   }
 
