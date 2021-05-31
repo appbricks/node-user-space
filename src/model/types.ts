@@ -2,15 +2,14 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type Key = {
-  publicKey?: string | null,
-  certificateRequest?: string | null,
-};
-
 export type User = {
   __typename: "User",
   userID?: string,
   userName?: string,
+  firstName?: string | null,
+  middleName?: string | null,
+  familyName?: string | null,
+  preferredName?: string | null,
   emailAddress?: string | null,
   mobilePhone?: string | null,
   confirmed?: boolean | null,
@@ -187,6 +186,11 @@ export enum SpaceStatus {
 }
 
 
+export type Key = {
+  publicKey?: string | null,
+  certificateRequest?: string | null,
+};
+
 export type WireguardKey = {
   wireguardPublicKey?: string | null,
 };
@@ -246,6 +250,85 @@ export type UserSearchItem = {
   userName?: string,
 };
 
+export type UpdateUserProfileMutationVariables = {
+  firstName?: string | null,
+  middleName?: string | null,
+  familyName?: string | null,
+  preferredName?: string | null,
+  emailAddress?: string | null,
+  mobilePhone?: string | null,
+};
+
+export type UpdateUserProfileMutation = {
+  // Update the user profile
+  updateUserProfile?:  {
+    __typename: "User",
+    userID: string,
+    userName: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    familyName?: string | null,
+    preferredName?: string | null,
+    emailAddress?: string | null,
+    mobilePhone?: string | null,
+    confirmed?: boolean | null,
+    publicKey?: string | null,
+    certificate?: string | null,
+    certificateRequest?: string | null,
+    devices?:  {
+      __typename: "DeviceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      deviceUsers?:  Array< {
+        __typename: "DeviceUser",
+        isOwner?: boolean | null,
+        status?: UserAccessStatus | null,
+        wireguardPublicKey?: string | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
+      } | null > | null,
+    } | null,
+    spaces?:  {
+      __typename: "SpaceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      spaceUsers?:  Array< {
+        __typename: "SpaceUser",
+        isOwner?: boolean | null,
+        isAdmin?: boolean | null,
+        // User's that are neither owners or admin can
+        // connect to the space and access only apps
+        // they are allowed to access. If this flag
+        // is set then they can also use the space
+        // as the egress node for internet access.
+        isEgressNode?: boolean | null,
+        status?: UserAccessStatus | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
+        lastConnectDeviceID?: string | null,
+      } | null > | null,
+    } | null,
+    // A user's universal config is an encrypted
+    // document containing metadata of all spaces the
+    // user owns.
+    universalConfig?: string | null,
+  } | null,
+};
+
 export type UpdateUserKeyMutationVariables = {
   userKey?: Key,
 };
@@ -256,6 +339,10 @@ export type UpdateUserKeyMutation = {
     __typename: "User",
     userID: string,
     userName: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    familyName?: string | null,
+    preferredName?: string | null,
     emailAddress?: string | null,
     mobilePhone?: string | null,
     confirmed?: boolean | null,
@@ -341,6 +428,10 @@ export type AddDeviceMutation = {
         __typename: "User",
         userID: string,
         userName: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+        preferredName?: string | null,
         emailAddress?: string | null,
         mobilePhone?: string | null,
         confirmed?: boolean | null,
@@ -387,6 +478,10 @@ export type AddDeviceUserMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -440,6 +535,10 @@ export type ActivateDeviceUserMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -533,6 +632,10 @@ export type UpdateDeviceUserKeyMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -589,6 +692,10 @@ export type DeleteDeviceUserMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -656,6 +763,10 @@ export type AddSpaceMutation = {
         __typename: "User",
         userID: string,
         userName: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+        preferredName?: string | null,
         emailAddress?: string | null,
         mobilePhone?: string | null,
         confirmed?: boolean | null,
@@ -721,6 +832,10 @@ export type InviteSpaceUserMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -803,6 +918,10 @@ export type ActivateSpaceUserMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -885,6 +1004,10 @@ export type DeactivateSpaceUserMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -967,6 +1090,10 @@ export type DeleteSpaceUserMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -1058,6 +1185,10 @@ export type AcceptSpaceUserInvitationMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -1139,6 +1270,10 @@ export type LeaveSpaceUserMutation = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -1241,6 +1376,10 @@ export type GetUserQuery = {
     __typename: "User",
     userID: string,
     userName: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    familyName?: string | null,
+    preferredName?: string | null,
     emailAddress?: string | null,
     mobilePhone?: string | null,
     confirmed?: boolean | null,
@@ -1326,6 +1465,10 @@ export type GetDeviceQuery = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -1385,6 +1528,10 @@ export type GetSpaceQuery = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -1460,6 +1607,10 @@ export type GetDeviceAccessRequestsQuery = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,
@@ -1515,6 +1666,10 @@ export type GetSpaceInvitationsQuery = {
       __typename: "User",
       userID: string,
       userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
       emailAddress?: string | null,
       mobilePhone?: string | null,
       confirmed?: boolean | null,

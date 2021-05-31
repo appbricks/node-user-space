@@ -36,6 +36,10 @@ export const getUser = /* GraphQL */ `
     getUser {
       userID
       userName
+      firstName
+      middleName
+      familyName
+      preferredName
       emailAddress
       mobilePhone
       confirmed
@@ -94,6 +98,10 @@ export const getDevice = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -138,6 +146,10 @@ export const getSpace = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -189,6 +201,10 @@ export const getDeviceAccessRequests = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -233,6 +249,10 @@ export const getSpaceInvitations = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed

@@ -297,6 +297,9 @@ export default class Provider implements ProviderInterface {
                     user {
                       userID
                       userName
+                      firstName
+                      middleName
+                      familyName
                     }
                     isOwner
                     isAdmin

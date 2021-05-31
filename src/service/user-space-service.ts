@@ -336,15 +336,26 @@ export default class UserSpaceService {
                 const {
                   userID,
                   userName,
-                  // fullName
+                  firstName,
+                  middleName,
+                  familyName
                 } = user!;
+
+                let fullName = 
+                  (firstName ? firstName + ' ': '') +
+                  (middleName ? 
+                    middleName.length > 1 
+                      ? middleName + ' '
+                      : middleName + '. '
+                    : '') +
+                  (familyName ? familyName : '');
 
                 const dateTime = new Date(lastConnectTime || 0);
 
                 return <SpaceUserListItem>{
                   userID,
                   userName,
-                  fullName: '',
+                  fullName,
                   status,
                   bytesUploaded: bytesToSize(bytesUploaded!),
                   bytesDownloaded: bytesToSize(bytesDownloaded!),

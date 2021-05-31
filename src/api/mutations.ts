@@ -2,11 +2,80 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const updateUserProfile = /* GraphQL */ `
+  mutation UpdateUserProfile(
+    $firstName: String
+    $middleName: String
+    $familyName: String
+    $preferredName: String
+    $emailAddress: AWSEmail
+    $mobilePhone: AWSPhone
+  ) {
+    updateUserProfile(
+      firstName: $firstName
+      middleName: $middleName
+      familyName: $familyName
+      preferredName: $preferredName
+      emailAddress: $emailAddress
+      mobilePhone: $mobilePhone
+    ) {
+      userID
+      userName
+      firstName
+      middleName
+      familyName
+      preferredName
+      emailAddress
+      mobilePhone
+      confirmed
+      publicKey
+      certificate
+      certificateRequest
+      devices {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        deviceUsers {
+          isOwner
+          status
+          wireguardPublicKey
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
+        }
+      }
+      spaces {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        spaceUsers {
+          isOwner
+          isAdmin
+          isEgressNode
+          status
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
+          lastConnectDeviceID
+        }
+      }
+      universalConfig
+    }
+  }
+`;
 export const updateUserKey = /* GraphQL */ `
   mutation UpdateUserKey($userKey: Key!) {
     updateUserKey(userKey: $userKey) {
       userID
       userName
+      firstName
+      middleName
+      familyName
+      preferredName
       emailAddress
       mobilePhone
       confirmed
@@ -72,6 +141,10 @@ export const addDevice = /* GraphQL */ `
         user {
           userID
           userName
+          firstName
+          middleName
+          familyName
+          preferredName
           emailAddress
           mobilePhone
           confirmed
@@ -106,6 +179,10 @@ export const addDeviceUser = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -145,6 +222,10 @@ export const activateDeviceUser = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -218,6 +299,10 @@ export const updateDeviceUserKey = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -257,6 +342,10 @@ export const deleteDeviceUser = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -314,6 +403,10 @@ export const addSpace = /* GraphQL */ `
         user {
           userID
           userName
+          firstName
+          middleName
+          familyName
+          preferredName
           emailAddress
           mobilePhone
           confirmed
@@ -368,6 +461,10 @@ export const inviteSpaceUser = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -424,6 +521,10 @@ export const activateSpaceUser = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -480,6 +581,10 @@ export const deactivateSpaceUser = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -536,6 +641,10 @@ export const deleteSpaceUser = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -597,6 +706,10 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
@@ -653,6 +766,10 @@ export const leaveSpaceUser = /* GraphQL */ `
       user {
         userID
         userName
+        firstName
+        middleName
+        familyName
+        preferredName
         emailAddress
         mobilePhone
         confirmed
