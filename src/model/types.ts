@@ -2,6 +2,11 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type Key = {
+  publicKey?: string | null,
+  certificateRequest?: string | null,
+};
+
 export type User = {
   __typename: "User",
   userID?: string,
@@ -67,7 +72,7 @@ export type DeviceUser = {
   wireguardPublicKey?: string | null,
   bytesUploaded?: number | null,
   bytesDownloaded?: number | null,
-  lastConnectTime?: number | null,
+  lastAccessTime?: number | null,
 };
 
 export type Device = {
@@ -186,11 +191,6 @@ export enum SpaceStatus {
 }
 
 
-export type Key = {
-  publicKey?: string | null,
-  certificateRequest?: string | null,
-};
-
 export type WireguardKey = {
   wireguardPublicKey?: string | null,
 };
@@ -250,85 +250,6 @@ export type UserSearchItem = {
   userName?: string,
 };
 
-export type UpdateUserProfileMutationVariables = {
-  firstName?: string | null,
-  middleName?: string | null,
-  familyName?: string | null,
-  preferredName?: string | null,
-  emailAddress?: string | null,
-  mobilePhone?: string | null,
-};
-
-export type UpdateUserProfileMutation = {
-  // Update the user profile
-  updateUserProfile?:  {
-    __typename: "User",
-    userID: string,
-    userName: string,
-    firstName?: string | null,
-    middleName?: string | null,
-    familyName?: string | null,
-    preferredName?: string | null,
-    emailAddress?: string | null,
-    mobilePhone?: string | null,
-    confirmed?: boolean | null,
-    publicKey?: string | null,
-    certificate?: string | null,
-    certificateRequest?: string | null,
-    devices?:  {
-      __typename: "DeviceUsersConnection",
-      pageInfo:  {
-        __typename: "PageInfo",
-        // When paginating forwards, are there more items?
-        hasNextPage: boolean,
-        // When paginating backwards, are there more items?
-        hasPreviousePage: boolean,
-      },
-      totalCount?: number | null,
-      deviceUsers?:  Array< {
-        __typename: "DeviceUser",
-        isOwner?: boolean | null,
-        status?: UserAccessStatus | null,
-        wireguardPublicKey?: string | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
-        lastConnectTime?: number | null,
-      } | null > | null,
-    } | null,
-    spaces?:  {
-      __typename: "SpaceUsersConnection",
-      pageInfo:  {
-        __typename: "PageInfo",
-        // When paginating forwards, are there more items?
-        hasNextPage: boolean,
-        // When paginating backwards, are there more items?
-        hasPreviousePage: boolean,
-      },
-      totalCount?: number | null,
-      spaceUsers?:  Array< {
-        __typename: "SpaceUser",
-        isOwner?: boolean | null,
-        isAdmin?: boolean | null,
-        // User's that are neither owners or admin can
-        // connect to the space and access only apps
-        // they are allowed to access. If this flag
-        // is set then they can also use the space
-        // as the egress node for internet access.
-        isEgressNode?: boolean | null,
-        status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
-        lastConnectTime?: number | null,
-        lastConnectDeviceID?: string | null,
-      } | null > | null,
-    } | null,
-    // A user's universal config is an encrypted
-    // document containing metadata of all spaces the
-    // user owns.
-    universalConfig?: string | null,
-  } | null,
-};
-
 export type UpdateUserKeyMutationVariables = {
   userKey?: Key,
 };
@@ -366,7 +287,7 @@ export type UpdateUserKeyMutation = {
         wireguardPublicKey?: string | null,
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
-        lastConnectTime?: number | null,
+        lastAccessTime?: number | null,
       } | null > | null,
     } | null,
     spaces?:  {
@@ -448,7 +369,7 @@ export type AddDeviceMutation = {
       wireguardPublicKey?: string | null,
       bytesUploaded?: number | null,
       bytesDownloaded?: number | null,
-      lastConnectTime?: number | null,
+      lastAccessTime?: number | null,
     },
   } | null,
 };
@@ -506,7 +427,7 @@ export type AddDeviceUserMutation = {
     wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
-    lastConnectTime?: number | null,
+    lastAccessTime?: number | null,
   } | null,
 };
 
@@ -563,7 +484,7 @@ export type ActivateDeviceUserMutation = {
     wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
-    lastConnectTime?: number | null,
+    lastAccessTime?: number | null,
   } | null,
 };
 
@@ -598,7 +519,7 @@ export type UpdateDeviceKeyMutation = {
         wireguardPublicKey?: string | null,
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
-        lastConnectTime?: number | null,
+        lastAccessTime?: number | null,
       } | null > | null,
     } | null,
   } | null,
@@ -660,7 +581,7 @@ export type UpdateDeviceUserKeyMutation = {
     wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
-    lastConnectTime?: number | null,
+    lastAccessTime?: number | null,
   } | null,
 };
 
@@ -720,7 +641,7 @@ export type DeleteDeviceUserMutation = {
     wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
-    lastConnectTime?: number | null,
+    lastAccessTime?: number | null,
   } | null,
 };
 
@@ -1403,7 +1324,7 @@ export type GetUserQuery = {
         wireguardPublicKey?: string | null,
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
-        lastConnectTime?: number | null,
+        lastAccessTime?: number | null,
       } | null > | null,
     } | null,
     spaces?:  {
@@ -1493,7 +1414,7 @@ export type GetDeviceQuery = {
     wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
-    lastConnectTime?: number | null,
+    lastAccessTime?: number | null,
   } | null,
 };
 
@@ -1635,7 +1556,7 @@ export type GetDeviceAccessRequestsQuery = {
     wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
-    lastConnectTime?: number | null,
+    lastAccessTime?: number | null,
   } | null > | null,
 };
 

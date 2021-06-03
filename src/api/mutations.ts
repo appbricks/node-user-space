@@ -2,71 +2,6 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const updateUserProfile = /* GraphQL */ `
-  mutation UpdateUserProfile(
-    $firstName: String
-    $middleName: String
-    $familyName: String
-    $preferredName: String
-    $emailAddress: AWSEmail
-    $mobilePhone: AWSPhone
-  ) {
-    updateUserProfile(
-      firstName: $firstName
-      middleName: $middleName
-      familyName: $familyName
-      preferredName: $preferredName
-      emailAddress: $emailAddress
-      mobilePhone: $mobilePhone
-    ) {
-      userID
-      userName
-      firstName
-      middleName
-      familyName
-      preferredName
-      emailAddress
-      mobilePhone
-      confirmed
-      publicKey
-      certificate
-      certificateRequest
-      devices {
-        pageInfo {
-          hasNextPage
-          hasPreviousePage
-        }
-        totalCount
-        deviceUsers {
-          isOwner
-          status
-          wireguardPublicKey
-          bytesUploaded
-          bytesDownloaded
-          lastConnectTime
-        }
-      }
-      spaces {
-        pageInfo {
-          hasNextPage
-          hasPreviousePage
-        }
-        totalCount
-        spaceUsers {
-          isOwner
-          isAdmin
-          isEgressNode
-          status
-          bytesUploaded
-          bytesDownloaded
-          lastConnectTime
-          lastConnectDeviceID
-        }
-      }
-      universalConfig
-    }
-  }
-`;
 export const updateUserKey = /* GraphQL */ `
   mutation UpdateUserKey($userKey: Key!) {
     updateUserKey(userKey: $userKey) {
@@ -94,7 +29,7 @@ export const updateUserKey = /* GraphQL */ `
           wireguardPublicKey
           bytesUploaded
           bytesDownloaded
-          lastConnectTime
+          lastAccessTime
         }
       }
       spaces {
@@ -158,7 +93,7 @@ export const addDevice = /* GraphQL */ `
         wireguardPublicKey
         bytesUploaded
         bytesDownloaded
-        lastConnectTime
+        lastAccessTime
       }
     }
   }
@@ -202,7 +137,7 @@ export const addDeviceUser = /* GraphQL */ `
       wireguardPublicKey
       bytesUploaded
       bytesDownloaded
-      lastConnectTime
+      lastAccessTime
     }
   }
 `;
@@ -245,7 +180,7 @@ export const activateDeviceUser = /* GraphQL */ `
       wireguardPublicKey
       bytesUploaded
       bytesDownloaded
-      lastConnectTime
+      lastAccessTime
     }
   }
 `;
@@ -269,7 +204,7 @@ export const updateDeviceKey = /* GraphQL */ `
           wireguardPublicKey
           bytesUploaded
           bytesDownloaded
-          lastConnectTime
+          lastAccessTime
         }
       }
     }
@@ -322,7 +257,7 @@ export const updateDeviceUserKey = /* GraphQL */ `
       wireguardPublicKey
       bytesUploaded
       bytesDownloaded
-      lastConnectTime
+      lastAccessTime
     }
   }
 `;
@@ -365,7 +300,7 @@ export const deleteDeviceUser = /* GraphQL */ `
       wireguardPublicKey
       bytesUploaded
       bytesDownloaded
-      lastConnectTime
+      lastAccessTime
     }
   }
 `;

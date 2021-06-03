@@ -10,6 +10,7 @@ import {
 } from '../model/types';
 
 import {
+  DeviceUserListItem,
   SpaceUserListItem
 } from '../model/lists';
 
@@ -27,6 +28,7 @@ export interface UserSpaceState extends State {
 
   // logged in users device list
   userDevices: DeviceUser[] 
+  deviceUsers: { [deviceID: string]: DeviceUserListItem[] }
   deviceAccessRequests: { [ deviceID: string ]: DeviceUser[] }
 
   userSpaces: SpaceUser[]
@@ -44,6 +46,7 @@ export const initialUserSpaceState = (): UserSpaceState =>
     status: [],
 
     userDevices: [],
+    deviceUsers: {},
     deviceAccessRequests: {},
 
     userSpaces: [],

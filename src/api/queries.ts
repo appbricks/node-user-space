@@ -58,7 +58,7 @@ export const getUser = /* GraphQL */ `
           wireguardPublicKey
           bytesUploaded
           bytesDownloaded
-          lastConnectTime
+          lastAccessTime
         }
       }
       spaces {
@@ -121,7 +121,7 @@ export const getDevice = /* GraphQL */ `
       wireguardPublicKey
       bytesUploaded
       bytesDownloaded
-      lastConnectTime
+      lastAccessTime
     }
   }
 `;
@@ -224,7 +224,7 @@ export const getDeviceAccessRequests = /* GraphQL */ `
       wireguardPublicKey
       bytesUploaded
       bytesDownloaded
-      lastConnectTime
+      lastAccessTime
     }
   }
 `;

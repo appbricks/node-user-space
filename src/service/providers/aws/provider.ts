@@ -119,7 +119,15 @@ export default class Provider implements ProviderInterface {
                     user {
                       userID
                       userName
+                      firstName
+                      middleName
+                      familyName
                     }
+                    isOwner
+                    status
+                    bytesUploaded
+                    bytesDownloaded
+                    lastAccessTime
                   }
                 }
               }

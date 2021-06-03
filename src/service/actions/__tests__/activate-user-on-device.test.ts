@@ -46,11 +46,6 @@ it('grant user access to a device owned by the logged in user', async () => {
 
   actionTester.expectAction(ACTIVATE_USER_ON_DEVICE, <DeviceUserIDPayload>{ deviceID, userID })
     .success<DeviceUserPayload>({ deviceUser });
-  actionTester.expectAction<DeviceUserIDPayload>(GET_DEVICE_ACCESS_REQUESTS, { deviceID })
-    .success<DeviceUsersPayload>(undefined, (counter, state, action) => {
-      expect(action.payload!.deviceUsers).toBeDefined();
-      return state;
-    });
   actionTester.expectAction(GET_USER_DEVICES)
     .success<DeviceUsersPayload>(undefined, (counter, state, action) => {
       expect(action.payload!.deviceUsers).toBeDefined();
@@ -60,6 +55,6 @@ it('grant user access to a device owned by the logged in user', async () => {
   dispatch.userspaceService!.activateUserOnDevice(deviceID, userID);
   await actionTester.done();
 
-  expect(actionTester.actionCounter).toEqual(3);
+  expect(actionTester.actionCounter).toEqual(2);
   expect(deviceUser.status).toEqual(UserAccessStatus.active);
 });

@@ -400,6 +400,9 @@ function loadMockData() {
     __typename: 'User',
     userID: 'd12935f9-55b3-4514-8346-baaf99d6e6fa',
     userName: 'bob',
+    firstName: 'Bobby',
+    middleName: 'J',
+    familyName: 'Brown',
     emailAddress: 'bob@acme.com',
     mobilePhone: '+19784445566',
     confirmed: true,
@@ -410,6 +413,9 @@ function loadMockData() {
     __typename: 'User',
     userID: '95e579be-a365-4268-bed0-17df80ef3dce',
     userName: 'deb',
+    firstName: 'Deborah',
+    middleName: 'Plynk',
+    familyName: 'Sanders',
     emailAddress: 'deb@acme.com',
     mobilePhone: '+19787778899',
     confirmed: true,
@@ -497,7 +503,7 @@ function loadMockData() {
     wireguardPublicKey: 'tom\'s device #1 wg public key',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[1],
@@ -507,7 +513,7 @@ function loadMockData() {
     wireguardPublicKey: 'tom\'s device #2 wg public key',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[2],
@@ -517,7 +523,7 @@ function loadMockData() {
     wireguardPublicKey: 'bob\'s device #1 wg public key',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[2],
@@ -527,7 +533,7 @@ function loadMockData() {
     wireguardPublicKey: 'tom\'s wg public key for bob\'s device #1',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[1],
@@ -537,7 +543,7 @@ function loadMockData() {
     wireguardPublicKey: 'bob\'s wg public key for tom\'s device #2',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[0],
@@ -547,7 +553,7 @@ function loadMockData() {
     wireguardPublicKey: 'deb\'s wg public key for tom\'s device #1',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 1622655379768,
   }, {
     __typename: "DeviceUser",
     device: devices[1],
@@ -557,7 +563,7 @@ function loadMockData() {
     wireguardPublicKey: 'deb\'s wg public key for tom\'s device #2',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[2],
@@ -567,7 +573,7 @@ function loadMockData() {
     wireguardPublicKey: 'deb\'s wg public key for bob\'s device #1',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[3],
@@ -577,7 +583,7 @@ function loadMockData() {
     wireguardPublicKey: 'bob\'s device #2 wg public key',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[3],
@@ -587,7 +593,7 @@ function loadMockData() {
     wireguardPublicKey: 'tom\'s wg public key for bob\'s device #2',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[3],
@@ -597,7 +603,7 @@ function loadMockData() {
     wireguardPublicKey: 'deb\'s wg public key for bob\'s device #2',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastConnectTime: 0,
+    lastAccessTime: 0,
   } ];
   
   devices[0].users = {

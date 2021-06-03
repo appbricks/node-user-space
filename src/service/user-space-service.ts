@@ -11,10 +11,12 @@ import {
 } from '@appbricks/utils';
 
 import { 
-  UserSearchItem
+  UserSearchItem,
+  User
 } from '../model/types';
 
 import {
+  DeviceUserListItem,
   SpaceUserListItem
 } from '../model/lists';
 
@@ -277,6 +279,21 @@ export default class UserSpaceService {
 
     let relatedAction = action.meta.relatedAction!;
 
+    const fullName: (user: User) => string = 
+    ({
+      firstName,
+      middleName,
+      familyName
+    }) => {
+      return (firstName ? firstName + ' ': '') +
+        (middleName ? 
+          middleName.length > 1 
+            ? middleName + ' '
+            : middleName + '. '
+          : '') +
+        (familyName ? familyName : '');
+    }
+
     switch (relatedAction.type) {
       case USER_SEARCH: {
         const searchArgs = <UserSearchPayload>relatedAction.payload!; 
@@ -295,17 +312,60 @@ export default class UserSpaceService {
       }
       case GET_USER_DEVICES: {
         const userDevices = (<DeviceUsersPayload>action.payload!).deviceUsers;
-        
+        this.logger.trace('Loaded current user\'s devices', userDevices);
+
+        // build user lists for devices owned by the current user
+        const deviceUsers: { [deviceID: string]: DeviceUserListItem[] } = {}
+        userDevices.forEach((deviceUser, i) => {
+          if (deviceUser.isOwner) {
+
+            deviceUsers[deviceUser.device!.deviceID!] = deviceUser.device!.users!.deviceUsers!
+              .filter(deviceUser => !deviceUser!.isOwner)
+              .map(deviceUser => {
+
+                const {
+                  user,
+                  status,
+                  bytesUploaded,
+                  bytesDownloaded,
+                  lastAccessTime
+                } = deviceUser!;
+                
+                const {
+                  userID,
+                  userName
+                } = user!;
+
+                const dateTime = new Date(lastAccessTime || 0);
+
+                return <DeviceUserListItem>{
+                  userID,
+                  userName,
+                  fullName: fullName(user!),
+                  status,
+                  bytesUploaded: bytesToSize(bytesUploaded!),
+                  bytesDownloaded: bytesToSize(bytesDownloaded!),
+                  lastAccessTime: lastAccessTime && lastAccessTime > 0
+                    ? dateTime.toLocaleDateString() + ' ' + 
+                      dateTime.toLocaleTimeString('en-US', { hour12: false, timeZoneName: 'short' })
+                    : 'never'
+                }
+              });
+          }
+        })
+        this.logger.trace('Created current user\'s device user lists: ', deviceUsers);
+
         return {
           ...state,
-          userDevices
+          userDevices,
+          deviceUsers
         }
       }
       case GET_DEVICE_ACCESS_REQUESTS: {
         const deviceID = (<DeviceIDPayload>relatedAction.payload!).deviceID;
         const deviceUsers = (<DeviceUsersPayload>action.payload!).deviceUsers;
 
-        const deviceAccessRequests = state.deviceAccessRequests || {};
+        const deviceAccessRequests = { ...state.deviceAccessRequests };
         deviceAccessRequests[deviceID] = deviceUsers;
         return {
           ...state,
@@ -335,27 +395,15 @@ export default class UserSpaceService {
                 
                 const {
                   userID,
-                  userName,
-                  firstName,
-                  middleName,
-                  familyName
+                  userName
                 } = user!;
-
-                let fullName = 
-                  (firstName ? firstName + ' ': '') +
-                  (middleName ? 
-                    middleName.length > 1 
-                      ? middleName + ' '
-                      : middleName + '. '
-                    : '') +
-                  (familyName ? familyName : '');
 
                 const dateTime = new Date(lastConnectTime || 0);
 
                 return <SpaceUserListItem>{
                   userID,
                   userName,
-                  fullName,
+                  fullName: fullName(user!),
                   status,
                   bytesUploaded: bytesToSize(bytesUploaded!),
                   bytesDownloaded: bytesToSize(bytesDownloaded!),

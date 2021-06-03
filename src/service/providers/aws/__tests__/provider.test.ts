@@ -85,7 +85,7 @@ if (process.env.DEBUG) {
 const provider = new Provider();
 
 // The following tests depend on record kept data 
-// in the User-Space database. These test will
+// in the User-Space database. These tests will
 // fail if the expected dataset is not the
 // same in the backend.
 
@@ -101,6 +101,15 @@ const tester3 = {
   userID: 'd68aef57-74db-450f-a6b2-d83285afc78c',
   userName: 'tester3'
 };
+
+const userWithNullNameFields = (user: object) => {
+  const nullName = {
+    firstName: null,
+    middleName: null,
+    familyName: null  
+  }
+  return Object.assign(nullName, user);
+}
 
 let device1: Device;
 let device2: Device;
@@ -136,13 +145,28 @@ it('retrieves a user\'s devices', async () => {
             totalCount: 3,
             deviceUsers: [
               {
-                user: tester1
+                user: userWithNullNameFields(tester1),
+                isOwner: true,
+                status: 'active',                
+                bytesDownloaded: 0,
+                bytesUploaded: 0,
+                lastAccessTime: 0
               },
               {
-                user: tester2
+                user: userWithNullNameFields(tester2),
+                isOwner: false,
+                status: 'pending',                
+                bytesDownloaded: 0,
+                bytesUploaded: 0,
+                lastAccessTime: 0
               },
               {
-                user: tester3
+                user: userWithNullNameFields(tester3),
+                isOwner: false,
+                status: 'pending',                
+                bytesDownloaded: 0,
+                bytesUploaded: 0,
+                lastAccessTime: 0
               }
             ]
           }
@@ -157,7 +181,12 @@ it('retrieves a user\'s devices', async () => {
             totalCount: 1,
             deviceUsers: [
               {
-                user: tester1
+                user: userWithNullNameFields(tester1),
+                isOwner: true,
+                status: 'active',                
+                bytesDownloaded: 0,
+                bytesUploaded: 0,
+                lastAccessTime: 0
               }
             ]
           }
@@ -221,7 +250,12 @@ it('deletes a users\'s device', async () => {
             totalCount: 1,
             deviceUsers: [
               {
-                user: tester1
+                user: userWithNullNameFields(tester1),
+                isOwner: true,
+                status: 'active',                
+                bytesDownloaded: 0,
+                bytesUploaded: 0,
+                lastAccessTime: 0
               }
             ]
           }

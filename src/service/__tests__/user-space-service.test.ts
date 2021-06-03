@@ -159,6 +159,39 @@ it('retrieves a users list of devices', async () => {
         .filter(deviceUser => deviceUser!.status == UserAccessStatus.active);
   
       expect(state.userDevices).toEqual(userDevices);
+      expect(state.deviceUsers).toEqual({
+        'c5021ecb-7c69-4950-a53c-fd4d5ca73b6f': [
+          {
+            userID: '95e579be-a365-4268-bed0-17df80ef3dce',
+            userName: 'deb',
+            fullName: 'Deborah Plynk Sanders',
+            status: 'pending',
+            bytesUploaded: '0 bytes',
+            bytesDownloaded: '0 bytes',
+            lastAccessTime: '6/2/2021 13:36:19 EDT'
+          }
+        ],
+        'ed3e2219-ff72-4405-88fb-8dab24030770': [
+          {
+            userID: 'd12935f9-55b3-4514-8346-baaf99d6e6fa',
+            userName: 'bob',
+            fullName: 'Bobby J. Brown',
+            status: 'pending',
+            bytesUploaded: '0 bytes',
+            bytesDownloaded: '0 bytes',
+            lastAccessTime: 'never'
+          },
+          {
+            userID: '95e579be-a365-4268-bed0-17df80ef3dce',
+            userName: 'deb',
+            fullName: 'Deborah Plynk Sanders',
+            status: 'active',
+            bytesUploaded: '0 bytes',
+            bytesDownloaded: '0 bytes',
+            lastAccessTime: 'never'
+          }
+        ]
+      });
     }
   );
   dispatch.userspaceService!.getUserDevices();
@@ -197,14 +230,7 @@ it('retrieves a access requests for a user\'s device and accepts a request', asy
   const deviceUserToActOn = getState().deviceAccessRequests![deviceID][0];
   stateTester.expectStateTest(ACTIVATE_USER_ON_DEVICE, ActionResult.pending);
   stateTester.expectStateTest(ACTIVATE_USER_ON_DEVICE, ActionResult.success);
-  stateTester.expectStateTest(GET_DEVICE_ACCESS_REQUESTS, ActionResult.pending);
   stateTester.expectStateTest(GET_USER_DEVICES, ActionResult.pending);
-  stateTester.expectStateTest(
-    GET_DEVICE_ACCESS_REQUESTS, ActionResult.success,
-    (counter, state, status) => {
-      expect(state.deviceAccessRequests![deviceID].length).toEqual(0);
-    }
-  );
   stateTester.expectStateTest(
     GET_USER_DEVICES, ActionResult.success,
     (counter, state, status) => {
@@ -220,14 +246,7 @@ it('retrieves a access requests for a user\'s device and accepts a request', asy
 
   stateTester.expectStateTest(DELETE_USER_FROM_DEVICE, ActionResult.pending);
   stateTester.expectStateTest(DELETE_USER_FROM_DEVICE, ActionResult.success);
-  stateTester.expectStateTest(GET_DEVICE_ACCESS_REQUESTS, ActionResult.pending);
   stateTester.expectStateTest(GET_USER_DEVICES, ActionResult.pending);
-  stateTester.expectStateTest(
-    GET_DEVICE_ACCESS_REQUESTS, ActionResult.success,
-    (counter, state, status) => {
-      expect(state.deviceAccessRequests![deviceID].length).toEqual(0);
-    }
-  );
   stateTester.expectStateTest(
     GET_USER_DEVICES, ActionResult.success,
     (counter, state, status) => {
@@ -274,7 +293,7 @@ it('retrieves a users list of spaces', async () => {
             {
               userID: 'd12935f9-55b3-4514-8346-baaf99d6e6fa',
               userName: 'bob',
-              fullName: '',
+              fullName: 'Bobby J. Brown',
               status: 'pending',
               bytesUploaded: '0 bytes',
               bytesDownloaded: '0 bytes',
@@ -283,7 +302,7 @@ it('retrieves a users list of spaces', async () => {
             {
               userID: '95e579be-a365-4268-bed0-17df80ef3dce',
               userName: 'deb',
-              fullName: '',
+              fullName: 'Deborah Plynk Sanders',
               status: 'active',
               bytesUploaded: '3.2 MiB',
               bytesDownloaded: '4.6 MiB',

@@ -46,14 +46,9 @@ it('deletes a user from a device', async () => {
       expect(action.payload!.deviceUsers).toBeDefined();
       return state;
     });
-  actionTester.expectAction<DeviceUserIDPayload>(GET_DEVICE_ACCESS_REQUESTS, { deviceID })
-    .success<DeviceUsersPayload>(undefined, (counter, state, action) => {
-      expect(action.payload!.deviceUsers).toBeDefined();
-      return state;
-    });
     
   dispatch.userspaceService!.deleteUserFromDevice(deviceID, userID);
   await actionTester.done();
 
-  expect(actionTester.actionCounter).toEqual(3);
+  expect(actionTester.actionCounter).toEqual(2);
 });
