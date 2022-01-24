@@ -1,31 +1,93 @@
 import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
-import { 
+import {
   SUCCESS,
-  Action, 
-  createAction, 
-  createFollowUpAction, 
-  serviceEpic 
+  NOOP,
+  Action,
+  createAction,
+  createFollowUpAction,
+  serviceEpicFanOut,
+  calculateDiffs
 } from '@appbricks/utils';
 
 import Provider from '../provider';
-import { 
+import {
   SpaceUsersPayload,
+  SpaceUpdateSubscriptionPayload,
+  SpaceTelemetrySubscriptionPayload,
   GET_USER_SPACES,
-} from '../action';
+  SUBSCRIBE_TO_SPACE_UPDATES,
+  SUBSCRIBE_TO_SPACE_TELEMETRY,
+} from '../actions';
+import {
+  UserSpaceStateProps
+} from '../state';
 
-export const getUserSpacesAction = 
-  (dispatch: redux.Dispatch<redux.Action>) => 
+export const action =
+  (dispatch: redux.Dispatch<redux.Action>) =>
     dispatch(createAction(GET_USER_SPACES));
 
-export const getUserSpacesEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
-  return serviceEpic(
-    GET_USER_SPACES, 
-    async (action, state$) => {
-      const spaceUsers = await csProvider.getUserSpaces();
-      return createFollowUpAction<SpaceUsersPayload>(action, SUCCESS, { spaceUsers });
+  return serviceEpicFanOut<void, UserSpaceStateProps>(
+    GET_USER_SPACES,
+    {
+      getUserSpaces: async (action, state$) => {
+        const spaceUsers = await csProvider.getUserSpaces();
+        return createFollowUpAction<SpaceUsersPayload>(action, SUCCESS, { spaceUsers });
+      },
+      subscribeToSpaceUpdates: async (action, state$, callSync) => {
+        let dependsAction = await callSync['getUserSpaces'];
+        if (dependsAction.type == SUCCESS) {
+
+          const [ unsubscribeSpaces, subscribeSpaces ] = calculateDiffs(
+            state$.value.userspace!.userSpaces.map(du => du.space!.spaceID!),
+            (<SpaceUsersPayload>dependsAction.payload).spaceUsers.map(du => du.space!.spaceID!)
+          );
+          if (unsubscribeSpaces.length > 0 || subscribeSpaces.length > 0) {
+            return createAction<SpaceUpdateSubscriptionPayload>(SUBSCRIBE_TO_SPACE_UPDATES, {
+              subscribeSpaces, unsubscribeSpaces
+            });  
+          }
+        }
+        return createAction(NOOP);
+      },
+      subscribeToSpaceTelemetry: async (action, state$, callSync) => {
+        let dependsAction = await callSync['getUserSpaces'];
+        if (dependsAction.type == SUCCESS) {
+
+          const [ unsubscribeSpaceUsers, subscribeSpaceUsers ] = calculateDiffs(
+            state$.value.userspace!.userSpaces.flatMap(
+              du1 => du1.space!.users!.spaceUsers!.map(
+                du2 => du1!.space!.spaceID! + '|' + du2!.user!.userID!
+              )
+            ),
+            (<SpaceUsersPayload>dependsAction.payload).spaceUsers.flatMap(
+              du1 => du1.space!.users!.spaceUsers!.map(
+                du2 => du1!.space!.spaceID! + '|' + du2!.user!.userID!
+              )
+            )
+          );
+          if (unsubscribeSpaceUsers.length > 0 || subscribeSpaceUsers.length > 0) {
+            return createAction<SpaceTelemetrySubscriptionPayload>(SUBSCRIBE_TO_SPACE_TELEMETRY, {
+              subscribeSpaceUsers: subscribeSpaceUsers.map(
+                v => {
+                  const s = v.split('|');
+                  return { spaceID: s[0], userID: s[1]};
+                }
+              ),
+              unsubscribeSpaceUsers: unsubscribeSpaceUsers.map(
+                v => {
+                  const s = v.split('|');
+                  return { spaceID: s[0], userID: s[1]};
+                }
+              )
+            });
+          }
+        }
+        return createAction(NOOP);
+      }
     }
   );
 }

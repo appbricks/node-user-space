@@ -16,14 +16,14 @@ import {
   SpaceUserPayload,
   GRANT_USER_ACCESS_TO_SPACE,
   GET_USER_SPACES
-} from '../action';
+} from '../actions';
 import { UserSpaceStateProps } from '../state';
 
-export const grantUserAccessToSpaceAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID: string) => 
     dispatch(createAction(GRANT_USER_ACCESS_TO_SPACE, <SpaceUserIDPayload>{ spaceID, userID }));
 
-export const grantUserAccessToSpaceEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpicFanOut<SpaceUserIDPayload, UserSpaceStateProps>(
     GRANT_USER_ACCESS_TO_SPACE, 

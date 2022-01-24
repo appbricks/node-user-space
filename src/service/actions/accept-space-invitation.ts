@@ -17,14 +17,14 @@ import {
   ACCEPT_SPACE_INVITATION,
   GET_USER_SPACES,
   GET_SPACE_INVITATIONS
-} from '../action';
+} from '../actions';
 import { UserSpaceStateProps } from '../state';
 
-export const acceptSpaceInvitationAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>, spaceID: string) => 
     dispatch(createAction(ACCEPT_SPACE_INVITATION, <SpaceIDPayload>{ spaceID }));
 
-export const acceptSpaceInvitationEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpicFanOut<SpaceIDPayload, UserSpaceStateProps>(
     ACCEPT_SPACE_INVITATION,

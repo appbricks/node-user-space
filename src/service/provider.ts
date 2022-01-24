@@ -1,10 +1,14 @@
 import { 
-  UserSearchConnection,
+  UserRef,
   DeviceUser,
   SpaceUser,
   App,
   AppUser,
-  CursorInput
+  UserUpdate,
+  DeviceUpdate,
+  DeviceUserUpdate,
+  SpaceUpdate,
+  SpaceUserUpdate
 } from '../model/types';
 
 /**
@@ -23,13 +27,43 @@ export default interface Provider {
    * Looks up users with names that start
    * with the given prefix.
    */
-  userSearch(namePrefix: string, limit?: number, cursor?: CursorInput): Promise<UserSearchConnection>;
+  userSearch(namePrefix: string, limit?: number): Promise<UserRef[]>;
+
+  /**
+   * Subscribes the user update stream.
+   */
+  subscribeToUserUpdates(userID: string, update: (data: UserUpdate) => void, error: (error: any) => void): void;
+
+  /**
+   * Unsubscribes from the user update stream.
+   */
+  unsubscribeFromUserUpdates(userID: string): Promise<void>;
 
   /**
    * Returns list of devices the current
    * logged in user has access to.
    */
   getUserDevices(): Promise<DeviceUser[]>;
+
+  /**
+   * Subscribes to the device update stream.
+   */
+  subscribeToDeviceUpdates(deviceID: string, update: (data: DeviceUpdate) => void, error: (error: any) => void): void;
+
+  /**
+   * Unsubscribes from the device update stream.
+   */
+  unsubscribeFromDeviceUpdates(deviceID: string): Promise<void>;
+
+  /**
+   * Subscribes to the device user update stream.
+   */
+  subscribeToDeviceUserUpdates(deviceID: string, userID: string, update: (data: DeviceUserUpdate) => void, error: (error: any) => void): void;
+
+  /**
+   * Unsubscribe from the device user update stream.
+   */
+  unsubscribeFromDeviceUserUpdates(deviceID: string, userID: string): Promise<void>;
 
   /**
    * Returns list of device access requests
@@ -60,6 +94,26 @@ export default interface Provider {
    * logged in user can connect to.
    */
   getUserSpaces(): Promise<SpaceUser[]>;
+
+  /**
+   * Subscribe to the space update stream.
+   */
+  subscribeToSpaceUpdates(spaceID: string, update: (data: SpaceUpdate) => void, error: (error: any) => void): void;
+
+  /**
+   * Unsubscribe from the space update stream.
+   */
+  unsubscribeFromSpaceUpdates(spaceID: string): Promise<void>;
+
+  /**
+   * Subscribe to the space user update stream.
+   */
+  subscribeToSpaceUserUpdates(spaceID: string, userID: string, update: (data: SpaceUserUpdate) => void, error: (error: any) => void): void;
+
+  /**
+   * Unubscribe from the space user update stream.
+   */
+  unsubscribeFromSpaceUserUpdates(spaceID: string, userID: string): Promise<void>
 
   /**
    * Returns list of space invitations the

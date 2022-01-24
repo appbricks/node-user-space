@@ -15,7 +15,7 @@ import {
   SpaceUsersPayload,
   GRANT_USER_ACCESS_TO_SPACE,
   GET_USER_SPACES
-} from '../../action';
+} from '../../actions';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
 

@@ -17,14 +17,14 @@ import {
   DELETE_USER_FROM_DEVICE,
   GET_USER_DEVICES,
   GET_DEVICE_ACCESS_REQUESTS
-} from '../action';
+} from '../actions';
 import { UserSpaceStateProps } from '../state';
 
-export const deleteUserFromDeviceAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>, deviceID: string, userID: string) => 
     dispatch(createAction(DELETE_USER_FROM_DEVICE, <DeviceUserIDPayload>{ deviceID, userID }));
 
-export const deleteUserFromDeviceEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpicFanOut<DeviceUserIDPayload, UserSpaceStateProps>(
     DELETE_USER_FROM_DEVICE, {

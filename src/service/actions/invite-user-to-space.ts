@@ -16,14 +16,14 @@ import {
   SpaceUserPayload,
   INVITE_USER_TO_SPACE,
   GET_USER_SPACES
-} from '../action';
+} from '../actions';
 import { UserSpaceStateProps } from '../state';
 
-export const inviteUserToSpaceAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) => 
     dispatch(createAction(INVITE_USER_TO_SPACE, <SpaceInvitationPayload>{ spaceID, userID, isAdmin, isEgressNode }));
 
-export const inviteUserToSpaceEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpicFanOut<SpaceInvitationPayload, UserSpaceStateProps>(
     INVITE_USER_TO_SPACE, 

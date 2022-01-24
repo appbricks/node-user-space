@@ -1,6 +1,6 @@
 {
   "name": "@appbricks/user-space",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "MyCloudSpace User-Space client module",
   "main": "lib/index.js",
   "scripts": {
@@ -24,21 +24,25 @@
   },
   "homepage": "https://github.com/appbricks/node-user-space",
   "dependencies": {
-    "@appbricks/utils": "0.0.17",
+    "@appbricks/utils": "^0.0.25",
     "aws-amplify": "^4.0.2",
     "redux-observable": "^1.2.0",
     "rxjs": "^6.6.7"
   },
   "devDependencies": {
-    "@appbricks/test-utils": "0.0.19",
+    "@appbricks/test-utils": "^0.0.22",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.3.0",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
+    "aws-appsync": "^4.1.4",
+    "aws-sdk": "^2.1058.0",
     "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "graphql-tag": "^2.12.6",
     "jest": "^26.6.3",
+    "node-fetch": "^2.6.1",
     "prettier": "^2.3.0",
     "ts-jest": "^26.5.6",
     "typescript": "^4.2.4"

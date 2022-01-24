@@ -13,7 +13,7 @@ import {
   DeviceUserIDPayload,
   DeviceUsersPayload,
   GET_DEVICE_ACCESS_REQUESTS 
-} from '../../action';
+} from '../../actions';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
 

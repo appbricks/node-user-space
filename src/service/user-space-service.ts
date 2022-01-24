@@ -2,23 +2,31 @@ import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
 import {
-  ErrorPayload,
-  ResetStatusPayload,
   Action,
   reducerDelegate,
   Logger,
+  dateTimeToLocale,
   bytesToSize
 } from '@appbricks/utils';
 
-import { 
-  UserSearchItem,
-  User
+import {
+  UserRef,
+  User,
+  UserAccessStatus,
+  Device,
+  DeviceUser,
+  Space,
+  SpaceUser,
+  SpaceStatus
 } from '../model/types';
 
 import {
+  DeviceDetail,
   DeviceUserListItem,
-  SpaceUserListItem
-} from '../model/lists';
+  SpaceDetail,
+  SpaceUserListItem,
+  setUpdatedFields
+} from '../model/display';
 
 import Provider from './provider';
 
@@ -27,92 +35,62 @@ import {
   UserSpaceStateProps,
   initialUserSpaceState
 } from './state';
-import {
-  UserSearchPayload,
-  UserSearchResultPayload,
-  DeviceUserIDPayload,
-  DeviceIDPayload,
-  DevicesPayload,
-  DevicePayload,
-  DeviceUserPayload,
-  DeviceUsersPayload,
-  SpaceUserIDPayload,
-  SpaceIDPayload,
-  SpaceInvitationPayload,
-  SpacesPayload,
-  SpacePayload,
-  SpaceUserPayload,
-  SpaceUsersPayload,
-  UserSpaceActionProps,
-  USER_SEARCH,
-  USER_SEARCH_PAGE_PREV,
-  USER_SEARCH_PAGE_NEXT,
-  CLEAR_USER_SEARCH_RESULTS,
-  GET_USER_DEVICES,
-  GET_DEVICE_ACCESS_REQUESTS,
-  ACTIVATE_USER_ON_DEVICE,
-  DELETE_USER_FROM_DEVICE,
-  DELETE_USER_FROM_SPACE,
-  DELETE_DEVICE,
-  GET_USER_DEVICE_TELEMETRY,
-  GET_USER_SPACES,
-  INVITE_USER_TO_SPACE,
-  GRANT_USER_ACCESS_TO_SPACE,
-  REMOVE_USER_ACCESS_TO_SPACE,
-  DELETE_SPACE,
-  GET_USER_SPACE_TELEMETRY,
-  GET_SPACE_INVITATIONS,
-  ACCEPT_SPACE_INVITATION,
-  LEAVE_SPACE,
-  GET_USER_APPS,
-  GET_APP_INVITATIONS,
-  GET_USER_APP_TELEMETRY,
-} from './action';
 
-import { userSearchAction, userSearchEpic } from './actions/user-search';
-import { userSearchPagePrevAction, userSearchPagePrevEpic } from './actions/user-search-page-prev';
-import { userSearchPageNextAction, userSearchPageNextEpic } from './actions/user-search-page-next';
-import { clearUserSearchResultsAction } from './actions/clear-user-search-results';
-import { getUserDevicesAction, getUserDevicesEpic } from './actions/get-user-devices';
-import { getDeviceAccessRequestsAction, getDeviceAccessRequestsEpic } from './actions/get-device-access-requests';
-import { activateUserOnDeviceAction, activateUserOnDeviceEpic } from './actions/activate-user-on-device';
-import { deleteUserFromDeviceAction, deleteUserFromDeviceEpic } from './actions/delete-user-from-device';
-import { deleteDeviceAction, deleteDeviceEpic } from './actions/delete-device';
-import { getUserSpacesAction, getUserSpacesEpic } from './actions/get-user-spaces';
-import { getSpaceInvitationsAction, getSpaceInvitationsEpic } from './actions/get-space-invitations';
-import { inviteUserToSpaceAction, inviteUserToSpaceEpic } from './actions/invite-user-to-space';
-import { grantUserAccessToSpaceAction, grantUserAccessToSpaceEpic } from './actions/grant-user-access-to-space';
-import { removeUserAccessToSpaceAction, removeUserAccessToSpaceEpic } from './actions/remove-user-access-to-space';
-import { deleteUserFromSpaceAction, deleteUserFromSpaceEpic } from './actions/delete-user-from-space';
-import { deleteSpaceAction, deleteSpaceEpic } from './actions/delete-space';
-import { acceptSpaceInvitationAction, acceptSpaceInvitationEpic } from './actions/accept-space-invitation';
-import { leaveSpaceAction, leaveSpaceEpic } from './actions/leave-space';
+import * as actions from './actions';
+
+import * as userSearch from './actions/user-search';
+import * as clearUserSearchResults from './actions/clear-user-search-results';
+import * as userUpdates from './actions/user-update-subscription';
+import * as getUserDevices from './actions/get-user-devices';
+import * as deviceUpdates from './actions/device-update-subscription';
+import * as deviceTelemetry from './actions/device-telemetry-subscription';
+import * as getDeviceAccessRequests from './actions/get-device-access-requests';
+import * as activateUserOnDevice from './actions/activate-user-on-device';
+import * as deleteUserFromDevice from './actions/delete-user-from-device';
+import * as deleteDevice from './actions/delete-device';
+import * as getUserSpaces from './actions/get-user-spaces';
+import * as spaceUpdates from './actions/space-updates-subscription';
+import * as spaceTelemetry from './actions/space-telemetry-subscription';
+import * as inviteUserToSpace from './actions/invite-user-to-space';
+import * as deleteUserFromSpace from './actions/delete-user-from-space';
+import * as grantUserAccessToSpace from './actions/grant-user-access-to-space';
+import * as removeUserAccessToSpace from './actions/remove-user-access-to-space';
+import * as deleteSpace from './actions/delete-space';
+import * as getSpaceInvitations from './actions/get-space-invitations';
+import * as acceptSpaceInvitation from './actions/accept-space-invitation';
+import * as leaveSpace from './actions/leave-space';
 
 type UserSpacePayload =
-  UserSearchPayload |
-  UserSearchResultPayload |
-  DeviceUserIDPayload |
-  DeviceIDPayload |
-  DevicesPayload |
-  DevicePayload |
-  DeviceUserPayload |
-  DeviceUsersPayload |
-  SpaceUserIDPayload |
-  SpaceIDPayload |
-  SpaceInvitationPayload |
-  SpacesPayload |
-  SpacePayload |
-  SpaceUserPayload |
-  SpaceUsersPayload; 
+  actions.UserSearchPayload |
+  actions.UserSearchResultPayload |
+  actions.UserIDPayload |
+  actions.UserPayload |
+  actions.DeviceUserIDPayload |
+  actions.DeviceIDPayload |
+  actions.DevicePayload |
+  actions.DevicesPayload |
+  actions.DeviceUserPayload |
+  actions.DeviceUsersPayload |
+  actions.DeviceUpdateSubscriptionPayload |
+  actions.DeviceTelemetrySubscriptionPayload |
+  actions.SpaceUserIDPayload |
+  actions.SpaceIDPayload |
+  actions.SpaceInvitationPayload |
+  actions.SpacePayload |
+  actions.SpacesPayload |
+  actions.SpaceUserPayload |
+  actions.SpaceUsersPayload |
+  actions.SpaceUpdateSubscriptionPayload |
+  actions.SpaceTelemetrySubscriptionPayload;
 
 export default class UserSpaceService {
 
   logger: Logger;
 
   csProvider: Provider;
-  
-  // service request actions that will result in 
-  // a service call side-effect that will be 
+
+  // service request actions that will result in
+  // a service call side-effect that will be
   // followed by a success or error action
   serviceRequests: Set<string>;
 
@@ -123,26 +101,29 @@ export default class UserSpaceService {
 
     this.serviceRequests = new Set();
     this.serviceRequests
-      .add(USER_SEARCH)
-      .add(GET_USER_DEVICES)
-      .add(GET_DEVICE_ACCESS_REQUESTS)
-      .add(ACTIVATE_USER_ON_DEVICE)
-      .add(DELETE_USER_FROM_DEVICE)
-      .add(DELETE_USER_FROM_SPACE)
-      .add(DELETE_DEVICE)
-      .add(GET_USER_DEVICE_TELEMETRY)
-      .add(GET_USER_SPACES)
-      .add(INVITE_USER_TO_SPACE)
-      .add(GRANT_USER_ACCESS_TO_SPACE)
-      .add(REMOVE_USER_ACCESS_TO_SPACE)
-      .add(DELETE_SPACE)
-      .add(GET_USER_SPACE_TELEMETRY)
-      .add(GET_SPACE_INVITATIONS)
-      .add(ACCEPT_SPACE_INVITATION)
-      .add(LEAVE_SPACE)
-      .add(GET_USER_APPS)
-      .add(GET_APP_INVITATIONS)
-      .add(GET_USER_APP_TELEMETRY)
+      .add(actions.USER_SEARCH)
+      .add(actions.GET_USER_DEVICES)
+      .add(actions.SUBSCRIBE_TO_USER_UPDATES)
+      .add(actions.UNSUBSCRIBE_FROM_USER_UPDATES)
+      .add(actions.GET_DEVICE_ACCESS_REQUESTS)
+      .add(actions.ACTIVATE_USER_ON_DEVICE)
+      .add(actions.DELETE_USER_FROM_DEVICE)
+      .add(actions.DELETE_USER_FROM_SPACE)
+      .add(actions.DELETE_DEVICE)
+      .add(actions.SUBSCRIBE_TO_DEVICE_UPDATES)
+      .add(actions.SUBSCRIBE_TO_DEVICE_TELEMETRY)
+      .add(actions.GET_USER_SPACES)
+      .add(actions.INVITE_USER_TO_SPACE)
+      .add(actions.GRANT_USER_ACCESS_TO_SPACE)
+      .add(actions.REMOVE_USER_ACCESS_TO_SPACE)
+      .add(actions.DELETE_SPACE)
+      .add(actions.SUBSCRIBE_TO_SPACE_UPDATES)
+      .add(actions.SUBSCRIBE_TO_SPACE_TELEMETRY)
+      .add(actions.GET_SPACE_INVITATIONS)
+      .add(actions.ACCEPT_SPACE_INVITATION)
+      .add(actions.LEAVE_SPACE)
+      .add(actions.GET_USER_APPS)
+      .add(actions.GET_APP_INVITATIONS)
   }
 
   static stateProps<S extends UserSpaceStateProps, C extends UserSpaceStateProps>(
@@ -154,94 +135,86 @@ export default class UserSpaceService {
   }
 
   static dispatchProps<C extends UserSpaceStateProps>(
-    dispatch: redux.Dispatch<redux.Action>, ownProps?: C): UserSpaceActionProps {
+    dispatch: redux.Dispatch<redux.Action>, ownProps?: C): actions.UserSpaceActionProps {
 
     return {
       userspaceService: {
         // user lookup actions
-        userSearch: (namePrefix: string, limit?: number) => 
-          userSearchAction(dispatch, namePrefix, limit),
-        userSearchPagePrev: () =>
-          userSearchPagePrevAction(dispatch),
-        userSearchPageNext: () =>
-          userSearchPageNextAction(dispatch),
+        userSearch: (namePrefix: string, limit?: number) =>
+          userSearch.action(dispatch, namePrefix, limit),
         clearUserSearchResults: () =>
-          clearUserSearchResultsAction(dispatch),
-
+          clearUserSearchResults.action(dispatch),
+        subscribeToUserUpdates: (userID: string) => 
+          userUpdates.subscribeAction(dispatch, userID),
+        unsubscribeFromUserUpdates: (userID: string) => 
+          userUpdates.unsubscribeAction(dispatch, userID),
+      
         // device owner actions
-        getUserDevices: () => 
-          getUserDevicesAction(dispatch),
-        getDeviceAccessRequests: (deviceID: string) => 
-          getDeviceAccessRequestsAction(dispatch, deviceID),
-        activateUserOnDevice: (deviceID: string, userID: string) => 
-          activateUserOnDeviceAction(dispatch, deviceID, userID),
-        deleteUserFromDevice: (deviceID: string, userID: string) => 
-          deleteUserFromDeviceAction(dispatch, deviceID, userID),
-        deleteDevice: (deviceID: string) => 
-          deleteDeviceAction(dispatch, deviceID),
-        subscribeUserDeviceTelemetry: (deviceID: string) => 
-          dispatch({type: undefined}),
-        unsubscribeUserDeviceTelemetry: (deviceID: string) => 
-          dispatch({type: undefined}),
-        
+        getUserDevices: () =>
+          getUserDevices.action(dispatch),
+        getDeviceAccessRequests: (deviceID: string) =>
+          getDeviceAccessRequests.action(dispatch, deviceID),
+        activateUserOnDevice: (deviceID: string, userID: string) =>
+          activateUserOnDevice.action(dispatch, deviceID, userID),
+        deleteUserFromDevice: (deviceID: string, userID: string) =>
+          deleteUserFromDevice.action(dispatch, deviceID, userID),
+        deleteDevice: (deviceID: string) =>
+          deleteDevice.action(dispatch, deviceID),
+
         // space owner actions
-        getUserSpaces: () => 
-          getUserSpacesAction(dispatch),
+        getUserSpaces: () =>
+          getUserSpaces.action(dispatch),
         inviteUserToSpace: (spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) =>
-          inviteUserToSpaceAction(dispatch, spaceID, userID, isAdmin, isEgressNode),
-        deleteUserFromSpace: (spaceID: string, userID: string) => 
-          deleteUserFromSpaceAction(dispatch, spaceID, userID),
-        grantUserAccessToSpace: (spaceID: string, userID: string) => 
-          grantUserAccessToSpaceAction(dispatch, spaceID, userID),
-        removeUserAccessToSpace: (spaceID: string, userID: string) => 
-          removeUserAccessToSpaceAction(dispatch, spaceID, userID),
-        deleteSpace: (spaceID: string) => 
-          deleteSpaceAction(dispatch, spaceID),
-        subscribeUserSpaceTelemetry: (spaceID: string) => 
-          dispatch({type: undefined}),
-        unsubscribeUserSpaceTelemetry: (spaceID: string) => 
-          dispatch({type: undefined}),
-        
-        // space guest actions 
-        getSpaceInvitations: () => 
-          getSpaceInvitationsAction(dispatch),
-        acceptSpaceInvitation: (spaceID: string) => 
-          acceptSpaceInvitationAction(dispatch, spaceID),
-        leaveSpace: (spaceID: string)  => 
-          leaveSpaceAction(dispatch, spaceID),
+          inviteUserToSpace.action(dispatch, spaceID, userID, isAdmin, isEgressNode),
+        grantUserAccessToSpace: (spaceID: string, userID: string) =>
+          grantUserAccessToSpace.action(dispatch, spaceID, userID),
+        removeUserAccessToSpace: (spaceID: string, userID: string) =>
+          removeUserAccessToSpace.action(dispatch, spaceID, userID),
+        deleteUserFromSpace: (spaceID: string, userID: string) =>
+          deleteUserFromSpace.action(dispatch, spaceID, userID),
+        deleteSpace: (spaceID: string) =>
+          deleteSpace.action(dispatch, spaceID),
+
+        // space guest actions
+        getSpaceInvitations: () =>
+          getSpaceInvitations.action(dispatch),
+        acceptSpaceInvitation: (spaceID: string) =>
+          acceptSpaceInvitation.action(dispatch, spaceID),
+        leaveSpace: (spaceID: string)  =>
+          leaveSpace.action(dispatch, spaceID),
 
         // app owner actions
-        getUserApps: () => 
+        getUserApps: () =>
           dispatch({type: undefined}),
-        getAppInvitations: () =>  
+        getAppInvitations: () =>
           dispatch({type: undefined}),
-        subscribeUserAppTelemetry: (appID: string) => 
-          dispatch({type: undefined}),
-        unsubscribeUserAppTelemetry: (appID: string) => 
-          dispatch({type: undefined})
       }
     }
   }
 
   epics(): Epic[] {
     return [
-      userSearchEpic(this.csProvider),
-      userSearchPagePrevEpic(),
-      userSearchPageNextEpic(),
-      getUserDevicesEpic(this.csProvider),
-      getDeviceAccessRequestsEpic(this.csProvider),
-      activateUserOnDeviceEpic(this.csProvider),
-      deleteUserFromDeviceEpic(this.csProvider),
-      deleteDeviceEpic(this.csProvider),
-      getUserSpacesEpic(this.csProvider),
-      getSpaceInvitationsEpic(this.csProvider),
-      inviteUserToSpaceEpic(this.csProvider),
-      grantUserAccessToSpaceEpic(this.csProvider),
-      removeUserAccessToSpaceEpic(this.csProvider),
-      deleteUserFromSpaceEpic(this.csProvider),
-      deleteSpaceEpic(this.csProvider),
-      acceptSpaceInvitationEpic(this.csProvider),
-      leaveSpaceEpic(this.csProvider),
+      userSearch.epic(this.csProvider),
+      getUserDevices.epic(this.csProvider),
+      userUpdates.subscribeEpic(this.csProvider),
+      userUpdates.unsubscribeEpic(this.csProvider),
+      getDeviceAccessRequests.epic(this.csProvider),
+      activateUserOnDevice.epic(this.csProvider),
+      deleteUserFromDevice.epic(this.csProvider),
+      deleteDevice.epic(this.csProvider),
+      deviceUpdates.subscribeEpic(this.csProvider),
+      deviceTelemetry.subscribeEpic(this.csProvider),
+      getUserSpaces.epic(this.csProvider),
+      inviteUserToSpace.epic(this.csProvider),
+      grantUserAccessToSpace.epic(this.csProvider),
+      removeUserAccessToSpace.epic(this.csProvider),
+      deleteUserFromSpace.epic(this.csProvider),
+      deleteSpace.epic(this.csProvider),
+      spaceUpdates.subscribeEpic(this.csProvider),
+      spaceTelemetry.subscribeEpic(this.csProvider),
+      getSpaceInvitations.epic(this.csProvider),
+      acceptSpaceInvitation.epic(this.csProvider),
+      leaveSpace.epic(this.csProvider),
     ];
   }
 
@@ -255,11 +228,112 @@ export default class UserSpaceService {
   ): UserSpaceState {
 
     switch (action.type) {
-      case CLEAR_USER_SEARCH_RESULTS: {
+      case actions.CLEAR_USER_SEARCH_RESULTS: {
         state = {
           ...state,
           userSearchResult: undefined
         }
+        break;
+      }
+      case actions.DEVICE_UPDATE: {
+        const device = (<actions.DevicePayload>action.payload!).device;
+        const detail = state.devices[device.deviceID!];
+        if (detail) {
+          state = {
+            ...state,
+            devices: {
+              ...state.devices,
+              [device.deviceID!]: updateDeviceDetail(detail, device)
+            }
+          }  
+        }
+        break;
+      }
+      case actions.DEVICE_TELEMETRY: {
+        const deviceUser = (<actions.DeviceUserPayload>action.payload!).deviceUser;
+        const detail = state.devices[deviceUser.device!.deviceID!]
+        if (detail) {
+          const item = detail.users.find((item, i, users) => {
+            if (item.userID == deviceUser.user!.userID) {
+              users.splice(i, 1);
+              return true;
+            }
+            return false;
+          });
+          if (item) {
+            const { updatedDetail, updatedItem } = updateDeviceUserListItem(detail, item, deviceUser);
+            if (updatedDetail) {
+              updatedDetail.users.unshift(updatedItem);
+              state = {
+                ...state,
+                devices: {
+                  ...state.devices,
+                  [deviceUser.device!.deviceID!]: updatedDetail
+                }
+              }
+            } else {
+              detail.users.unshift(updatedItem);
+              state = {
+                ...state,
+                devices: {
+                  ...state.devices,
+                  [deviceUser.device!.deviceID!]: detail
+                }
+              }
+            }
+          }
+        }
+        break;
+      }
+      case actions.SPACE_UPDATE: {
+        const space = (<actions.SpacePayload>action.payload!).space;
+        const detail = state.spaces[space.spaceID!];
+        if (detail) {
+          state = {
+            ...state,
+            spaces: {
+              ...state.spaces,
+              [space.spaceID!]: updateSpaceDetail(detail, space)
+            }
+          }
+        }
+        break;
+      }
+      case actions.SPACE_TELEMETRY: {
+        const spaceUser = (<actions.SpaceUserPayload>action.payload!).spaceUser;
+        const detail = state.spaces[spaceUser.space!.spaceID!]
+        if (detail) {
+          const item = detail.users.find((item, i, users) => {
+            if (item.userID == spaceUser.user!.userID) {
+              users.splice(i, 1);
+              return true;
+            }
+            return false;
+          });
+          if (item) {
+            const { updatedDetail, updatedItem } = updateSpaceUserListItem(detail, item, spaceUser);
+            if (updatedDetail) {
+              updatedDetail.users.unshift(updatedItem);
+              state = {
+                ...state,
+                spaces: {
+                  ...state.spaces,
+                  [spaceUser.space!.spaceID!]: updatedDetail
+                }
+              }
+            } else {
+              detail.users.unshift(updatedItem);
+              state = {
+                ...state,
+                spaces: {
+                  ...state.spaces,
+                  [spaceUser.space!.spaceID!]: detail
+                }
+              }
+            }
+          }
+        }
+        break;
       }
     }
 
@@ -279,91 +353,35 @@ export default class UserSpaceService {
 
     let relatedAction = action.meta.relatedAction!;
 
-    const fullName: (user: User) => string = 
-    ({
-      firstName,
-      middleName,
-      familyName
-    }) => {
-      return (firstName ? firstName + ' ': '') +
-        (middleName ? 
-          middleName.length > 1 
-            ? middleName + ' '
-            : middleName + '. '
-          : '') +
-        (familyName ? familyName : '');
-    }
-
     switch (relatedAction.type) {
-      case USER_SEARCH: {
-        const searchArgs = <UserSearchPayload>relatedAction.payload!; 
-        const searchResult = <UserSearchResultPayload>action.payload!;
+      case actions.USER_SEARCH: {
+        const searchResult = <actions.UserSearchResultPayload>action.payload!;
 
         return {
           ...state,
-          userSearchResult: {
-            result: <UserSearchItem[]>searchResult.userSearchResult.users,
-
-            searchPrefix: searchArgs.namePrefix,
-            limit: searchArgs.limit!,
-            pageInfo: searchResult.userSearchResult.pageInfo!
-          }
+          userSearchResult: <UserRef[]>searchResult.userSearchResult
         }
       }
-      case GET_USER_DEVICES: {
-        const userDevices = (<DeviceUsersPayload>action.payload!).deviceUsers;
+      case actions.GET_USER_DEVICES: {
+        const userDevices = (<actions.DeviceUsersPayload>action.payload!).deviceUsers;
         this.logger.trace('Loaded current user\'s devices', userDevices);
 
         // build user lists for devices owned by the current user
-        const deviceUsers: { [deviceID: string]: DeviceUserListItem[] } = {}
-        userDevices.forEach((deviceUser, i) => {
-          if (deviceUser.isOwner) {
-
-            deviceUsers[deviceUser.device!.deviceID!] = deviceUser.device!.users!.deviceUsers!
-              .filter(deviceUser => !deviceUser!.isOwner)
-              .map(deviceUser => {
-
-                const {
-                  user,
-                  status,
-                  bytesUploaded,
-                  bytesDownloaded,
-                  lastAccessTime
-                } = deviceUser!;
-                
-                const {
-                  userID,
-                  userName
-                } = user!;
-
-                const dateTime = new Date(lastAccessTime || 0);
-
-                return <DeviceUserListItem>{
-                  userID,
-                  userName,
-                  fullName: fullName(user!),
-                  status,
-                  bytesUploaded: bytesToSize(bytesUploaded!),
-                  bytesDownloaded: bytesToSize(bytesDownloaded!),
-                  lastAccessTime: lastAccessTime && lastAccessTime > 0
-                    ? dateTime.toLocaleDateString() + ' ' + 
-                      dateTime.toLocaleTimeString('en-US', { hour12: false, timeZoneName: 'short' })
-                    : 'never'
-                }
-              });
-          }
+        const devices: { [deviceID: string]: DeviceDetail } = {}
+        userDevices.forEach(({ device }) => {
+          devices[device!.deviceID!] = deviceDetail(device!)
         })
-        this.logger.trace('Created current user\'s device user lists: ', deviceUsers);
+        this.logger.trace('Current user\'s device collection: ', devices);
 
         return {
           ...state,
           userDevices,
-          deviceUsers
+          devices
         }
       }
-      case GET_DEVICE_ACCESS_REQUESTS: {
-        const deviceID = (<DeviceIDPayload>relatedAction.payload!).deviceID;
-        const deviceUsers = (<DeviceUsersPayload>action.payload!).deviceUsers;
+      case actions.GET_DEVICE_ACCESS_REQUESTS: {
+        const deviceID = (<actions.DeviceIDPayload>relatedAction.payload!).deviceID;
+        const deviceUsers = (<actions.DeviceUsersPayload>action.payload!).deviceUsers;
 
         const deviceAccessRequests = { ...state.deviceAccessRequests };
         deviceAccessRequests[deviceID] = deviceUsers;
@@ -372,59 +390,25 @@ export default class UserSpaceService {
           deviceAccessRequests
         }
       }
-      case GET_USER_SPACES: {
-        const userSpaces = (<SpaceUsersPayload>action.payload!).spaceUsers;
+      case actions.GET_USER_SPACES: {
+        const userSpaces = (<actions.SpaceUsersPayload>action.payload!).spaceUsers;
         this.logger.trace('Loaded current user\'s spaces', userSpaces);
 
         // build user lists for spaces owned by the current user
-        const spaceUsers: { [spaceID: string]: SpaceUserListItem[] } = {}
-        userSpaces.forEach((spaceUser, i) => {
-          if (spaceUser.isOwner) {
-
-            spaceUsers[spaceUser.space!.spaceID!] = spaceUser.space!.users!.spaceUsers!
-              .filter(spaceUser => !spaceUser!.isOwner)
-              .map(spaceUser => {
-
-                const {
-                  user,
-                  status,
-                  bytesUploaded,
-                  bytesDownloaded,
-                  lastConnectTime
-                } = spaceUser!;
-                
-                const {
-                  userID,
-                  userName
-                } = user!;
-
-                const dateTime = new Date(lastConnectTime || 0);
-
-                return <SpaceUserListItem>{
-                  userID,
-                  userName,
-                  fullName: fullName(user!),
-                  status,
-                  bytesUploaded: bytesToSize(bytesUploaded!),
-                  bytesDownloaded: bytesToSize(bytesDownloaded!),
-                  lastConnectTime: lastConnectTime && lastConnectTime > 0
-                    ? dateTime.toLocaleDateString() + ' ' + 
-                      dateTime.toLocaleTimeString('en-US', { hour12: false, timeZoneName: 'short' })
-                    : 'never'
-                }
-              });
-          }
+        const spaces: { [spaceID: string]: SpaceDetail } = {}
+        userSpaces.forEach(({ space }) => {
+          spaces[space!.spaceID!] = spaceDetail(space!);
         })
-        this.logger.trace('Created current user\'s space user lists: ', spaceUsers);
+        this.logger.trace('Created current user\'s space collection: ', spaces);
 
         return {
           ...state,
           userSpaces,
-          spaceUsers
+          spaces
         }
       }
-      case GET_SPACE_INVITATIONS: {
-        const spaceInvitations = (<SpaceUsersPayload>action.payload!).spaceUsers;
+      case actions.GET_SPACE_INVITATIONS: {
+        const spaceInvitations = (<actions.SpaceUsersPayload>action.payload!).spaceUsers;
 
         return {
           ...state,
@@ -435,4 +419,325 @@ export default class UserSpaceService {
 
     return state;
   }
+}
+
+const deviceDetail = (device: Device): DeviceDetail => {
+
+  const {
+    users
+  } = device;
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+  let lastAccessedTime = 0;
+  let lastAccessedBy = ''; 
+  let lastSpaceConnectedTo = '';
+  let bytesDownloaded = 0;
+  let bytesUploaded = 0;
+
+  const deviceUsers: DeviceUserListItem[] = [];
+  users!.deviceUsers!.forEach(deviceUser => {
+    if (!deviceUser!.isOwner) {
+      deviceUsers.push(deviceUserListItem(deviceUser!));
+    }
+    if (deviceUser!.status == UserAccessStatus.active) {
+      if (deviceUser!.lastAccessTime! > lastAccessedTime) {
+        lastAccessedTime = deviceUser!.lastAccessTime!;
+        lastAccessedBy = fullName(deviceUser!.user!);
+        lastSpaceConnectedTo = deviceUser!.lastSpaceConnectedTo!;
+      }
+      if (deviceUser!.lastAccessTime! >= startOfMonth) {
+        // only add usage values for current month
+        bytesDownloaded += deviceUser!.bytesDownloaded!;
+        bytesUploaded += deviceUser!.bytesUploaded!;  
+      }  
+    }
+  });
+
+  const lastAccessedDataTime = new Date(lastAccessedTime || 0);
+
+  return {
+    name: device.deviceName!,
+    type: device.deviceType!,
+    version: device.clientVersion!,
+    ownerAdmin: fullName(device.owner!),
+    lastAccessed: lastAccessedTime > 0
+      ? dateTimeToLocale(lastAccessedDataTime, true)
+      : 'never',
+    lastAccessedBy,
+    lastSpaceConnectedTo,
+    dataUsageIn: bytesToSize(bytesDownloaded),
+    dataUsageOut: bytesToSize(bytesUploaded),
+    bytesDownloaded, 
+    bytesUploaded,
+    lastAccessedTime,
+    users: deviceUsers
+  };
+}
+
+const deviceUserListItem = (deviceUser: DeviceUser): DeviceUserListItem => {
+
+  const {
+    user,
+    status,
+    bytesUploaded,
+    bytesDownloaded,
+    lastAccessTime,
+    lastSpaceConnectedTo
+  } = deviceUser;
+
+  const {
+    userID,
+    userName
+  } = user!;
+
+  const dateTime = new Date(lastAccessTime || 0);
+
+  return <DeviceUserListItem>{
+    userID,
+    userName,
+    fullName: fullName(user!),
+    status,
+    lastSpaceConnectedTo,
+    dataUsageIn: bytesToSize(bytesDownloaded!),
+    dataUsageOut: bytesToSize(bytesUploaded!),
+    lastAccessTime: lastAccessTime && lastAccessTime > 0
+      ? dateTimeToLocale(dateTime)
+      : 'never',
+    deviceUser
+  }
+}
+
+const updateDeviceDetail = (
+  detail: DeviceDetail, 
+  device: Device
+): DeviceDetail => {
+
+  const updatedDetail = (({ updatedFields, ...d }) => <DeviceDetail>d)(detail);
+  if (device.deviceName) {
+    updatedDetail.name = device.deviceName!;
+  }
+  if (device.deviceType) {
+    updatedDetail.type = device.deviceType!;
+  }
+  if (device.clientVersion) {
+    updatedDetail.version = device.clientVersion!;
+  }
+  setUpdatedFields<DeviceDetail>(detail, updatedDetail);
+  return updatedDetail;
+}
+
+const updateDeviceUserListItem = (
+  detail: DeviceDetail, 
+  item: DeviceUserListItem,
+  deviceUser: DeviceUser
+): {
+  updatedDetail?: DeviceDetail, 
+  updatedItem: DeviceUserListItem
+} => {
+
+  let updatedDetail = undefined;
+  const updatedItem = (({ updatedFields, ...i }) => <DeviceUserListItem>i)(item);
+
+  if (deviceUser.status) {
+    updatedItem.status = deviceUser.status!;
+    updatedItem.deviceUser!.status = deviceUser.status!;
+  }
+  if (deviceUser.bytesDownloaded) {
+    updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <DeviceDetail>d)(detail);
+    updatedDetail.bytesDownloaded -= item.deviceUser!.bytesDownloaded!;
+    updatedDetail.bytesDownloaded += deviceUser.bytesDownloaded;
+    updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
+    updatedItem.dataUsageIn = bytesToSize(deviceUser.bytesDownloaded!);
+    updatedItem.deviceUser!.bytesDownloaded = deviceUser.bytesDownloaded
+  }
+  if (deviceUser.bytesUploaded) {
+    updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <DeviceDetail>d)(detail);
+    updatedDetail.bytesUploaded -= item.deviceUser!!.bytesUploaded!;
+    updatedDetail.bytesUploaded += deviceUser.bytesUploaded;
+    updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
+    updatedItem.dataUsageOut = bytesToSize(deviceUser.bytesUploaded!);
+    updatedItem.deviceUser!.bytesUploaded = deviceUser.bytesUploaded
+  }
+  if (deviceUser.lastAccessTime) {
+    const dateTime = new Date(deviceUser.lastAccessTime);
+    updatedItem.lastAccessTime = dateTimeToLocale(dateTime);
+    if (deviceUser.lastAccessTime > detail.lastAccessedTime) {
+      updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <DeviceDetail>d)(detail);
+      updatedDetail.lastAccessedTime = deviceUser.lastAccessTime;
+      updatedDetail.lastAccessed = updatedItem.lastAccessTime;
+      updatedDetail.lastAccessedBy = fullName(updatedItem.deviceUser!.user!);
+      if (deviceUser.lastSpaceConnectedTo) {
+        updatedDetail.lastSpaceConnectedTo = deviceUser.lastSpaceConnectedTo;
+      }
+    }
+  }
+  if (deviceUser.lastSpaceConnectedTo) {
+    updatedItem.lastSpaceConnectedTo = deviceUser.lastSpaceConnectedTo;
+  }
+
+  if (updatedDetail) {
+    setUpdatedFields<DeviceDetail>(detail, updatedDetail);  
+  }
+  setUpdatedFields<DeviceUserListItem>(item, updatedItem);
+  return { updatedDetail, updatedItem };
+}
+
+const spaceDetail = (space: Space): SpaceDetail => {
+
+  const {
+    users
+  } = space;
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  const connectWindow = now.setMinutes(now.getMinutes() - 10);
+
+  let clientsConnected = 0;
+  let bytesDownloaded = 0;
+  let bytesUploaded = 0;
+
+  const spaceUsers: SpaceUserListItem[] = [];
+  users!.spaceUsers!.forEach(spaceUser => {
+    if (!spaceUser!.isOwner) {
+      spaceUsers.push(spaceUserListItem(spaceUser!));
+    }
+    if (spaceUser!.status == UserAccessStatus.active) {
+      if (space.status == SpaceStatus.running && spaceUser!.lastConnectTime! > connectWindow) {
+        // *** NB: this needs to be streamed and not calculated ***
+        clientsConnected++;
+      }
+      if (spaceUser!.lastConnectTime! >= startOfMonth) {
+        // only add usage values for current month
+        bytesDownloaded += spaceUser!.bytesDownloaded!;
+        bytesUploaded += spaceUser!.bytesUploaded!;  
+      }
+    }
+  });
+
+  return {
+    name: space.spaceName!,
+    status: space.status!,
+    ownerAdmin: fullName(space.owner!),
+    clientsConnected,
+    dataUsageIn: bytesToSize(bytesDownloaded),
+    dataUsageOut: bytesToSize(bytesUploaded),
+    cloudProvider: space.iaas!,
+    type: space.recipe!,
+    location: space.region!,
+    version: space.version!,
+    bytesDownloaded, 
+    bytesUploaded,
+    users: spaceUsers
+  };
+}
+
+const spaceUserListItem = (spaceUser: SpaceUser): SpaceUserListItem => {
+
+  const {
+    user,
+    status,
+    bytesUploaded,
+    bytesDownloaded,
+    lastConnectTime
+  } = spaceUser!;
+
+  const {
+    userID,
+    userName
+  } = user!;
+
+  const dateTime = new Date(lastConnectTime || 0);
+
+  return <SpaceUserListItem>{
+    userID,
+    userName,
+    fullName: fullName(user!),
+    status,
+    dataUsageIn: bytesToSize(bytesDownloaded!),
+    dataUsageOut: bytesToSize(bytesUploaded!),
+    lastConnectTime: lastConnectTime && lastConnectTime > 0
+      ? dateTimeToLocale(dateTime)
+      : 'never',
+    spaceUser
+  }
+}
+
+const updateSpaceDetail = (
+  detail: SpaceDetail, 
+  space: Space
+): SpaceDetail => {
+
+  const updatedDetail = (({ updatedFields, ...d }) => <SpaceDetail>d)(detail);
+  if (space.spaceName) {
+    updatedDetail.name = space.spaceName!;
+  }
+  if (space.status) {
+    updatedDetail.status = space.status!;
+  }
+  if (space.version) {
+    updatedDetail.version = space.version!;
+  }
+  setUpdatedFields<SpaceDetail>(detail, updatedDetail);
+  return updatedDetail;
+}
+
+const updateSpaceUserListItem = (
+  detail: SpaceDetail, 
+  item: SpaceUserListItem, 
+  spaceUser: SpaceUser
+): {
+  updatedDetail?: SpaceDetail, 
+  updatedItem: SpaceUserListItem
+} => {
+
+  let updatedDetail = undefined;
+  const updatedItem = (({ updatedFields, ...i }) => <SpaceUserListItem>i)(item);
+
+  if (spaceUser.status) {
+    updatedItem.status = spaceUser.status!;
+    updatedItem.spaceUser!.status = spaceUser.status!;
+  }
+  if (spaceUser.bytesDownloaded) {
+    updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <SpaceDetail>d)(detail);
+    updatedDetail.bytesDownloaded -= item.spaceUser!.bytesDownloaded!;
+    updatedDetail.bytesDownloaded += spaceUser.bytesDownloaded;
+    updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
+    updatedItem.dataUsageIn = bytesToSize(spaceUser.bytesDownloaded!);
+    updatedItem.spaceUser!.bytesDownloaded = spaceUser.bytesDownloaded
+  }
+  if (spaceUser.bytesUploaded) {
+    updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <SpaceDetail>d)(detail);
+    updatedDetail.bytesUploaded -= item.spaceUser!.bytesUploaded!;
+    updatedDetail.bytesUploaded += spaceUser.bytesUploaded;
+    updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
+    updatedItem.dataUsageOut = bytesToSize(spaceUser.bytesUploaded!);
+    updatedItem.spaceUser!.bytesUploaded = spaceUser.bytesUploaded
+  }
+  if (spaceUser.lastConnectTime) {
+    const dateTime = new Date(spaceUser.lastConnectTime);
+    updatedItem.lastConnectTime = dateTimeToLocale(dateTime);
+  }
+
+  if (updatedDetail) {
+    setUpdatedFields<SpaceDetail>(detail, updatedDetail);  
+  }
+  setUpdatedFields<SpaceUserListItem>(item, updatedItem);
+  return { updatedDetail, updatedItem };
+}
+
+const fullName: (user: User | UserRef) => string =
+({
+  firstName,
+  middleName,
+  familyName
+}) => {
+  return (firstName ? firstName + ' ': '') +
+    (middleName ?
+      middleName.length > 1
+        ? middleName + ' '
+        : middleName + '. '
+      : '') +
+    (familyName ? familyName : '');
 }

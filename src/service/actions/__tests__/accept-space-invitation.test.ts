@@ -16,7 +16,7 @@ import {
   ACCEPT_SPACE_INVITATION,
   GET_SPACE_INVITATIONS,
   GET_USER_SPACES
-} from '../../action';
+} from '../../actions';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
 

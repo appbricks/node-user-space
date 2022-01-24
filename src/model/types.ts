@@ -20,7 +20,6 @@ export type User = {
   confirmed?: boolean | null,
   publicKey?: string | null,
   certificate?: string | null,
-  certificateRequest?: string | null,
   devices?: DeviceUsersConnection,
   spaces?: SpaceUsersConnection,
   // A user's universal config is an encrypted
@@ -73,16 +72,29 @@ export type DeviceUser = {
   bytesUploaded?: number | null,
   bytesDownloaded?: number | null,
   lastAccessTime?: number | null,
+  lastSpaceConnectedTo?: string | null,
 };
 
 export type Device = {
   __typename: "Device",
   deviceID?: string,
   deviceName?: string,
+  owner?: UserRef,
+  // device info
+  deviceType?: string | null,
+  clientVersion?: string | null,
   publicKey?: string | null,
   certificate?: string | null,
-  certificateRequest?: string | null,
   users?: DeviceUsersConnection,
+};
+
+export type UserRef = {
+  __typename: "UserRef",
+  userID?: string,
+  userName?: string | null,
+  firstName?: string | null,
+  middleName?: string | null,
+  familyName?: string | null,
 };
 
 export enum UserAccessStatus {
@@ -129,9 +141,19 @@ export type Space = {
   __typename: "Space",
   spaceID?: string,
   spaceName?: string,
+  owner?: UserRef,
   recipe?: string | null,
   iaas?: string | null,
   region?: string | null,
+  version?: string | null,
+  publicKey?: string | null,
+  certificate?: string | null,
+  isEgressNode?: boolean | null,
+  // space node
+  ipAddress?: string | null,
+  fqdn?: string | null,
+  port?: number | null,
+  localCARoot?: string | null,
   apps?: SpaceAppsConnection,
   users?: SpaceUsersConnection,
   status?: SpaceStatus | null,
@@ -191,6 +213,11 @@ export enum SpaceStatus {
 }
 
 
+export type DeviceInfo = {
+  deviceType: string,
+  clientVersion: string,
+};
+
 export type WireguardKey = {
   wireguardPublicKey?: string | null,
 };
@@ -207,48 +234,93 @@ export type SpaceII = {
   spaceUser?: SpaceUser,
 };
 
-export type TableUsersFilterInput = {
-  userName?: TableStringFilterInput | null,
-  emailAddress?: TableStringFilterInput | null,
-  mobilePhone?: TableStringFilterInput | null,
+export type PublishDataInput = {
+  type: PublishDataType,
+  compressed: boolean,
+  payload: string,
 };
 
-export type TableStringFilterInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
+// Async push data type
+export enum PublishDataType {
+  event = "event",
+}
+
+
+export type PublishResult = {
+  __typename: "PublishResult",
+  success?: boolean,
+  error?: string | null,
 };
 
-export type CursorInput = {
-  index: number,
-  nextTokens: Array< string | null >,
-};
-
-export type UserSearchConnection = {
-  __typename: "UserSearchConnection",
-  pageInfo?: PageInfo,
-  edges?:  Array<UserSearchEdge | null > | null,
-  totalCount?: number | null,
-  users?:  Array<UserSearchItem | null > | null,
-};
-
-export type UserSearchEdge = {
-  __typename: "UserSearchEdge",
-  node?: UserSearchItem,
-};
-
-export type UserSearchItem = {
-  __typename: "UserSearchItem",
+export type UserUpdate = {
+  __typename: "UserUpdate",
   userID?: string,
-  userName?: string,
+  numDevices?: number | null,
+  numSpaces?: number | null,
+  user?: User,
 };
+
+export type DeviceUpdate = {
+  __typename: "DeviceUpdate",
+  deviceID?: string,
+  numUsers?: number | null,
+  device?: Device,
+};
+
+export type DeviceUserUpdate = {
+  __typename: "DeviceUserUpdate",
+  deviceID?: string,
+  userID?: string,
+  deviceUser?: DeviceUser,
+};
+
+export type SpaceUpdate = {
+  __typename: "SpaceUpdate",
+  spaceID?: string,
+  numUsers?: number | null,
+  numApps?: number | null,
+  space?: Space,
+};
+
+export type SpaceUserUpdate = {
+  __typename: "SpaceUserUpdate",
+  spaceID?: string,
+  userID?: string,
+  spaceUser?: SpaceUser,
+};
+
+export type AppUpdate = {
+  __typename: "AppUpdate",
+  appID?: string,
+  numUsers?: number | null,
+  app?: App,
+};
+
+export type AppUserUpdate = {
+  __typename: "AppUserUpdate",
+  appID?: string,
+  userID?: string,
+  appUser?: AppUser,
+};
+
+export type UserSearchFilterInput = {
+  userName?: string | null,
+  emailAddress?: string | null,
+};
+
+export type DeviceAuth = {
+  __typename: "DeviceAuth",
+  accessType?: AccessType,
+  device?: Device,
+};
+
+export enum AccessType {
+  unauthorized = "unauthorized",
+  pending = "pending",
+  guest = "guest",
+  admin = "admin",
+}
+
 
 export type UpdateUserKeyMutationVariables = {
   userKey?: Key,
@@ -269,7 +341,6 @@ export type UpdateUserKeyMutation = {
     confirmed?: boolean | null,
     publicKey?: string | null,
     certificate?: string | null,
-    certificateRequest?: string | null,
     devices?:  {
       __typename: "DeviceUsersConnection",
       pageInfo:  {
@@ -288,6 +359,7 @@ export type UpdateUserKeyMutation = {
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
         lastAccessTime?: number | null,
+        lastSpaceConnectedTo?: string | null,
       } | null > | null,
     } | null,
     spaces?:  {
@@ -326,6 +398,7 @@ export type UpdateUserKeyMutation = {
 
 export type AddDeviceMutationVariables = {
   deviceName?: string,
+  deviceInfo?: DeviceInfo,
   deviceKey?: Key,
   accessKey?: WireguardKey,
 };
@@ -341,9 +414,11 @@ export type AddDeviceMutation = {
         __typename: "Device",
         deviceID: string,
         deviceName: string,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
-        certificateRequest?: string | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -358,7 +433,6 @@ export type AddDeviceMutation = {
         confirmed?: boolean | null,
         publicKey?: string | null,
         certificate?: string | null,
-        certificateRequest?: string | null,
         // A user's universal config is an encrypted
         // document containing metadata of all spaces the
         // user owns.
@@ -370,6 +444,7 @@ export type AddDeviceMutation = {
       bytesUploaded?: number | null,
       bytesDownloaded?: number | null,
       lastAccessTime?: number | null,
+      lastSpaceConnectedTo?: string | null,
     },
   } | null,
 };
@@ -387,9 +462,19 @@ export type AddDeviceUserMutation = {
       __typename: "Device",
       deviceID: string,
       deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -408,7 +493,6 @@ export type AddDeviceUserMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -428,6 +512,7 @@ export type AddDeviceUserMutation = {
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
+    lastSpaceConnectedTo?: string | null,
   } | null,
 };
 
@@ -444,9 +529,19 @@ export type ActivateDeviceUserMutation = {
       __typename: "Device",
       deviceID: string,
       deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -465,7 +560,6 @@ export type ActivateDeviceUserMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -485,6 +579,7 @@ export type ActivateDeviceUserMutation = {
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
+    lastSpaceConnectedTo?: string | null,
   } | null,
 };
 
@@ -499,9 +594,19 @@ export type UpdateDeviceKeyMutation = {
     __typename: "Device",
     deviceID: string,
     deviceName: string,
+    owner?:  {
+      __typename: "UserRef",
+      userID: string,
+      userName?: string | null,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+    } | null,
+    // device info
+    deviceType?: string | null,
+    clientVersion?: string | null,
     publicKey?: string | null,
     certificate?: string | null,
-    certificateRequest?: string | null,
     users?:  {
       __typename: "DeviceUsersConnection",
       pageInfo:  {
@@ -520,6 +625,7 @@ export type UpdateDeviceKeyMutation = {
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
         lastAccessTime?: number | null,
+        lastSpaceConnectedTo?: string | null,
       } | null > | null,
     } | null,
   } | null,
@@ -541,9 +647,19 @@ export type UpdateDeviceUserKeyMutation = {
       __typename: "Device",
       deviceID: string,
       deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -562,7 +678,6 @@ export type UpdateDeviceUserKeyMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -582,6 +697,7 @@ export type UpdateDeviceUserKeyMutation = {
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
+    lastSpaceConnectedTo?: string | null,
   } | null,
 };
 
@@ -601,9 +717,19 @@ export type DeleteDeviceUserMutation = {
       __typename: "Device",
       deviceID: string,
       deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -622,7 +748,6 @@ export type DeleteDeviceUserMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -642,6 +767,7 @@ export type DeleteDeviceUserMutation = {
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
+    lastSpaceConnectedTo?: string | null,
   } | null,
 };
 
@@ -657,6 +783,7 @@ export type DeleteDeviceMutation = {
 
 export type AddSpaceMutationVariables = {
   spaceName?: string,
+  spaceKey?: Key,
   recipe?: string,
   iaas?: string,
   region?: string,
@@ -677,6 +804,15 @@ export type AddSpaceMutation = {
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        localCARoot?: string | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -693,7 +829,6 @@ export type AddSpaceMutation = {
         confirmed?: boolean | null,
         publicKey?: string | null,
         certificate?: string | null,
-        certificateRequest?: string | null,
         // A user's universal config is an encrypted
         // document containing metadata of all spaces the
         // user owns.
@@ -735,9 +870,26 @@ export type InviteSpaceUserMutation = {
       __typename: "Space",
       spaceID: string,
       spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -762,7 +914,6 @@ export type InviteSpaceUserMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -821,9 +972,26 @@ export type ActivateSpaceUserMutation = {
       __typename: "Space",
       spaceID: string,
       spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -848,7 +1016,6 @@ export type ActivateSpaceUserMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -907,9 +1074,26 @@ export type DeactivateSpaceUserMutation = {
       __typename: "Space",
       spaceID: string,
       spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -934,7 +1118,6 @@ export type DeactivateSpaceUserMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -993,9 +1176,26 @@ export type DeleteSpaceUserMutation = {
       __typename: "Space",
       spaceID: string,
       spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1020,7 +1220,6 @@ export type DeleteSpaceUserMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1088,9 +1287,26 @@ export type AcceptSpaceUserInvitationMutation = {
       __typename: "Space",
       spaceID: string,
       spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1115,7 +1331,6 @@ export type AcceptSpaceUserInvitationMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1173,9 +1388,26 @@ export type LeaveSpaceUserMutation = {
       __typename: "Space",
       spaceID: string,
       spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1200,7 +1432,6 @@ export type LeaveSpaceUserMutation = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1245,49 +1476,405 @@ export type LeaveSpaceUserMutation = {
   } | null,
 };
 
+export type PublishDataMutationVariables = {
+  data?: Array< PublishDataInput >,
+};
+
+export type PublishDataMutation = {
+  // Asynchronously pushes a data payload of a
+  // given type to the platform. The only response
+  // expected will be a success of fail
+  publishData?:  Array< {
+    __typename: "PublishResult",
+    success: boolean,
+    error?: string | null,
+  } | null > | null,
+};
+
+export type PushUsersUpdateMutationVariables = {
+  data?: string,
+};
+
+export type PushUsersUpdateMutation = {
+  // Mutations to data entities attached to
+  // subscriptions that will push changes to
+  // clients with active subscriptions to
+  // these entitites.
+  pushUsersUpdate?:  {
+    __typename: "UserUpdate",
+    userID: string,
+    numDevices?: number | null,
+    numSpaces?: number | null,
+    user:  {
+      __typename: "User",
+      userID: string,
+      userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
+      emailAddress?: string | null,
+      mobilePhone?: string | null,
+      confirmed?: boolean | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      // A user's universal config is an encrypted
+      // document containing metadata of all spaces the
+      // user owns.
+      universalConfig?: string | null,
+    },
+  } | null,
+};
+
+export type PushDevicesUpdateMutationVariables = {
+  data?: string,
+};
+
+export type PushDevicesUpdateMutation = {
+  pushDevicesUpdate?:  {
+    __typename: "DeviceUpdate",
+    deviceID: string,
+    numUsers?: number | null,
+    device:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    },
+  } | null,
+};
+
+export type PushDeviceUsersUpdateMutationVariables = {
+  data?: string,
+};
+
+export type PushDeviceUsersUpdateMutation = {
+  pushDeviceUsersUpdate?:  {
+    __typename: "DeviceUserUpdate",
+    deviceID: string,
+    userID: string,
+    deviceUser:  {
+      __typename: "DeviceUser",
+      device?:  {
+        __typename: "Device",
+        deviceID: string,
+        deviceName: string,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+      } | null,
+      user?:  {
+        __typename: "User",
+        userID: string,
+        userName: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+        preferredName?: string | null,
+        emailAddress?: string | null,
+        mobilePhone?: string | null,
+        confirmed?: boolean | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // A user's universal config is an encrypted
+        // document containing metadata of all spaces the
+        // user owns.
+        universalConfig?: string | null,
+      } | null,
+      isOwner?: boolean | null,
+      status?: UserAccessStatus | null,
+      wireguardPublicKey?: string | null,
+      bytesUploaded?: number | null,
+      bytesDownloaded?: number | null,
+      lastAccessTime?: number | null,
+      lastSpaceConnectedTo?: string | null,
+    },
+  } | null,
+};
+
+export type PushSpacesUpdateMutationVariables = {
+  data?: string,
+};
+
+export type PushSpacesUpdateMutation = {
+  pushSpacesUpdate?:  {
+    __typename: "SpaceUpdate",
+    spaceID: string,
+    numUsers?: number | null,
+    numApps?: number | null,
+    space:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    },
+  } | null,
+};
+
+export type PushSpaceUsersUpdateMutationVariables = {
+  data?: string,
+};
+
+export type PushSpaceUsersUpdateMutation = {
+  pushSpaceUsersUpdate?:  {
+    __typename: "SpaceUserUpdate",
+    spaceID: string,
+    userID: string,
+    spaceUser:  {
+      __typename: "SpaceUser",
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName: string,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      user?:  {
+        __typename: "User",
+        userID: string,
+        userName: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+        preferredName?: string | null,
+        emailAddress?: string | null,
+        mobilePhone?: string | null,
+        confirmed?: boolean | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // A user's universal config is an encrypted
+        // document containing metadata of all spaces the
+        // user owns.
+        universalConfig?: string | null,
+      } | null,
+      isOwner?: boolean | null,
+      isAdmin?: boolean | null,
+      // User's that are neither owners or admin can
+      // connect to the space and access only apps
+      // they are allowed to access. If this flag
+      // is set then they can also use the space
+      // as the egress node for internet access.
+      isEgressNode?: boolean | null,
+      status?: UserAccessStatus | null,
+      bytesUploaded?: number | null,
+      bytesDownloaded?: number | null,
+      accessList?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      lastConnectTime?: number | null,
+      lastConnectDeviceID?: string | null,
+    },
+  } | null,
+};
+
+export type PushAppsUpdateMutationVariables = {
+  data?: string,
+};
+
+export type PushAppsUpdateMutation = {
+  pushAppsUpdate?:  {
+    __typename: "AppUpdate",
+    appID: string,
+    numUsers?: number | null,
+    app:  {
+      __typename: "App",
+      appID: string,
+      appName: string,
+      recipe: string,
+      iaas: string,
+      region: string,
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName: string,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      users?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    },
+  } | null,
+};
+
+export type PushAppUsersUpdateMutationVariables = {
+  data?: string,
+};
+
+export type PushAppUsersUpdateMutation = {
+  pushAppUsersUpdate?:  {
+    __typename: "AppUserUpdate",
+    appID: string,
+    userID: string,
+    appUser:  {
+      __typename: "AppUser",
+      app?:  {
+        __typename: "App",
+        appID: string,
+        appName: string,
+        recipe: string,
+        iaas: string,
+        region: string,
+      } | null,
+      user?:  {
+        __typename: "User",
+        userID: string,
+        userName: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+        preferredName?: string | null,
+        emailAddress?: string | null,
+        mobilePhone?: string | null,
+        confirmed?: boolean | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // A user's universal config is an encrypted
+        // document containing metadata of all spaces the
+        // user owns.
+        universalConfig?: string | null,
+      } | null,
+      lastAccessTime?: number | null,
+    },
+  } | null,
+};
+
 export type UserSearchQueryVariables = {
-  filter?: TableUsersFilterInput,
+  filter?: UserSearchFilterInput,
   limit?: number | null,
-  next?: CursorInput | null,
 };
 
 export type UserSearchQuery = {
   // Returns a list of users matching
   // the given filter
-  userSearch?:  {
-    __typename: "UserSearchConnection",
-    pageInfo:  {
-      __typename: "PageInfo",
-      // When paginating forwards, are there more items?
-      hasNextPage: boolean,
-      // When paginating backwards, are there more items?
-      hasPreviousePage: boolean,
-      // Cursor used for pagination
-      cursor?:  {
-        __typename: "Cursor",
-        // The next page token index. To move to the next
-        // page, cursor does not need to be updated. To move
-        // to the prev page simply decrement the index by 2.
-        index: number,
-        // The token to use to retrieve the next page for a
-        // given index
-        nextTokens: Array< string | null >,
-      } | null,
-    },
-    edges?:  Array< {
-      __typename: "UserSearchEdge",
-      node:  {
-        __typename: "UserSearchItem",
+  userSearch:  Array< {
+    __typename: "UserRef",
+    userID: string,
+    userName?: string | null,
+    firstName?: string | null,
+    middleName?: string | null,
+    familyName?: string | null,
+  } | null >,
+};
+
+export type AuthDeviceQueryVariables = {
+  idKey?: string,
+};
+
+export type AuthDeviceQuery = {
+  // Authenticates and authorizes the
+  // current logged in user on the device
+  // identified by the given key. The
+  // response returns the user's access
+  // type on the device and if the user
+  // has admin access the full device
+  // information will be returned.
+  authDevice?:  {
+    __typename: "DeviceAuth",
+    accessType: AccessType,
+    device?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
         userID: string,
-        userName: string,
-      },
-    } | null > | null,
-    totalCount?: number | null,
-    users?:  Array< {
-      __typename: "UserSearchItem",
-      userID: string,
-      userName: string,
-    } | null > | null,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null,
 };
 
@@ -1306,7 +1893,6 @@ export type GetUserQuery = {
     confirmed?: boolean | null,
     publicKey?: string | null,
     certificate?: string | null,
-    certificateRequest?: string | null,
     devices?:  {
       __typename: "DeviceUsersConnection",
       pageInfo:  {
@@ -1325,6 +1911,7 @@ export type GetUserQuery = {
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
         lastAccessTime?: number | null,
+        lastSpaceConnectedTo?: string | null,
       } | null > | null,
     } | null,
     spaces?:  {
@@ -1374,9 +1961,19 @@ export type GetDeviceQuery = {
       __typename: "Device",
       deviceID: string,
       deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1395,7 +1992,6 @@ export type GetDeviceQuery = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1415,6 +2011,7 @@ export type GetDeviceQuery = {
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
+    lastSpaceConnectedTo?: string | null,
   } | null,
 };
 
@@ -1431,9 +2028,26 @@ export type GetSpaceQuery = {
       __typename: "Space",
       spaceID: string,
       spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1458,7 +2072,6 @@ export type GetSpaceQuery = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1516,9 +2129,19 @@ export type GetDeviceAccessRequestsQuery = {
       __typename: "Device",
       deviceID: string,
       deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1537,7 +2160,6 @@ export type GetDeviceAccessRequestsQuery = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1557,6 +2179,7 @@ export type GetDeviceAccessRequestsQuery = {
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
+    lastSpaceConnectedTo?: string | null,
   } | null > | null,
 };
 
@@ -1569,9 +2192,26 @@ export type GetSpaceInvitationsQuery = {
       __typename: "Space",
       spaceID: string,
       spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1596,7 +2236,6 @@ export type GetSpaceInvitationsQuery = {
       confirmed?: boolean | null,
       publicKey?: string | null,
       certificate?: string | null,
-      certificateRequest?: string | null,
       devices?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1639,4 +2278,332 @@ export type GetSpaceInvitationsQuery = {
     lastConnectTime?: number | null,
     lastConnectDeviceID?: string | null,
   } | null > | null,
+};
+
+export type UserUpdatesSubscriptionVariables = {
+  userID?: string,
+};
+
+export type UserUpdatesSubscription = {
+  userUpdates?:  {
+    __typename: "UserUpdate",
+    userID: string,
+    numDevices?: number | null,
+    numSpaces?: number | null,
+    user:  {
+      __typename: "User",
+      userID: string,
+      userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
+      emailAddress?: string | null,
+      mobilePhone?: string | null,
+      confirmed?: boolean | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      // A user's universal config is an encrypted
+      // document containing metadata of all spaces the
+      // user owns.
+      universalConfig?: string | null,
+    },
+  } | null,
+};
+
+export type DeviceUpdatesSubscriptionVariables = {
+  deviceID?: string,
+};
+
+export type DeviceUpdatesSubscription = {
+  deviceUpdates?:  {
+    __typename: "DeviceUpdate",
+    deviceID: string,
+    numUsers?: number | null,
+    device:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    },
+  } | null,
+};
+
+export type DeviceUserUpdatesSubscriptionVariables = {
+  deviceID?: string,
+  userID?: string,
+};
+
+export type DeviceUserUpdatesSubscription = {
+  deviceUserUpdates?:  {
+    __typename: "DeviceUserUpdate",
+    deviceID: string,
+    userID: string,
+    deviceUser:  {
+      __typename: "DeviceUser",
+      device?:  {
+        __typename: "Device",
+        deviceID: string,
+        deviceName: string,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+      } | null,
+      user?:  {
+        __typename: "User",
+        userID: string,
+        userName: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+        preferredName?: string | null,
+        emailAddress?: string | null,
+        mobilePhone?: string | null,
+        confirmed?: boolean | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // A user's universal config is an encrypted
+        // document containing metadata of all spaces the
+        // user owns.
+        universalConfig?: string | null,
+      } | null,
+      isOwner?: boolean | null,
+      status?: UserAccessStatus | null,
+      wireguardPublicKey?: string | null,
+      bytesUploaded?: number | null,
+      bytesDownloaded?: number | null,
+      lastAccessTime?: number | null,
+      lastSpaceConnectedTo?: string | null,
+    },
+  } | null,
+};
+
+export type SpaceUpdatesSubscriptionVariables = {
+  spaceID?: string,
+};
+
+export type SpaceUpdatesSubscription = {
+  spaceUpdates?:  {
+    __typename: "SpaceUpdate",
+    spaceID: string,
+    numUsers?: number | null,
+    numApps?: number | null,
+    space:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    },
+  } | null,
+};
+
+export type SpaceUserUpdatesSubscriptionVariables = {
+  spaceID?: string,
+  userID?: string,
+};
+
+export type SpaceUserUpdatesSubscription = {
+  spaceUserUpdates?:  {
+    __typename: "SpaceUserUpdate",
+    spaceID: string,
+    userID: string,
+    spaceUser:  {
+      __typename: "SpaceUser",
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName: string,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      user?:  {
+        __typename: "User",
+        userID: string,
+        userName: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+        preferredName?: string | null,
+        emailAddress?: string | null,
+        mobilePhone?: string | null,
+        confirmed?: boolean | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // A user's universal config is an encrypted
+        // document containing metadata of all spaces the
+        // user owns.
+        universalConfig?: string | null,
+      } | null,
+      isOwner?: boolean | null,
+      isAdmin?: boolean | null,
+      // User's that are neither owners or admin can
+      // connect to the space and access only apps
+      // they are allowed to access. If this flag
+      // is set then they can also use the space
+      // as the egress node for internet access.
+      isEgressNode?: boolean | null,
+      status?: UserAccessStatus | null,
+      bytesUploaded?: number | null,
+      bytesDownloaded?: number | null,
+      accessList?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      lastConnectTime?: number | null,
+      lastConnectDeviceID?: string | null,
+    },
+  } | null,
+};
+
+export type AppUpdatesSubscriptionVariables = {
+  appID?: string,
+};
+
+export type AppUpdatesSubscription = {
+  appUpdates?:  {
+    __typename: "AppUpdate",
+    appID: string,
+    numUsers?: number | null,
+    app:  {
+      __typename: "App",
+      appID: string,
+      appName: string,
+      recipe: string,
+      iaas: string,
+      region: string,
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName: string,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      users?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    },
+  } | null,
+};
+
+export type AppUserUpdatesSubscriptionVariables = {
+  appID?: string,
+  userID?: string,
+};
+
+export type AppUserUpdatesSubscription = {
+  appUserUpdates?:  {
+    __typename: "AppUserUpdate",
+    appID: string,
+    userID: string,
+    appUser:  {
+      __typename: "AppUser",
+      app?:  {
+        __typename: "App",
+        appID: string,
+        appName: string,
+        recipe: string,
+        iaas: string,
+        region: string,
+      } | null,
+      user?:  {
+        __typename: "User",
+        userID: string,
+        userName: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+        preferredName?: string | null,
+        emailAddress?: string | null,
+        mobilePhone?: string | null,
+        confirmed?: boolean | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // A user's universal config is an encrypted
+        // document containing metadata of all spaces the
+        // user owns.
+        universalConfig?: string | null,
+      } | null,
+      lastAccessTime?: number | null,
+    },
+  } | null,
 };

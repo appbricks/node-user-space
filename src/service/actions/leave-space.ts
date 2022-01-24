@@ -16,14 +16,14 @@ import {
   SpaceUserPayload,
   LEAVE_SPACE,
   GET_USER_SPACES
-} from '../action';
+} from '../actions';
 import { UserSpaceStateProps } from '../state';
 
-export const leaveSpaceAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>, spaceID: string) => 
     dispatch(createAction(LEAVE_SPACE, <SpaceIDPayload>{ spaceID }));
 
-export const leaveSpaceEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpicFanOut<SpaceIDPayload, UserSpaceStateProps>(
     LEAVE_SPACE, 

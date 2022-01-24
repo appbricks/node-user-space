@@ -16,14 +16,14 @@ import {
   SpaceUserPayload,
   DELETE_USER_FROM_SPACE,
   GET_USER_SPACES
-} from '../action';
+} from '../actions';
 import { UserSpaceStateProps } from '../state';
 
-export const deleteUserFromSpaceAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID: string) => 
     dispatch(createAction(DELETE_USER_FROM_SPACE, <SpaceUserIDPayload>{ spaceID, userID }));
 
-export const deleteUserFromSpaceEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpicFanOut<SpaceUserIDPayload, UserSpaceStateProps>(
     DELETE_USER_FROM_SPACE, 

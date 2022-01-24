@@ -14,20 +14,20 @@ import {
   UserSearchPayload,
   UserSearchResultPayload,
   USER_SEARCH,
-} from '../action';
+} from '../actions';
 import { UserSpaceStateProps } from '../state';
 
-export const userSearchAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>, namePrefix: string, limit?: number) => 
     dispatch(createAction(USER_SEARCH, <UserSearchPayload>{ namePrefix, limit }));
 
-export const userSearchEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpic<UserSearchPayload, UserSpaceStateProps>(
     USER_SEARCH, 
     async (action, state$) => {
       const payload = action.payload!;
-      const userSearchResult = await csProvider.userSearch(payload.namePrefix, payload.limit, payload.cursor);
+      const userSearchResult = await csProvider.userSearch(payload.namePrefix, payload.limit);
       return createFollowUpAction<UserSearchResultPayload>(action, SUCCESS, { userSearchResult });
     }
   );

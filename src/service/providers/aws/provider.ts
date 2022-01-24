@@ -1,5 +1,6 @@
 import { API, graphqlOperation } from 'aws-amplify';
 import { GraphQLResult } from '@aws-amplify/api-graphql';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 
 import {
   Logger,
@@ -9,11 +10,15 @@ import {
 import ProviderInterface from '../../provider';
 
 import {
-  UserSearchConnection,
+  UserRef,
   User,
   DeviceUser,
   SpaceUser,
-  CursorInput
+  UserUpdate,
+  DeviceUpdate,
+  DeviceUserUpdate,
+  SpaceUpdate,
+  SpaceUserUpdate
 } from '../../../model/types';
 
 import {
@@ -42,48 +47,35 @@ export default class Provider implements ProviderInterface {
 
   private api: typeof API;
 
+  private subscriptions: {[id: string]: ZenObservable.Subscription} = {};
+
   constructor(api?: typeof API) {
     this.logger = new Logger('AwsUserSpaceProvider');
     this.api = api || API;
   }
 
-  async userSearch(namePrefix: string, limit?: number, cursor?: CursorInput) {
+  async userSearch(namePrefix: string, limit?: number) {
 
-    this.logger.debug('User search query - namePrefix, limit, cursor:', namePrefix, limit, cursor);
+    this.logger.debug('User search query - namePrefix, limit, cursor:', namePrefix, limit);
 
     const userSearchQuery = /* GraphQL */ `
       query UserSearch(
         $namePrefix: String!
         $limit: Int
-        $cursor: CursorInput
       ) {
-        userSearch(filter: {userName: {beginsWith: $namePrefix}}, limit: $limit, next: $cursor) {
-          pageInfo {
-            hasNextPage
-            hasPreviousePage
-            cursor {
-              index
-              nextTokens
-            }
-          }
-          totalCount
-          users {
-            userID
-            userName
-          }
-          edges {
-            node {
-              userID
-              userName
-            }
-          }
+        userSearch(filter: {userName: $namePrefix}, limit: $limit) {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
         }
       }`;
 
     try {
-      const result = <GraphQLResult<{ userSearch: UserSearchConnection }>>
+      const result = <GraphQLResult<{ userSearch: UserRef[] }>>
         await this.api.graphql(
-          graphqlOperation(userSearchQuery, { namePrefix, limit, cursor })
+          graphqlOperation(userSearchQuery, { namePrefix, limit })
         );
       if (result.data) {
         const userSearch = result.data.userSearch
@@ -96,6 +88,58 @@ export default class Provider implements ProviderInterface {
     } catch (error) {
       this.logger.error('userSearch API call returned error: ', error);
       throw new Error(ERROR_USER_SEARCH, error);
+    }
+  }
+
+  subscribeToUserUpdates(
+    userID: string,
+    update: (data: UserUpdate) => void,
+    error: (error: any) => void
+  ) {
+    const subscriptionKey = `userUpdates(userID: ${userID})`;
+    if (!this.subscriptions[subscriptionKey]) {
+
+      const subscriptionQuery = /* GraphQL */ `
+        subscription SubscribeToUserUpdates($userID: ID!) {
+          userUpdates(userID: $userID) {
+            userID
+            numDevices
+            numSpaces
+            user {
+              userID
+              userName
+              firstName
+              middleName
+              familyName
+              emailAddress
+              mobilePhone
+              confirmed
+              publicKey
+              certificate
+            }
+          }
+        }`;
+
+      const observable: Observable<object> = <Observable<object>>API.graphql(
+        graphqlOperation(subscriptionQuery, { userID })
+      );
+      const subscription = observable.subscribe({
+        next: data => update(<UserUpdate>(<any>data).value.data.userUpdates),
+        error: data => error(data.error)
+      });
+      this.subscriptions[subscriptionKey] = subscription;
+
+    } else {
+      this.logger.debug('Subscription exists:', subscriptionKey);
+    }
+  }
+
+  async unsubscribeFromUserUpdates(
+    userID: string,
+  ) {
+    const subscription = this.subscriptions[`userUpdates(userID: ${userID})`];
+    if (subscription) {
+      await subscription.unsubscribe();
     }
   }
 
@@ -112,6 +156,16 @@ export default class Provider implements ProviderInterface {
               device {
                 deviceID
                 deviceName
+                owner {
+                  userID
+                  userName
+                  firstName
+                  middleName
+                  familyName
+                }
+                deviceType
+                clientVersion
+                publicKey
                 certificate
                 users {
                   totalCount
@@ -128,6 +182,7 @@ export default class Provider implements ProviderInterface {
                     bytesUploaded
                     bytesDownloaded
                     lastAccessTime
+                    lastSpaceConnectedTo
                   }
                 }
               }
@@ -152,6 +207,104 @@ export default class Provider implements ProviderInterface {
     } catch (error) {
       this.logger.error('getUserDevices API call returned error: ', error);
       throw new Error(ERROR_GET_USER_DEVICES, error);
+    }
+  }
+
+  subscribeToDeviceUpdates(
+    deviceID: string,
+    update: (data: DeviceUpdate) => void,
+    error: (error: any) => void
+  ) {
+    const subscriptionKey = `deviceUpdates(deviceID: ${deviceID})`;
+    if (!this.subscriptions[subscriptionKey]) {
+
+      const subscriptionQuery = /* GraphQL */ `
+        subscription SubscribeToDeviceUpdates($deviceID: ID!) {
+          deviceUpdates(deviceID: $deviceID) {
+            deviceID
+            numUsers
+            device {
+              deviceID
+              deviceName
+              publicKey
+              certificate
+            }
+          }
+        }`;
+
+      const observable: Observable<object> = <Observable<object>>API.graphql(
+        graphqlOperation(subscriptionQuery, { deviceID })
+      );
+      const subscription = observable.subscribe({
+        next: data => update(<DeviceUpdate>(<any>data).value.data.deviceUpdates),
+        error: data => error(data.error)
+      });
+      this.subscriptions[subscriptionKey] = subscription;
+
+    } else {
+      this.logger.debug('Subscription exists:', subscriptionKey);
+    }
+  }
+
+  async unsubscribeFromDeviceUpdates(
+    deviceID: string,
+  ) {
+    const subscription = this.subscriptions[`deviceUpdates(deviceID: ${deviceID})`];
+    if (subscription) {
+      await subscription.unsubscribe();
+    }
+  }
+
+  subscribeToDeviceUserUpdates(
+    deviceID: string,
+    userID: string,
+    update: (data: DeviceUserUpdate) => void,
+    error: (error: any) => void
+  ) {
+    const subscriptionKey = `deviceUserUpdates(deviceID: ${deviceID}, userID: ${userID})`;
+    if (!this.subscriptions[subscriptionKey]) {
+
+      const subscriptionQuery = /* GraphQL */ `
+        subscription SubscribeToDeviceUserUpdates($deviceID: ID!, $userID: ID!) {
+          deviceUserUpdates(deviceID: $deviceID, userID: $userID) {
+            deviceID
+            userID
+            deviceUser {
+              device {
+                deviceID
+              }
+              user {
+                userID
+              }
+              status
+              bytesUploaded
+              bytesDownloaded
+              lastAccessTime
+            }
+          }
+        }`;
+
+      const observable: Observable<object> = <Observable<object>>API.graphql(
+        graphqlOperation(subscriptionQuery, { deviceID, userID })
+      );
+      const subscription = observable.subscribe({
+        next: data => update(<DeviceUserUpdate>(<any>data).value.data.deviceUserUpdates),
+        error: data => error(data.error)
+      });
+      this.subscriptions[subscriptionKey] = subscription;
+
+    } else {
+      this.logger.debug('Subscription exists:', subscriptionKey);
+    }
+  }
+
+  async unsubscribeFromDeviceUserUpdates(
+    deviceID: string,
+    userID: string,
+  ) {
+    const subscription = this.subscriptions[`deviceUserUpdates(deviceID: ${deviceID}, userID: ${userID})`];
+    if (subscription) {
+      await subscription.unsubscribe();
     }
   }
 
@@ -295,9 +448,24 @@ export default class Provider implements ProviderInterface {
               space {
                 spaceID
                 spaceName
+                owner {
+                  userID
+                  userName
+                  firstName
+                  middleName
+                  familyName
+                }
                 recipe
                 iaas
                 region
+                version
+                publicKey
+                certificate
+                isEgressNode
+                ipAddress
+                fqdn
+                port
+                localCARoot                
                 status
                 lastSeen
                 users {
@@ -341,6 +509,105 @@ export default class Provider implements ProviderInterface {
     } catch (error) {
       this.logger.error('getUserSpaces API call returned error: ', error);
       throw new Error(ERROR_GET_USER_SPACES, error);
+    }
+  }
+
+  subscribeToSpaceUpdates(
+    spaceID: string,
+    update: (data: SpaceUpdate) => void,
+    error: (error: any) => void
+  ) {
+    const subscriptionKey = `spaceUpdates(spaceID: ${spaceID})`;
+    if (!this.subscriptions[subscriptionKey]) {
+
+      const subscriptionQuery = /* GraphQL */ `
+        subscription SubscribeToSpaceUpdates($spaceID: ID!) {
+          spaceUpdates(spaceID: $spaceID) {
+            spaceID
+            numUsers
+            space {
+              spaceID
+              spaceName
+              publicKey
+              certificate
+              recipe
+              iaas
+              region
+              version
+              isEgressNode
+            }
+          }
+        }`;
+
+      const observable: Observable<object> = <Observable<object>>API.graphql(
+        graphqlOperation(subscriptionQuery, { spaceID })
+      );
+      const subscription = observable.subscribe({
+        next: data => update(<SpaceUpdate>(<any>data).value.data.spaceUpdates),
+        error: data => error(data.error)
+      });
+      this.subscriptions[subscriptionKey] = subscription;
+
+    } else {
+      this.logger.debug('Subscription exists:', subscriptionKey);
+    }      
+  }
+
+  async unsubscribeFromSpaceUpdates(
+    spaceID: string,
+  ) {
+    const subscription = this.subscriptions[`spaceUpdates(spaceID: ${spaceID})`];
+    if (subscription) {
+      await subscription.unsubscribe();
+    }
+  }
+
+  subscribeToSpaceUserUpdates(
+    spaceID: string,
+    userID: string,
+    update: (data: SpaceUserUpdate) => void,
+    error: (error: any) => void
+  ) {
+    const subscriptionKey = `spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`;
+    if (!this.subscriptions[subscriptionKey]) {
+
+      const subscriptionQuery = /* GraphQL */ `
+        subscription SubscribeToSpaceUserUpdates($spaceID: ID!, $userID: ID!) {
+          spaceUserUpdates(spaceID: $spaceID, userID: $userID) {
+            spaceID
+            userID
+            spaceUser {
+              isEgressNode
+              status
+              bytesUploaded
+              bytesDownloaded
+              lastConnectTime
+              lastConnectDeviceID
+            }
+          }
+        }`;
+
+      const observable: Observable<object> = <Observable<object>>API.graphql(
+        graphqlOperation(subscriptionQuery, { spaceID, userID })
+      );
+      const subscription = observable.subscribe({
+        next: data => update(<SpaceUserUpdate>(<any>data).value.data.spaceUserUpdates),
+        error: data => error(data.error)
+      });
+      this.subscriptions[subscriptionKey] = subscription;
+
+    } else {
+      this.logger.debug('Subscription exists:', subscriptionKey);
+    }
+  }
+
+  async unsubscribeFromSpaceUserUpdates(
+    spaceID: string,
+    userID: string,
+  ) {
+    const subscription = this.subscriptions[`spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`];
+    if (subscription) {
+      await subscription.unsubscribe();
     }
   }
 
@@ -538,6 +805,7 @@ export default class Provider implements ProviderInterface {
             recipe
             iaas
             region
+            version
           }
           isAdmin
           isEgressNode

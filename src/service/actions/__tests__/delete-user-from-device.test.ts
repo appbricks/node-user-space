@@ -13,7 +13,7 @@ import {
   DELETE_USER_FROM_DEVICE,
   GET_USER_DEVICES,
   GET_DEVICE_ACCESS_REQUESTS
-} from '../../action';
+} from '../../actions';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
 

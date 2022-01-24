@@ -14,14 +14,14 @@ import {
   DeviceUserIDPayload,
   DeviceUsersPayload,
   GET_DEVICE_ACCESS_REQUESTS,
-} from '../action';
+} from '../actions';
 import { UserSpaceStateProps } from '../state';
 
-export const getDeviceAccessRequestsAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>, deviceID: string) => 
     dispatch(createAction(GET_DEVICE_ACCESS_REQUESTS, <DeviceUserIDPayload>{ deviceID }));
 
-export const getDeviceAccessRequestsEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpic<DeviceUserIDPayload, UserSpaceStateProps>(
     GET_DEVICE_ACCESS_REQUESTS, 

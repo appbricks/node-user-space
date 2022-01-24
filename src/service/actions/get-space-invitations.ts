@@ -13,13 +13,13 @@ import Provider from '../provider';
 import { 
   SpaceUsersPayload,
   GET_SPACE_INVITATIONS,
-} from '../action';
+} from '../actions';
 
-export const getSpaceInvitationsAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>) => 
     dispatch(createAction(GET_SPACE_INVITATIONS));
 
-export const getSpaceInvitationsEpic = (csProvider: Provider): Epic => {
+export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpic(
     GET_SPACE_INVITATIONS, 

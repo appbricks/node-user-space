@@ -1,25 +1,38 @@
 import ProviderInterface from '../provider';
 
 import {
-  UserSearchConnection,
-  UserSearchItem,
+  UserRef,
   User,
   Device,
   DeviceUser,
   UserAccessStatus,
   Space,
   SpaceUser,
-  CursorInput,
-  PageInfo
+  UserUpdate,
+  DeviceUpdate,
+  DeviceUserUpdate,
+  SpaceUpdate,
+  SpaceUserUpdate,
+  SpaceStatus
 } from '../../model/types';
 
-import { UserSpaceActionProps } from '../action';
+import { UserSpaceActionProps } from '../actions';
 import UserSpaceService from '../user-space-service';
 
-import { 
+import {
   ActionTester,
   testActionDispatcher
 } from '@appbricks/test-utils';
+
+// date older than a month
+export const date1 = new Date();
+date1.setMonth(date1.getMonth() - 1.5);
+// date 5 mins old
+export const date2 = new Date();
+date2.setMinutes(date2.getMinutes() - 5);
+// date 2 mins old
+export const date3 = new Date();
+date3.setMinutes(date3.getMinutes() - 2);
 
 export const initServiceDispatch = (
   actionTester: ActionTester
@@ -47,7 +60,7 @@ export const initServiceDispatch = (
 }
 
 /**
- * Mock User-Space API provider. 
+ * Mock User-Space API provider.
  */
 export default class MockProvider implements ProviderInterface {
 
@@ -58,14 +71,16 @@ export default class MockProvider implements ProviderInterface {
   spaces: Space[];
   spaceUsers: SpaceUser[];
 
+  subscriptionMap: { [id: string]: { update: (data: any) => void, error: (err: any) => void} } = {}
+
   // logged in user
   user?: User;
 
   constructor() {
-    const { 
-      users, 
-      devices, deviceUsers, 
-      spaces, spaceUsers 
+    const {
+      users,
+      devices, deviceUsers,
+      spaces, spaceUsers
     } = loadMockData();
 
     this.users = users;
@@ -75,69 +90,78 @@ export default class MockProvider implements ProviderInterface {
     this.spaceUsers = spaceUsers;
   }
 
+  pushSubscriptionUpdate(data: any, ...id: string[]) {
+    const subscription = this.subscriptionMap[id.join('|')];
+    if (subscription) {
+      subscription.update(data);
+    } else {
+      throw new Error(`subscription ${id.join('|')} not found`)
+    }
+  }
+
+  pushSubscriptionError(err: any, ...id: string[]) {
+    const subscription = this.subscriptionMap[id.join('|')];
+    if (subscription) {
+      subscription.error(err);
+    } else {
+      throw new Error(`subscription ${id.join('|')} not found`)
+    }
+  }
+
   setLoggedInUser(loggedInUser: string) {
     this.user = this.users.find(user => user.userName == loggedInUser);
     expect(this.user).toBeDefined();
   }
 
-  async userSearch(namePrefix: string, limit?: number, cursor?: CursorInput) {
+  async userSearch(namePrefix: string, limit?: number) {
 
     const users = this.users
       .filter(user => user.userName!.startsWith(namePrefix))
-      .map(user => 
-        <UserSearchItem>{ 
-          __typename: "UserSearchItem", 
-          userID: user.userID, 
-          userName: user.userName 
+      .map(user =>
+        <UserRef>{
+          __typename: "UserRef",
+          userID: user.userID,
+          userName: user.userName,
+          firstName: user.firstName,
+          middleName: user.middleName,
+          familyName: user.familyName
         }
       );
 
-    let pageInfo = <PageInfo>{
-      __typename: 'PageInfo',
-      hasPreviousePage: false,
-      hasNextPage: false,
-      cursor: {
-        __typename: "Cursor",
-        index: -1,
-        nextTokens: []
-      }
-    }
-
-    let currToken = 0;
-    let nextToken = users.length;
-
     if (limit) {
-      if (cursor && cursor.index >= 0) {
-        currToken = parseInt(<string>cursor!.nextTokens[cursor.index], 10);
-        nextToken = currToken + limit;
-        
-        pageInfo.cursor!.index = cursor!.index;
-        pageInfo.cursor!.nextTokens = cursor!.nextTokens;  
-
-        pageInfo.cursor!.index++;
-        if (pageInfo.cursor!.index == pageInfo.cursor!.nextTokens.length) {
-          pageInfo.cursor!.nextTokens.push(nextToken.toString());        
-        }
-      } else {
-        nextToken = limit;
-        pageInfo.cursor!.index = 0;
-        pageInfo.cursor!.nextTokens = [ nextToken.toString() ];
-      }
-      pageInfo.hasPreviousePage = (pageInfo.cursor!.index > 0);
-      pageInfo.hasNextPage = nextToken < users.length;
+      return users.slice(0, limit);
+    } else {
+      return users;
     }
+  }
 
-    return <UserSearchConnection>{     
-      __typename: "UserSearchConnection",
-      totalCount: Math.min(users.length, nextToken) - currToken,
-      users: users.slice(currToken, nextToken),
-      pageInfo
-    }
+  subscribeToUserUpdates(userID: string, update: (data: UserUpdate) => void, error: (error: any) => void) {
+    this.subscriptionMap[userID] = { update, error };
+  }
+
+  async unsubscribeFromUserUpdates(userID: string) {
+    delete this.subscriptionMap[userID];
   }
 
   async getUserDevices() {
     return <DeviceUser[]>this.user!.devices!.deviceUsers!
       .filter(deviceUser => deviceUser!.status == UserAccessStatus.active);
+  }
+
+  subscribeToDeviceUpdates(deviceID: string, update: (data: DeviceUpdate) => void, error: (error: any) => void) {
+    this.subscriptionMap[deviceID] = { update, error };
+  }
+
+  async unsubscribeFromDeviceUpdates(deviceID: string) {
+    delete this.subscriptionMap[deviceID];
+  }
+
+  subscribeToDeviceUserUpdates(deviceID: string, userID: string, update: (sata: DeviceUserUpdate) => void, error: (error: any) => void) {
+    this.subscriptionMap[deviceID + '|' + userID] = { update, error };
+  }
+
+  async unsubscribeFromDeviceUserUpdates(deviceID: string, userID: string) {
+    delete this.subscriptionMap[deviceID + '|' + userID];
   }
 
   async getDeviceAccessRequests(deviceID: string) {
@@ -146,7 +170,7 @@ export default class MockProvider implements ProviderInterface {
     if (!deviceUser) {
       throw new Error(`user does not own a device with ID ${deviceID}`);
     }
-  
+
     return <DeviceUser[]>deviceUser.device!.users!.deviceUsers!
       .filter(deviceUser => deviceUser!.status == UserAccessStatus.pending);
   }
@@ -157,7 +181,7 @@ export default class MockProvider implements ProviderInterface {
     if (!deviceUser) {
       throw new Error(`user does not own a device with ID ${deviceID}`);
     }
-    
+
     const deviceUserToActivate = deviceUser.device!.users!.deviceUsers!
       .find(deviceUser => deviceUser!.user!.userID == userID && deviceUser!.status == UserAccessStatus.pending);
     if (!deviceUserToActivate) {
@@ -174,7 +198,7 @@ export default class MockProvider implements ProviderInterface {
     if (!deviceUser) {
       throw new Error(`user does not own a device with ID ${deviceID}`);
     }
-    
+
     // delete device association with user
     let deleteAt = deviceUser.device!.users!.deviceUsers!
       .findIndex(deviceUser => deviceUser!.user!.userID == userID);
@@ -199,7 +223,7 @@ export default class MockProvider implements ProviderInterface {
     if (!deviceUser) {
       throw new Error(`user does not own a device with ID ${deviceID}`);
     }
-    
+
     let deleteAt = this.devices.findIndex(device => device.deviceID == deviceID);
     this.devices.splice(deleteAt, 1);
 
@@ -226,6 +250,22 @@ export default class MockProvider implements ProviderInterface {
       .filter(spaceUser => spaceUser!.status == UserAccessStatus.active)
   }
 
+  subscribeToSpaceUpdates(spaceID: string, update: (data: SpaceUpdate) => void, error: (error: any) => void) {
+    this.subscriptionMap[spaceID] = { update, error };
+  }
+
+  async unsubscribeFromSpaceUpdates(spaceID: string) {
+    delete this.subscriptionMap[spaceID];
+  }
+
+  subscribeToSpaceUserUpdates(spaceID: string, userID: string, update: (data: SpaceUserUpdate) => void, error: (error: any) => void) {
+    this.subscriptionMap[spaceID + '|' + userID] = { update, error };
+  }
+
+  async unsubscribeFromSpaceUserUpdates(spaceID: string, userID: string) {
+    delete this.subscriptionMap[spaceID + '|' + userID];
+  }
+
   async getSpaceInvitations() {
     return <SpaceUser[]>this.user!.spaces!.spaceUsers!
       .filter(spaceUser => spaceUser!.status == UserAccessStatus.pending);
@@ -243,7 +283,7 @@ export default class MockProvider implements ProviderInterface {
     if (checkUserToInvite) {
       throw new Error(`user with ID ${userID} already associated with space with ID ${spaceID}`);
     }
-    
+
     const userToInvite = this.users.find(user => user.userID == userID);
     const spaceUserInvite = <SpaceUser>{
       __typename: "SpaceUser",
@@ -277,7 +317,7 @@ export default class MockProvider implements ProviderInterface {
     if (!spaceUserToDeactivate) {
       throw new Error(`user with ID ${userID} is not associated with space with ID ${spaceID}`);
     }
-    
+
     spaceUserToDeactivate.status = UserAccessStatus.active;
     return spaceUserToDeactivate;
   }
@@ -294,7 +334,7 @@ export default class MockProvider implements ProviderInterface {
     if (!spaceUserToDeactivate) {
       throw new Error(`user with ID ${userID} is not associated with space with ID ${spaceID}`);
     }
-    
+
     spaceUserToDeactivate.status = UserAccessStatus.inactive;
     return spaceUserToDeactivate;
   }
@@ -305,7 +345,7 @@ export default class MockProvider implements ProviderInterface {
     if (!spaceUser) {
       throw new Error(`user does not own a space with ID ${spaceID}`);
     }
-    
+
     // delete space association with user
     let deleteAt = spaceUser.space!.users!.spaceUsers!
       .findIndex(spaceUser => spaceUser!.user!.userID == userID);
@@ -330,7 +370,7 @@ export default class MockProvider implements ProviderInterface {
     if (!spaceUser) {
       throw new Error(`user does not own a space with ID ${spaceID}`);
     }
-    
+
     let deleteAt = this.spaces.findIndex(space => space.spaceID == spaceID);
     this.spaces.splice(deleteAt, 1);
 
@@ -371,7 +411,7 @@ export default class MockProvider implements ProviderInterface {
     }
 
     spaceUser.status = UserAccessStatus.inactive;
-    return spaceUser;    
+    return spaceUser;
   }
 
   async getUserApps() {
@@ -390,12 +430,14 @@ function loadMockData() {
     __typename: 'User',
     userID: 'a645c56e-f454-460f-8324-eff15357e973',
     userName: 'tom',
+    firstName: 'Thomas',
+    middleName: 'T',
+    familyName: 'Bradford',
     emailAddress: 'tom@acme.com',
     mobilePhone: '+19781112233',
     confirmed: true,
     publicKey: 'tom\'s public key',
     certificate: 'tom\'s certificate',
-    certificateRequest: 'tom\'s certificate request'
   }, {
     __typename: 'User',
     userID: 'd12935f9-55b3-4514-8346-baaf99d6e6fa',
@@ -408,7 +450,6 @@ function loadMockData() {
     confirmed: true,
     publicKey: 'bob\'s public key',
     certificate: 'bob\'s certificate',
-    certificateRequest: 'bob\'s certificate request'
   }, {
     __typename: 'User',
     userID: '95e579be-a365-4268-bed0-17df80ef3dce',
@@ -421,7 +462,6 @@ function loadMockData() {
     confirmed: true,
     publicKey: 'deb\'s public key',
     certificate: 'deb\'s certificate',
-    certificateRequest: 'deb\'s certificate request'
   }, {
     __typename: 'User',
     userID: 'c18d325c-c0f1-4ba3-8898-026b48eb9bdc',
@@ -431,7 +471,6 @@ function loadMockData() {
     confirmed: true,
     publicKey: 'debbie\'s public key',
     certificate: 'debbie\'s certificate',
-    certificateRequest: 'debbie\'s certificate request'
   }, {
     __typename: 'User',
     userID: 'e745d48e-d9ba-4277-9d9e-fc13197eff38',
@@ -441,7 +480,6 @@ function loadMockData() {
     confirmed: true,
     publicKey: 'denny\'s public key',
     certificate: 'denny\'s certificate',
-    certificateRequest: 'denny\'s certificate request'
   }, {
     __typename: 'User',
     userID: '1ade82fc-750e-433c-aa30-4c5764ff02fb',
@@ -451,7 +489,6 @@ function loadMockData() {
     confirmed: true,
     publicKey: 'darren\'s public key',
     certificate: 'darren\'s certificate',
-    certificateRequest: 'darren\'s certificate request'
   }, {
     __typename: 'User',
     userID: '8e0a1535-bf9e-4548-8602-ce3b0f619734',
@@ -461,39 +498,74 @@ function loadMockData() {
     confirmed: true,
     publicKey: 'danny\'s public key',
     certificate: 'danny\'s certificate',
-    certificateRequest: 'danny\'s certificate request'
   } ];
-  
+
   const devices: Device[] = [ {
     __typename: 'Device',
     deviceID: 'c5021ecb-7c69-4950-a53c-fd4d5ca73b6f',
     deviceName: 'tom\'s device #1',
+    owner: {
+      __typename: 'UserRef',
+      userID: users[0].userID,
+      userName: users[0].userName,
+      firstName: users[0].firstName,
+      middleName: users[0].middleName,
+      familyName: users[0].familyName
+    },
+    deviceType: 'MacBook',
+    clientVersion: 'app/darwin:arm64/1.5.0',
     publicKey: 'tom\'s device #1 public key',
     certificate: 'tom\'s device #1 certificate key',
-    certificateRequest: 'tom\'s device #1 certificate request',
   }, {
     __typename: 'Device',
     deviceID: 'ed3e2219-ff72-4405-88fb-8dab24030770',
     deviceName: 'tom\'s device #2',
+    owner: {
+      __typename: 'UserRef',
+      userID: users[0].userID,
+      userName: users[0].userName,
+      firstName: users[0].firstName,
+      middleName: users[0].middleName,
+      familyName: users[0].familyName
+    },
+    deviceType: 'iPhone',
+    clientVersion: 'client/ios:arm64/1.1.0',
     publicKey: 'tom\'s device #2 public key',
     certificate: 'tom\'s device #2 certificate key',
-    certificateRequest: 'tom\'s device #2 certificate request',
   }, {
     __typename: 'Device',
     deviceID: 'f25b8176-dbb7-4a8a-b08d-5f8e56cc4303',
     deviceName: 'bob\'s device #1',
+    owner: {
+      __typename: 'UserRef',
+      userID: users[1].userID,
+      userName: users[1].userName,
+      firstName: users[1].firstName,
+      middleName: users[1].middleName,
+      familyName: users[1].familyName
+    },
+    deviceType: 'UbuntuServer',
+    clientVersion: 'cli/linux:amd64/1.5.0',
     publicKey: 'bob\'s device #1 public key',
     certificate: 'bob\'s device #1 certificate key',
-    certificateRequest: 'bob\'s device #1 certificate request',
   }, {
     __typename: 'Device',
     deviceID: '9bb6399-6c7a-4cd5-a536-5a4d74482020',
     deviceName: 'bob\'s device #2',
+    owner: {
+      __typename: 'UserRef',
+      userID: users[1].userID,
+      userName: users[1].userName,
+      firstName: users[1].firstName,
+      middleName: users[1].middleName,
+      familyName: users[1].familyName
+    },
+    deviceType: 'UbuntuServer',
+    clientVersion: 'client/android:arm64/1.1.0',
     publicKey: 'bob\'s device #2 public key',
     certificate: 'bob\'s device #2 certificate key',
-    certificateRequest: 'bob\'s device #2 certificate request',
   } ];
-  
+
   const deviceUsers: DeviceUser[] = [ {
     __typename: "DeviceUser",
     device: devices[0],
@@ -501,9 +573,10 @@ function loadMockData() {
     isOwner: true,
     status: UserAccessStatus.active,
     wireguardPublicKey: 'tom\'s device #1 wg public key',
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastAccessTime: 0,
+    bytesUploaded: 12,
+    bytesDownloaded: 21,
+    lastAccessTime: date3.getTime(),
+    lastSpaceConnectedTo: 'bob\'s space #2'
   }, {
     __typename: "DeviceUser",
     device: devices[1],
@@ -511,9 +584,10 @@ function loadMockData() {
     isOwner: true,
     status: UserAccessStatus.active,
     wireguardPublicKey: 'tom\'s device #2 wg public key',
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastAccessTime: 0,
+    bytesUploaded: 34,
+    bytesDownloaded: 43,
+    lastAccessTime: date1.getTime(),
+    lastSpaceConnectedTo: 'tom\'s space #1'
   }, {
     __typename: "DeviceUser",
     device: devices[2],
@@ -521,9 +595,9 @@ function loadMockData() {
     isOwner: true,
     status: UserAccessStatus.active,
     wireguardPublicKey: 'bob\'s device #1 wg public key',
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastAccessTime: 0,
+    bytesUploaded: 823,
+    bytesDownloaded: 465,
+    lastAccessTime: date2.getTime(),
   }, {
     __typename: "DeviceUser",
     device: devices[2],
@@ -531,9 +605,10 @@ function loadMockData() {
     isOwner: false,
     status: UserAccessStatus.active,
     wireguardPublicKey: 'tom\'s wg public key for bob\'s device #1',
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastAccessTime: 0,
+    bytesUploaded: 583,
+    bytesDownloaded: 836,
+    lastAccessTime: date3.getTime(),
+    lastSpaceConnectedTo: 'bob\'s space #2'
   }, {
     __typename: "DeviceUser",
     device: devices[1],
@@ -553,7 +628,7 @@ function loadMockData() {
     wireguardPublicKey: 'deb\'s wg public key for tom\'s device #1',
     bytesUploaded: 0,
     bytesDownloaded: 0,
-    lastAccessTime: 1622655379768,
+    lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
     device: devices[1],
@@ -561,9 +636,10 @@ function loadMockData() {
     isOwner: false,
     status: UserAccessStatus.active,
     wireguardPublicKey: 'deb\'s wg public key for tom\'s device #2',
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
-    lastAccessTime: 0,
+    bytesUploaded: 56,
+    bytesDownloaded: 65,
+    lastAccessTime: date3.getTime(),
+    lastSpaceConnectedTo: 'bob\'s space #2',
   }, {
     __typename: "DeviceUser",
     device: devices[2],
@@ -605,7 +681,7 @@ function loadMockData() {
     bytesDownloaded: 0,
     lastAccessTime: 0,
   } ];
-  
+
   devices[0].users = {
     __typename: "DeviceUsersConnection",
     totalCount: 2,
@@ -641,7 +717,7 @@ function loadMockData() {
       deviceUsers[10],
     ]
   };
-  
+
   users[0].devices = {
     __typename: "DeviceUsersConnection",
     totalCount: 4,
@@ -671,33 +747,63 @@ function loadMockData() {
       deviceUsers[10],
     ]
   }
-  
+
   const spaces: Space[] = [ {
     __typename: "Space",
     spaceID: 'd83b7d95-5681-427d-a65a-5d8a868d72e9',
     spaceName: 'tom\'s space #1',
+    owner: {
+      __typename: 'UserRef',
+      userID: users[0].userID,
+      userName: users[0].userName,
+      firstName: users[0].firstName,
+      middleName: users[0].middleName,
+      familyName: users[0].familyName
+    },
     recipe: 'recipe #1',
     iaas: 'aws',
     region: 'us-east-1',
+    version: '2.0.0',
+    status: SpaceStatus.running,
     lastSeen: 0,
   }, {
     __typename: "Space",
     spaceID: 'af296bd0-1186-42f0-b7ca-90980d22b961',
     spaceName: 'bob\'s space #1',
+    owner: {
+      __typename: 'UserRef',
+      userID: users[1].userID,
+      userName: users[1].userName,
+      firstName: users[1].firstName,
+      middleName: users[1].middleName,
+      familyName: users[1].familyName
+    },
     recipe: 'recipe #1',
     iaas: 'aws',
     region: 'us-west-1',
+    version: '1.5.0',
+    status: SpaceStatus.shutdown,
     lastSeen: 0,
   }, {
     __typename: "Space",
     spaceID: '9a5242dc-0681-4d67-9fe7-bdc691d1a18d',
     spaceName: 'bob\'s space #2',
+    owner: {
+      __typename: 'UserRef',
+      userID: users[1].userID,
+      userName: users[1].userName,
+      firstName: users[1].firstName,
+      middleName: users[1].middleName,
+      familyName: users[1].familyName
+    },
     recipe: 'recipe #2',
     iaas: 'gcp',
     region: 'us-east1',
+    version: '1.2.0',
+    status: SpaceStatus.running,
     lastSeen: 0,
   } ];
-  
+
   const spaceUsers: SpaceUser[] = [ {
     __typename: "SpaceUser",
     space: spaces[0],
@@ -708,7 +814,7 @@ function loadMockData() {
     status: UserAccessStatus.active,
     bytesUploaded: 9833378,
     bytesDownloaded: 387393,
-    lastConnectTime: 1621457397783,
+    lastConnectTime: date3.getTime(),
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
@@ -732,7 +838,7 @@ function loadMockData() {
     status: UserAccessStatus.active,
     bytesUploaded: 98333388,
     bytesDownloaded: 89333484,
-    lastConnectTime: 1621457266813,
+    lastConnectTime: date1.getTime(),
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
@@ -756,7 +862,7 @@ function loadMockData() {
     status: UserAccessStatus.active,
     bytesUploaded: 8239884,
     bytesDownloaded: 2389343,
-    lastConnectTime: 1621457740350,
+    lastConnectTime: date3.getTime(),
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
@@ -780,7 +886,7 @@ function loadMockData() {
     status: UserAccessStatus.active,
     bytesUploaded: 3388393,
     bytesDownloaded: 4857729,
-    lastConnectTime: 1621457598241,
+    lastConnectTime: date2.getTime(),
     lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
@@ -795,7 +901,7 @@ function loadMockData() {
     lastConnectTime: 0,
     lastConnectDeviceID: null,
   } ]
-  
+
   spaces[0].users = {
     __typename: "SpaceUsersConnection",
     totalCount: 3,
@@ -822,7 +928,7 @@ function loadMockData() {
       spaceUsers[7],
     ]
   };
-  
+
   users[0].spaces = {
     __typename: "SpaceUsersConnection",
     totalCount: 3,
@@ -850,9 +956,9 @@ function loadMockData() {
     ]
   };
 
-  return { 
-    users, 
-    devices, deviceUsers, 
-    spaces, spaceUsers 
+  return {
+    users,
+    devices, deviceUsers,
+    spaces, spaceUsers
   };
 }

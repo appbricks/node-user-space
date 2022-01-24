@@ -1,39 +1,36 @@
-import { State, ActionResult } from '@appbricks/utils';
+import { 
+  State 
+} from '@appbricks/utils';
 
 import {
-  UserSearchItem,
-  Device,
+  UserRef,
   DeviceUser,
-  Space,
   SpaceUser,
-  PageInfo
 } from '../model/types';
 
 import {
-  DeviceUserListItem,
-  SpaceUserListItem
-} from '../model/lists';
+  DeviceDetail,
+  SpaceDetail
+} from '../model/display';
 
 // User Space state type
 export interface UserSpaceState extends State {
   
-  userSearchResult?: {
-    result: UserSearchItem[]
-    
-    // used for pagination
-    searchPrefix: string
-    limit: number
-    pageInfo: PageInfo
-  }
+  loggedInUserID?: string
+
+  userSearchResult?: UserRef[]
 
   // logged in users device list
   userDevices: DeviceUser[] 
-  deviceUsers: { [deviceID: string]: DeviceUserListItem[] }
   deviceAccessRequests: { [ deviceID: string ]: DeviceUser[] }
+  // formated device info
+  devices: { [deviceID: string]: DeviceDetail }
 
+  // logged in users space list
   userSpaces: SpaceUser[]
-  spaceUsers: { [spaceID: string]: SpaceUserListItem[] }
   spaceInvitations?: SpaceUser[]
+  // formated space info
+  spaces: { [spaceID: string]: SpaceDetail }
 };
 
 // User Space state properties
@@ -46,10 +43,10 @@ export const initialUserSpaceState = (): UserSpaceState =>
     status: [],
 
     userDevices: [],
-    deviceUsers: {},
     deviceAccessRequests: {},
+    devices: {},
 
     userSpaces: [],
-    spaceUsers: {},
     spaceInvitations: [],
+    spaces: {},
   };

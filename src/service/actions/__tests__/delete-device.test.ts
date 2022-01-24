@@ -10,7 +10,7 @@ import {
   DeviceUsersPayload,
   DELETE_DEVICE,
   GET_USER_DEVICES
-} from '../../action';
+} from '../../actions';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
 

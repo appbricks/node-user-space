@@ -16,7 +16,6 @@ export const updateUserKey = /* GraphQL */ `
       confirmed
       publicKey
       certificate
-      certificateRequest
       devices {
         pageInfo {
           hasNextPage
@@ -30,6 +29,7 @@ export const updateUserKey = /* GraphQL */ `
           bytesUploaded
           bytesDownloaded
           lastAccessTime
+          lastSpaceConnectedTo
         }
       }
       spaces {
@@ -56,11 +56,13 @@ export const updateUserKey = /* GraphQL */ `
 export const addDevice = /* GraphQL */ `
   mutation AddDevice(
     $deviceName: String!
+    $deviceInfo: DeviceInfo!
     $deviceKey: Key!
     $accessKey: WireguardKey!
   ) {
     addDevice(
       deviceName: $deviceName
+      deviceInfo: $deviceInfo
       deviceKey: $deviceKey
       accessKey: $accessKey
     ) {
@@ -69,9 +71,10 @@ export const addDevice = /* GraphQL */ `
         device {
           deviceID
           deviceName
+          deviceType
+          clientVersion
           publicKey
           certificate
-          certificateRequest
         }
         user {
           userID
@@ -85,7 +88,6 @@ export const addDevice = /* GraphQL */ `
           confirmed
           publicKey
           certificate
-          certificateRequest
           universalConfig
         }
         isOwner
@@ -94,6 +96,7 @@ export const addDevice = /* GraphQL */ `
         bytesUploaded
         bytesDownloaded
         lastAccessTime
+        lastSpaceConnectedTo
       }
     }
   }
@@ -104,9 +107,17 @@ export const addDeviceUser = /* GraphQL */ `
       device {
         deviceID
         deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
         publicKey
         certificate
-        certificateRequest
         users {
           totalCount
         }
@@ -123,7 +134,6 @@ export const addDeviceUser = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -138,6 +148,7 @@ export const addDeviceUser = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       lastAccessTime
+      lastSpaceConnectedTo
     }
   }
 `;
@@ -147,9 +158,17 @@ export const activateDeviceUser = /* GraphQL */ `
       device {
         deviceID
         deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
         publicKey
         certificate
-        certificateRequest
         users {
           totalCount
         }
@@ -166,7 +185,6 @@ export const activateDeviceUser = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -181,6 +199,7 @@ export const activateDeviceUser = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       lastAccessTime
+      lastSpaceConnectedTo
     }
   }
 `;
@@ -189,9 +208,17 @@ export const updateDeviceKey = /* GraphQL */ `
     updateDeviceKey(deviceID: $deviceID, deviceKey: $deviceKey) {
       deviceID
       deviceName
+      owner {
+        userID
+        userName
+        firstName
+        middleName
+        familyName
+      }
+      deviceType
+      clientVersion
       publicKey
       certificate
-      certificateRequest
       users {
         pageInfo {
           hasNextPage
@@ -205,6 +232,7 @@ export const updateDeviceKey = /* GraphQL */ `
           bytesUploaded
           bytesDownloaded
           lastAccessTime
+          lastSpaceConnectedTo
         }
       }
     }
@@ -224,9 +252,17 @@ export const updateDeviceUserKey = /* GraphQL */ `
       device {
         deviceID
         deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
         publicKey
         certificate
-        certificateRequest
         users {
           totalCount
         }
@@ -243,7 +279,6 @@ export const updateDeviceUserKey = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -258,6 +293,7 @@ export const updateDeviceUserKey = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       lastAccessTime
+      lastSpaceConnectedTo
     }
   }
 `;
@@ -267,9 +303,17 @@ export const deleteDeviceUser = /* GraphQL */ `
       device {
         deviceID
         deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
         publicKey
         certificate
-        certificateRequest
         users {
           totalCount
         }
@@ -286,7 +330,6 @@ export const deleteDeviceUser = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -301,6 +344,7 @@ export const deleteDeviceUser = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       lastAccessTime
+      lastSpaceConnectedTo
     }
   }
 `;
@@ -312,6 +356,7 @@ export const deleteDevice = /* GraphQL */ `
 export const addSpace = /* GraphQL */ `
   mutation AddSpace(
     $spaceName: String!
+    $spaceKey: Key!
     $recipe: String!
     $iaas: String!
     $region: String!
@@ -319,6 +364,7 @@ export const addSpace = /* GraphQL */ `
   ) {
     addSpace(
       spaceName: $spaceName
+      spaceKey: $spaceKey
       recipe: $recipe
       iaas: $iaas
       region: $region
@@ -332,6 +378,14 @@ export const addSpace = /* GraphQL */ `
           recipe
           iaas
           region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          ipAddress
+          fqdn
+          port
+          localCARoot
           status
           lastSeen
         }
@@ -347,7 +401,6 @@ export const addSpace = /* GraphQL */ `
           confirmed
           publicKey
           certificate
-          certificateRequest
           universalConfig
         }
         isOwner
@@ -381,9 +434,24 @@ export const inviteSpaceUser = /* GraphQL */ `
       space {
         spaceID
         spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
         apps {
           totalCount
         }
@@ -405,7 +473,6 @@ export const inviteSpaceUser = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -441,9 +508,24 @@ export const activateSpaceUser = /* GraphQL */ `
       space {
         spaceID
         spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
         apps {
           totalCount
         }
@@ -465,7 +547,6 @@ export const activateSpaceUser = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -501,9 +582,24 @@ export const deactivateSpaceUser = /* GraphQL */ `
       space {
         spaceID
         spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
         apps {
           totalCount
         }
@@ -525,7 +621,6 @@ export const deactivateSpaceUser = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -561,9 +656,24 @@ export const deleteSpaceUser = /* GraphQL */ `
       space {
         spaceID
         spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
         apps {
           totalCount
         }
@@ -585,7 +695,6 @@ export const deleteSpaceUser = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -626,9 +735,24 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
       space {
         spaceID
         spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
         apps {
           totalCount
         }
@@ -650,7 +774,6 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -686,9 +809,24 @@ export const leaveSpaceUser = /* GraphQL */ `
       space {
         spaceID
         spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
         apps {
           totalCount
         }
@@ -710,7 +848,6 @@ export const leaveSpaceUser = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -737,6 +874,266 @@ export const leaveSpaceUser = /* GraphQL */ `
       }
       lastConnectTime
       lastConnectDeviceID
+    }
+  }
+`;
+export const publishData = /* GraphQL */ `
+  mutation PublishData($data: [PublishDataInput!]!) {
+    publishData(data: $data) {
+      success
+      error
+    }
+  }
+`;
+export const pushUsersUpdate = /* GraphQL */ `
+  mutation PushUsersUpdate($data: String!) {
+    pushUsersUpdate(data: $data) {
+      userID
+      numDevices
+      numSpaces
+      user {
+        userID
+        userName
+        firstName
+        middleName
+        familyName
+        preferredName
+        emailAddress
+        mobilePhone
+        confirmed
+        publicKey
+        certificate
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
+        universalConfig
+      }
+    }
+  }
+`;
+export const pushDevicesUpdate = /* GraphQL */ `
+  mutation PushDevicesUpdate($data: String!) {
+    pushDevicesUpdate(data: $data) {
+      deviceID
+      numUsers
+      device {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        users {
+          totalCount
+        }
+      }
+    }
+  }
+`;
+export const pushDeviceUsersUpdate = /* GraphQL */ `
+  mutation PushDeviceUsersUpdate($data: String!) {
+    pushDeviceUsersUpdate(data: $data) {
+      deviceID
+      userID
+      deviceUser {
+        device {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+        }
+        user {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+          preferredName
+          emailAddress
+          mobilePhone
+          confirmed
+          publicKey
+          certificate
+          universalConfig
+        }
+        isOwner
+        status
+        wireguardPublicKey
+        bytesUploaded
+        bytesDownloaded
+        lastAccessTime
+        lastSpaceConnectedTo
+      }
+    }
+  }
+`;
+export const pushSpacesUpdate = /* GraphQL */ `
+  mutation PushSpacesUpdate($data: String!) {
+    pushSpacesUpdate(data: $data) {
+      spaceID
+      numUsers
+      numApps
+      space {
+        spaceID
+        spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
+    }
+  }
+`;
+export const pushSpaceUsersUpdate = /* GraphQL */ `
+  mutation PushSpaceUsersUpdate($data: String!) {
+    pushSpaceUsersUpdate(data: $data) {
+      spaceID
+      userID
+      spaceUser {
+        space {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          ipAddress
+          fqdn
+          port
+          localCARoot
+          status
+          lastSeen
+        }
+        user {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+          preferredName
+          emailAddress
+          mobilePhone
+          confirmed
+          publicKey
+          certificate
+          universalConfig
+        }
+        isOwner
+        isAdmin
+        isEgressNode
+        status
+        bytesUploaded
+        bytesDownloaded
+        accessList {
+          totalCount
+        }
+        lastConnectTime
+        lastConnectDeviceID
+      }
+    }
+  }
+`;
+export const pushAppsUpdate = /* GraphQL */ `
+  mutation PushAppsUpdate($data: String!) {
+    pushAppsUpdate(data: $data) {
+      appID
+      numUsers
+      app {
+        appID
+        appName
+        recipe
+        iaas
+        region
+        space {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          ipAddress
+          fqdn
+          port
+          localCARoot
+          status
+          lastSeen
+        }
+        users {
+          totalCount
+        }
+      }
+    }
+  }
+`;
+export const pushAppUsersUpdate = /* GraphQL */ `
+  mutation PushAppUsersUpdate($data: String!) {
+    pushAppUsersUpdate(data: $data) {
+      appID
+      userID
+      appUser {
+        app {
+          appID
+          appName
+          recipe
+          iaas
+          region
+        }
+        user {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+          preferredName
+          emailAddress
+          mobilePhone
+          confirmed
+          publicKey
+          certificate
+          universalConfig
+        }
+        lastAccessTime
+      }
     }
   }
 `;

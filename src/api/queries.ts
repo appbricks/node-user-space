@@ -3,30 +3,37 @@
 // this is an auto generated file. This will be overwritten
 
 export const userSearch = /* GraphQL */ `
-  query UserSearch(
-    $filter: TableUsersFilterInput!
-    $limit: Int
-    $next: CursorInput
-  ) {
-    userSearch(filter: $filter, limit: $limit, next: $next) {
-      pageInfo {
-        hasNextPage
-        hasPreviousePage
-        cursor {
-          index
-          nextTokens
-        }
-      }
-      edges {
-        node {
+  query UserSearch($filter: UserSearchFilterInput!, $limit: Int) {
+    userSearch(filter: $filter, limit: $limit) {
+      userID
+      userName
+      firstName
+      middleName
+      familyName
+    }
+  }
+`;
+export const authDevice = /* GraphQL */ `
+  query AuthDevice($idKey: String!) {
+    authDevice(idKey: $idKey) {
+      accessType
+      device {
+        deviceID
+        deviceName
+        owner {
           userID
           userName
+          firstName
+          middleName
+          familyName
         }
-      }
-      totalCount
-      users {
-        userID
-        userName
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        users {
+          totalCount
+        }
       }
     }
   }
@@ -45,7 +52,6 @@ export const getUser = /* GraphQL */ `
       confirmed
       publicKey
       certificate
-      certificateRequest
       devices {
         pageInfo {
           hasNextPage
@@ -59,6 +65,7 @@ export const getUser = /* GraphQL */ `
           bytesUploaded
           bytesDownloaded
           lastAccessTime
+          lastSpaceConnectedTo
         }
       }
       spaces {
@@ -88,9 +95,17 @@ export const getDevice = /* GraphQL */ `
       device {
         deviceID
         deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
         publicKey
         certificate
-        certificateRequest
         users {
           totalCount
         }
@@ -107,7 +122,6 @@ export const getDevice = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -122,6 +136,7 @@ export const getDevice = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       lastAccessTime
+      lastSpaceConnectedTo
     }
   }
 `;
@@ -131,9 +146,24 @@ export const getSpace = /* GraphQL */ `
       space {
         spaceID
         spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
         apps {
           totalCount
         }
@@ -155,7 +185,6 @@ export const getSpace = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -191,9 +220,17 @@ export const getDeviceAccessRequests = /* GraphQL */ `
       device {
         deviceID
         deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
         publicKey
         certificate
-        certificateRequest
         users {
           totalCount
         }
@@ -210,7 +247,6 @@ export const getDeviceAccessRequests = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }
@@ -225,6 +261,7 @@ export const getDeviceAccessRequests = /* GraphQL */ `
       bytesUploaded
       bytesDownloaded
       lastAccessTime
+      lastSpaceConnectedTo
     }
   }
 `;
@@ -234,9 +271,24 @@ export const getSpaceInvitations = /* GraphQL */ `
       space {
         spaceID
         spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        localCARoot
         apps {
           totalCount
         }
@@ -258,7 +310,6 @@ export const getSpaceInvitations = /* GraphQL */ `
         confirmed
         publicKey
         certificate
-        certificateRequest
         devices {
           totalCount
         }

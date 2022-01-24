@@ -16,7 +16,7 @@ import {
   ACTIVATE_USER_ON_DEVICE,
   GET_USER_DEVICES,
   GET_DEVICE_ACCESS_REQUESTS
-} from '../../action';
+} from '../../actions';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
 

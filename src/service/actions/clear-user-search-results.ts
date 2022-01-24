@@ -6,8 +6,8 @@ import {
 
 import { 
   CLEAR_USER_SEARCH_RESULTS,
-} from '../action';
+} from '../actions';
 
-export const clearUserSearchResultsAction = 
+export const action = 
   (dispatch: redux.Dispatch<redux.Action>) => 
     dispatch(createAction(CLEAR_USER_SEARCH_RESULTS));

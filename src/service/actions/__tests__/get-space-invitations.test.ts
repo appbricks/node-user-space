@@ -12,7 +12,7 @@ import {
 import { 
   SpaceUsersPayload,
   GET_SPACE_INVITATIONS 
-} from '../../action';
+} from '../../actions';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
 
