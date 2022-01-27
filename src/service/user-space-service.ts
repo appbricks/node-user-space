@@ -144,11 +144,11 @@ export default class UserSpaceService {
           userSearch.action(dispatch, namePrefix, limit),
         clearUserSearchResults: () =>
           clearUserSearchResults.action(dispatch),
-        subscribeToUserUpdates: (userID: string) => 
+        subscribeToUserUpdates: (userID: string) =>
           userUpdates.subscribeAction(dispatch, userID),
-        unsubscribeFromUserUpdates: (userID: string) => 
+        unsubscribeFromUserUpdates: (userID: string) =>
           userUpdates.unsubscribeAction(dispatch, userID),
-      
+
         // device owner actions
         getUserDevices: () =>
           getUserDevices.action(dispatch),
@@ -245,41 +245,20 @@ export default class UserSpaceService {
               ...state.devices,
               [device.deviceID!]: updateDeviceDetail(detail, device)
             }
-          }  
+          }
         }
         break;
       }
       case actions.DEVICE_TELEMETRY: {
         const deviceUser = (<actions.DeviceUserPayload>action.payload!).deviceUser;
-        const detail = state.devices[deviceUser.device!.deviceID!]
-        if (detail) {
-          const item = detail.users.find((item, i, users) => {
-            if (item.userID == deviceUser.user!.userID) {
-              users.splice(i, 1);
-              return true;
-            }
-            return false;
-          });
-          if (item) {
-            const { updatedDetail, updatedItem } = updateDeviceUserListItem(detail, item, deviceUser);
-            if (updatedDetail) {
-              updatedDetail.users.unshift(updatedItem);
-              state = {
-                ...state,
-                devices: {
-                  ...state.devices,
-                  [deviceUser.device!.deviceID!]: updatedDetail
-                }
-              }
-            } else {
-              detail.users.unshift(updatedItem);
-              state = {
-                ...state,
-                devices: {
-                  ...state.devices,
-                  [deviceUser.device!.deviceID!]: detail
-                }
-              }
+        const detail = state.devices[deviceUser.device!.deviceID!];
+        const updatedDetail = updateDeviceUserListItem(detail, deviceUser);
+        if (updatedDetail) {
+          state = {
+            ...state,
+            devices: {
+              ...state.devices,
+              [deviceUser.device!.deviceID!]: updatedDetail
             }
           }
         }
@@ -301,35 +280,14 @@ export default class UserSpaceService {
       }
       case actions.SPACE_TELEMETRY: {
         const spaceUser = (<actions.SpaceUserPayload>action.payload!).spaceUser;
-        const detail = state.spaces[spaceUser.space!.spaceID!]
-        if (detail) {
-          const item = detail.users.find((item, i, users) => {
-            if (item.userID == spaceUser.user!.userID) {
-              users.splice(i, 1);
-              return true;
-            }
-            return false;
-          });
-          if (item) {
-            const { updatedDetail, updatedItem } = updateSpaceUserListItem(detail, item, spaceUser);
-            if (updatedDetail) {
-              updatedDetail.users.unshift(updatedItem);
-              state = {
-                ...state,
-                spaces: {
-                  ...state.spaces,
-                  [spaceUser.space!.spaceID!]: updatedDetail
-                }
-              }
-            } else {
-              detail.users.unshift(updatedItem);
-              state = {
-                ...state,
-                spaces: {
-                  ...state.spaces,
-                  [spaceUser.space!.spaceID!]: detail
-                }
-              }
+        const detail = state.spaces[spaceUser.space!.spaceID!];
+        const updatedDetail = updateSpaceUserListItem(detail, spaceUser);
+        if (updatedDetail) {
+          state = {
+            ...state,
+            spaces: {
+              ...state.spaces,
+              [spaceUser.space!.spaceID!]: updatedDetail
             }
           }
         }
@@ -431,16 +389,14 @@ const deviceDetail = (device: Device): DeviceDetail => {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 
   let lastAccessedTime = 0;
-  let lastAccessedBy = ''; 
+  let lastAccessedBy = '';
   let lastSpaceConnectedTo = '';
   let bytesDownloaded = 0;
   let bytesUploaded = 0;
 
   const deviceUsers: DeviceUserListItem[] = [];
   users!.deviceUsers!.forEach(deviceUser => {
-    if (!deviceUser!.isOwner) {
-      deviceUsers.push(deviceUserListItem(deviceUser!));
-    }
+    deviceUsers.push(deviceUserListItem(deviceUser!));
     if (deviceUser!.status == UserAccessStatus.active) {
       if (deviceUser!.lastAccessTime! > lastAccessedTime) {
         lastAccessedTime = deviceUser!.lastAccessTime!;
@@ -450,8 +406,8 @@ const deviceDetail = (device: Device): DeviceDetail => {
       if (deviceUser!.lastAccessTime! >= startOfMonth) {
         // only add usage values for current month
         bytesDownloaded += deviceUser!.bytesDownloaded!;
-        bytesUploaded += deviceUser!.bytesUploaded!;  
-      }  
+        bytesUploaded += deviceUser!.bytesUploaded!;
+      }
     }
   });
 
@@ -469,7 +425,7 @@ const deviceDetail = (device: Device): DeviceDetail => {
     lastSpaceConnectedTo,
     dataUsageIn: bytesToSize(bytesDownloaded),
     dataUsageOut: bytesToSize(bytesUploaded),
-    bytesDownloaded, 
+    bytesDownloaded,
     bytesUploaded,
     lastAccessedTime,
     users: deviceUsers
@@ -510,7 +466,7 @@ const deviceUserListItem = (deviceUser: DeviceUser): DeviceUserListItem => {
 }
 
 const updateDeviceDetail = (
-  detail: DeviceDetail, 
+  detail: DeviceDetail,
   device: Device
 ): DeviceDetail => {
 
@@ -524,64 +480,78 @@ const updateDeviceDetail = (
   if (device.clientVersion) {
     updatedDetail.version = device.clientVersion!;
   }
-  setUpdatedFields<DeviceDetail>(detail, updatedDetail);
+  // setUpdatedFields<DeviceDetail>(detail, updatedDetail);
   return updatedDetail;
 }
 
 const updateDeviceUserListItem = (
-  detail: DeviceDetail, 
-  item: DeviceUserListItem,
+  detail: DeviceDetail,
   deviceUser: DeviceUser
-): {
-  updatedDetail?: DeviceDetail, 
-  updatedItem: DeviceUserListItem
-} => {
+): DeviceDetail | undefined => {
 
-  let updatedDetail = undefined;
-  const updatedItem = (({ updatedFields, ...i }) => <DeviceUserListItem>i)(item);
+  const itemIndex = detail.users.findIndex(item => item.userID == deviceUser.user!.userID);
+  if (itemIndex != -1) {
 
-  if (deviceUser.status) {
-    updatedItem.status = deviceUser.status!;
-    updatedItem.deviceUser!.status = deviceUser.status!;
-  }
-  if (deviceUser.bytesDownloaded) {
-    updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <DeviceDetail>d)(detail);
-    updatedDetail.bytesDownloaded -= item.deviceUser!.bytesDownloaded!;
-    updatedDetail.bytesDownloaded += deviceUser.bytesDownloaded;
-    updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
-    updatedItem.dataUsageIn = bytesToSize(deviceUser.bytesDownloaded!);
-    updatedItem.deviceUser!.bytesDownloaded = deviceUser.bytesDownloaded
-  }
-  if (deviceUser.bytesUploaded) {
-    updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <DeviceDetail>d)(detail);
-    updatedDetail.bytesUploaded -= item.deviceUser!!.bytesUploaded!;
-    updatedDetail.bytesUploaded += deviceUser.bytesUploaded;
-    updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
-    updatedItem.dataUsageOut = bytesToSize(deviceUser.bytesUploaded!);
-    updatedItem.deviceUser!.bytesUploaded = deviceUser.bytesUploaded
-  }
-  if (deviceUser.lastAccessTime) {
-    const dateTime = new Date(deviceUser.lastAccessTime);
-    updatedItem.lastAccessTime = dateTimeToLocale(dateTime);
-    if (deviceUser.lastAccessTime > detail.lastAccessedTime) {
-      updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <DeviceDetail>d)(detail);
-      updatedDetail.lastAccessedTime = deviceUser.lastAccessTime;
-      updatedDetail.lastAccessed = updatedItem.lastAccessTime;
-      updatedDetail.lastAccessedBy = fullName(updatedItem.deviceUser!.user!);
-      if (deviceUser.lastSpaceConnectedTo) {
-        updatedDetail.lastSpaceConnectedTo = deviceUser.lastSpaceConnectedTo;
+    // make copies of the detail and item that
+    // will change as part of this update
+    const updatedDetail = (({
+      updatedFields,
+      users,
+      ...d
+    }) => <DeviceDetail>{
+      ...d,
+      users: [...users],
+    })(detail);
+    const updatedItem = (
+      ({
+        updatedFields,
+        deviceUser,
+        ...i
+      }) => <DeviceUserListItem>{
+        ...i,
+        deviceUser: { ...deviceUser }
+      }
+    )(detail.users[itemIndex]);
+    const [ item ] = updatedDetail.users.splice(itemIndex, 1, updatedItem);
+
+    if (deviceUser.status) {
+      updatedItem.status = deviceUser.status!;
+      updatedItem.deviceUser!.status = deviceUser.status!;
+    }
+    if (deviceUser.bytesDownloaded) {
+      updatedDetail.bytesDownloaded -= item.deviceUser!.bytesDownloaded!;
+      updatedDetail.bytesDownloaded += deviceUser.bytesDownloaded;
+      updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
+      updatedItem.dataUsageIn = bytesToSize(deviceUser.bytesDownloaded!);
+      updatedItem.deviceUser!.bytesDownloaded = deviceUser.bytesDownloaded
+    }
+    if (deviceUser.bytesUploaded) {
+      updatedDetail.bytesUploaded -= item.deviceUser!!.bytesUploaded!;
+      updatedDetail.bytesUploaded += deviceUser.bytesUploaded;
+      updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
+      updatedItem.dataUsageOut = bytesToSize(deviceUser.bytesUploaded!);
+      updatedItem.deviceUser!.bytesUploaded = deviceUser.bytesUploaded
+    }
+    if (deviceUser.lastAccessTime) {
+      const dateTime = new Date(deviceUser.lastAccessTime);
+      updatedItem.lastAccessTime = dateTimeToLocale(dateTime);
+      if (deviceUser.lastAccessTime > detail.lastAccessedTime) {
+        updatedDetail.lastAccessedTime = deviceUser.lastAccessTime;
+        updatedDetail.lastAccessed = updatedItem.lastAccessTime;
+        updatedDetail.lastAccessedBy = fullName(updatedItem.deviceUser!.user!);
+        if (deviceUser.lastSpaceConnectedTo) {
+          updatedDetail.lastSpaceConnectedTo = deviceUser.lastSpaceConnectedTo;
+        }
       }
     }
-  }
-  if (deviceUser.lastSpaceConnectedTo) {
-    updatedItem.lastSpaceConnectedTo = deviceUser.lastSpaceConnectedTo;
-  }
+    if (deviceUser.lastSpaceConnectedTo) {
+      updatedItem.lastSpaceConnectedTo = deviceUser.lastSpaceConnectedTo;
+    }
 
-  if (updatedDetail) {
-    setUpdatedFields<DeviceDetail>(detail, updatedDetail);  
+    // setUpdatedFields<DeviceDetail>(detail, updatedDetail);
+    // setUpdatedFields<DeviceUserListItem>(item, updatedItem);
+    return updatedDetail;
   }
-  setUpdatedFields<DeviceUserListItem>(item, updatedItem);
-  return { updatedDetail, updatedItem };
 }
 
 const spaceDetail = (space: Space): SpaceDetail => {
@@ -600,9 +570,7 @@ const spaceDetail = (space: Space): SpaceDetail => {
 
   const spaceUsers: SpaceUserListItem[] = [];
   users!.spaceUsers!.forEach(spaceUser => {
-    if (!spaceUser!.isOwner) {
-      spaceUsers.push(spaceUserListItem(spaceUser!));
-    }
+    spaceUsers.push(spaceUserListItem(spaceUser!));
     if (spaceUser!.status == UserAccessStatus.active) {
       if (space.status == SpaceStatus.running && spaceUser!.lastConnectTime! > connectWindow) {
         // *** NB: this needs to be streamed and not calculated ***
@@ -611,7 +579,7 @@ const spaceDetail = (space: Space): SpaceDetail => {
       if (spaceUser!.lastConnectTime! >= startOfMonth) {
         // only add usage values for current month
         bytesDownloaded += spaceUser!.bytesDownloaded!;
-        bytesUploaded += spaceUser!.bytesUploaded!;  
+        bytesUploaded += spaceUser!.bytesUploaded!;
       }
     }
   });
@@ -627,7 +595,7 @@ const spaceDetail = (space: Space): SpaceDetail => {
     type: space.recipe!,
     location: space.region!,
     version: space.version!,
-    bytesDownloaded, 
+    bytesDownloaded,
     bytesUploaded,
     users: spaceUsers
   };
@@ -665,7 +633,7 @@ const spaceUserListItem = (spaceUser: SpaceUser): SpaceUserListItem => {
 }
 
 const updateSpaceDetail = (
-  detail: SpaceDetail, 
+  detail: SpaceDetail,
   space: Space
 ): SpaceDetail => {
 
@@ -679,52 +647,67 @@ const updateSpaceDetail = (
   if (space.version) {
     updatedDetail.version = space.version!;
   }
-  setUpdatedFields<SpaceDetail>(detail, updatedDetail);
+  // setUpdatedFields<SpaceDetail>(detail, updatedDetail);
   return updatedDetail;
 }
 
 const updateSpaceUserListItem = (
-  detail: SpaceDetail, 
-  item: SpaceUserListItem, 
+  detail: SpaceDetail,
   spaceUser: SpaceUser
-): {
-  updatedDetail?: SpaceDetail, 
-  updatedItem: SpaceUserListItem
-} => {
+): SpaceDetail | undefined => {
 
-  let updatedDetail = undefined;
-  const updatedItem = (({ updatedFields, ...i }) => <SpaceUserListItem>i)(item);
+  const itemIndex = detail.users.findIndex(item => item.userID == spaceUser.user!.userID);
+  if (itemIndex != -1) {
 
-  if (spaceUser.status) {
-    updatedItem.status = spaceUser.status!;
-    updatedItem.spaceUser!.status = spaceUser.status!;
-  }
-  if (spaceUser.bytesDownloaded) {
-    updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <SpaceDetail>d)(detail);
-    updatedDetail.bytesDownloaded -= item.spaceUser!.bytesDownloaded!;
-    updatedDetail.bytesDownloaded += spaceUser.bytesDownloaded;
-    updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
-    updatedItem.dataUsageIn = bytesToSize(spaceUser.bytesDownloaded!);
-    updatedItem.spaceUser!.bytesDownloaded = spaceUser.bytesDownloaded
-  }
-  if (spaceUser.bytesUploaded) {
-    updatedDetail = updatedDetail || (({ updatedFields, ...d }) => <SpaceDetail>d)(detail);
-    updatedDetail.bytesUploaded -= item.spaceUser!.bytesUploaded!;
-    updatedDetail.bytesUploaded += spaceUser.bytesUploaded;
-    updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
-    updatedItem.dataUsageOut = bytesToSize(spaceUser.bytesUploaded!);
-    updatedItem.spaceUser!.bytesUploaded = spaceUser.bytesUploaded
-  }
-  if (spaceUser.lastConnectTime) {
-    const dateTime = new Date(spaceUser.lastConnectTime);
-    updatedItem.lastConnectTime = dateTimeToLocale(dateTime);
-  }
+    // make copies of the detail and item that
+    // will chang as part of this update
+    const updatedDetail = (({
+      updatedFields,
+      users,
+      ...d
+    }) => <SpaceDetail>{
+      ...d,
+      users: [...users],
+    })(detail);
+    const updatedItem = (
+      ({
+        updatedFields,
+        spaceUser,
+        ...i
+      }) => <SpaceUserListItem>{
+        ...i,
+        spaceUser: { ...spaceUser }
+      }
+    )(detail.users[itemIndex]);
+    const [ item ] = updatedDetail.users.splice(itemIndex, 1, updatedItem);
 
-  if (updatedDetail) {
-    setUpdatedFields<SpaceDetail>(detail, updatedDetail);  
+    if (spaceUser.status) {
+      updatedItem.status = spaceUser.status!;
+      updatedItem.spaceUser!.status = spaceUser.status!;
+    }
+    if (spaceUser.bytesDownloaded) {
+      updatedDetail.bytesDownloaded -= item.spaceUser!.bytesDownloaded!;
+      updatedDetail.bytesDownloaded += spaceUser.bytesDownloaded;
+      updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
+      updatedItem.dataUsageIn = bytesToSize(spaceUser.bytesDownloaded!);
+      updatedItem.spaceUser!.bytesDownloaded = spaceUser.bytesDownloaded
+    }
+    if (spaceUser.bytesUploaded) {
+      updatedDetail.bytesUploaded -= item.spaceUser!.bytesUploaded!;
+      updatedDetail.bytesUploaded += spaceUser.bytesUploaded;
+      updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
+      updatedItem.dataUsageOut = bytesToSize(spaceUser.bytesUploaded!);
+      updatedItem.spaceUser!.bytesUploaded = spaceUser.bytesUploaded
+    }
+    if (spaceUser.lastConnectTime) {
+      const dateTime = new Date(spaceUser.lastConnectTime);
+      updatedItem.lastConnectTime = dateTimeToLocale(dateTime);
+    }
+
+    // setUpdatedFields<SpaceDetail>(detail, updatedDetail);
+    // setUpdatedFields<SpaceUserListItem>(item, updatedItem);
+    return updatedDetail;
   }
-  setUpdatedFields<SpaceUserListItem>(item, updatedItem);
-  return { updatedDetail, updatedItem };
 }
 
 const fullName: (user: User | UserRef) => string =

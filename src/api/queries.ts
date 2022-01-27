@@ -153,6 +153,13 @@ export const getSpace = /* GraphQL */ `
           middleName
           familyName
         }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
@@ -272,6 +279,13 @@ export const getSpaceInvitations = /* GraphQL */ `
         spaceID
         spaceName
         owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
           userID
           userName
           firstName

@@ -91,56 +91,50 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  subscribeToUserUpdates(
+  async subscribeToUserUpdates(
     userID: string,
     update: (data: UserUpdate) => void,
     error: (error: any) => void
   ) {
     const subscriptionKey = `userUpdates(userID: ${userID})`;
-    if (!this.subscriptions[subscriptionKey]) {
+    await this.unsubscribe(subscriptionKey);
 
-      const subscriptionQuery = /* GraphQL */ `
-        subscription SubscribeToUserUpdates($userID: ID!) {
-          userUpdates(userID: $userID) {
+    const subscriptionQuery = /* GraphQL */ `
+      subscription SubscribeToUserUpdates($userID: ID!) {
+        userUpdates(userID: $userID) {
+          userID
+          numDevices
+          numSpaces
+          user {
             userID
-            numDevices
-            numSpaces
-            user {
-              userID
-              userName
-              firstName
-              middleName
-              familyName
-              emailAddress
-              mobilePhone
-              confirmed
-              publicKey
-              certificate
-            }
+            userName
+            firstName
+            middleName
+            familyName
+            emailAddress
+            mobilePhone
+            confirmed
+            publicKey
+            certificate
           }
-        }`;
+        }
+      }`;
 
-      const observable: Observable<object> = <Observable<object>>API.graphql(
-        graphqlOperation(subscriptionQuery, { userID })
-      );
-      const subscription = observable.subscribe({
-        next: data => update(<UserUpdate>(<any>data).value.data.userUpdates),
-        error: data => error(data.error)
-      });
-      this.subscriptions[subscriptionKey] = subscription;
-
-    } else {
-      this.logger.debug('Subscription exists:', subscriptionKey);
-    }
+    const observable: Observable<object> = <Observable<object>>API.graphql(
+      graphqlOperation(subscriptionQuery, { userID })
+    );
+    const subscription = observable.subscribe({
+      next: data => update(<UserUpdate>(<any>data).value.data.userUpdates),
+      error: data => error(data.error)
+    });
+    this.logger.debug('Creating subscription:', subscriptionKey);
+    this.subscriptions[subscriptionKey] = subscription;
   }
 
   async unsubscribeFromUserUpdates(
     userID: string,
   ) {
-    const subscription = this.subscriptions[`userUpdates(userID: ${userID})`];
-    if (subscription) {
-      await subscription.unsubscribe();
-    }
+    await this.unsubscribe(`userUpdates(userID: ${userID})`);
   }
 
   async getUserDevices() {
@@ -210,102 +204,90 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  subscribeToDeviceUpdates(
+  async subscribeToDeviceUpdates(
     deviceID: string,
     update: (data: DeviceUpdate) => void,
     error: (error: any) => void
   ) {
     const subscriptionKey = `deviceUpdates(deviceID: ${deviceID})`;
-    if (!this.subscriptions[subscriptionKey]) {
+    await this.unsubscribe(subscriptionKey);
 
-      const subscriptionQuery = /* GraphQL */ `
-        subscription SubscribeToDeviceUpdates($deviceID: ID!) {
-          deviceUpdates(deviceID: $deviceID) {
+    const subscriptionQuery = /* GraphQL */ `
+      subscription SubscribeToDeviceUpdates($deviceID: ID!) {
+        deviceUpdates(deviceID: $deviceID) {
+          deviceID
+          numUsers
+          device {
             deviceID
-            numUsers
-            device {
-              deviceID
-              deviceName
-              publicKey
-              certificate
-            }
+            deviceName
+            publicKey
+            certificate
           }
-        }`;
+        }
+      }`;
 
-      const observable: Observable<object> = <Observable<object>>API.graphql(
-        graphqlOperation(subscriptionQuery, { deviceID })
-      );
-      const subscription = observable.subscribe({
-        next: data => update(<DeviceUpdate>(<any>data).value.data.deviceUpdates),
-        error: data => error(data.error)
-      });
-      this.subscriptions[subscriptionKey] = subscription;
-
-    } else {
-      this.logger.debug('Subscription exists:', subscriptionKey);
-    }
+    const observable: Observable<object> = <Observable<object>>API.graphql(
+      graphqlOperation(subscriptionQuery, { deviceID })
+    );
+    const subscription = observable.subscribe({
+      next: data => update(<DeviceUpdate>(<any>data).value.data.deviceUpdates),
+      error: data => error(data.error)
+    });
+    this.logger.debug('Creating subscription:', subscriptionKey);
+    this.subscriptions[subscriptionKey] = subscription;
   }
 
   async unsubscribeFromDeviceUpdates(
     deviceID: string,
   ) {
-    const subscription = this.subscriptions[`deviceUpdates(deviceID: ${deviceID})`];
-    if (subscription) {
-      await subscription.unsubscribe();
-    }
+    await this.unsubscribe(`deviceUpdates(deviceID: ${deviceID})`);
   }
 
-  subscribeToDeviceUserUpdates(
+  async subscribeToDeviceUserUpdates(
     deviceID: string,
     userID: string,
     update: (data: DeviceUserUpdate) => void,
     error: (error: any) => void
   ) {
     const subscriptionKey = `deviceUserUpdates(deviceID: ${deviceID}, userID: ${userID})`;
-    if (!this.subscriptions[subscriptionKey]) {
+    await this.unsubscribe(subscriptionKey);
 
-      const subscriptionQuery = /* GraphQL */ `
-        subscription SubscribeToDeviceUserUpdates($deviceID: ID!, $userID: ID!) {
-          deviceUserUpdates(deviceID: $deviceID, userID: $userID) {
-            deviceID
-            userID
-            deviceUser {
-              device {
-                deviceID
-              }
-              user {
-                userID
-              }
-              status
-              bytesUploaded
-              bytesDownloaded
-              lastAccessTime
+    const subscriptionQuery = /* GraphQL */ `
+      subscription SubscribeToDeviceUserUpdates($deviceID: ID!, $userID: ID!) {
+        deviceUserUpdates(deviceID: $deviceID, userID: $userID) {
+          deviceID
+          userID
+          deviceUser {
+            device {
+              deviceID
             }
+            user {
+              userID
+            }
+            status
+            bytesUploaded
+            bytesDownloaded
+            lastAccessTime
           }
-        }`;
+        }
+      }`;
 
-      const observable: Observable<object> = <Observable<object>>API.graphql(
-        graphqlOperation(subscriptionQuery, { deviceID, userID })
-      );
-      const subscription = observable.subscribe({
-        next: data => update(<DeviceUserUpdate>(<any>data).value.data.deviceUserUpdates),
-        error: data => error(data.error)
-      });
-      this.subscriptions[subscriptionKey] = subscription;
-
-    } else {
-      this.logger.debug('Subscription exists:', subscriptionKey);
-    }
+    const observable: Observable<object> = <Observable<object>>API.graphql(
+      graphqlOperation(subscriptionQuery, { deviceID, userID })
+    );
+    const subscription = observable.subscribe({
+      next: data => update(<DeviceUserUpdate>(<any>data).value.data.deviceUserUpdates),
+      error: data => error(data.error)
+    });
+    this.logger.debug('Creating subscription:', subscriptionKey);
+    this.subscriptions[subscriptionKey] = subscription;
   }
 
   async unsubscribeFromDeviceUserUpdates(
     deviceID: string,
     userID: string,
   ) {
-    const subscription = this.subscriptions[`deviceUserUpdates(deviceID: ${deviceID}, userID: ${userID})`];
-    if (subscription) {
-      await subscription.unsubscribe();
-    }
+    await this.unsubscribe(`deviceUserUpdates(deviceID: ${deviceID}, userID: ${userID})`);
   }
 
   async getDeviceAccessRequests(deviceID: string) {
@@ -455,6 +437,13 @@ export default class Provider implements ProviderInterface {
                   middleName
                   familyName
                 }
+                admins {
+                  userID
+                  userName
+                  firstName
+                  middleName
+                  familyName
+                }
                 recipe
                 iaas
                 region
@@ -512,103 +501,91 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  subscribeToSpaceUpdates(
+  async subscribeToSpaceUpdates(
     spaceID: string,
     update: (data: SpaceUpdate) => void,
     error: (error: any) => void
   ) {
     const subscriptionKey = `spaceUpdates(spaceID: ${spaceID})`;
-    if (!this.subscriptions[subscriptionKey]) {
+    await this.unsubscribe(subscriptionKey);
 
-      const subscriptionQuery = /* GraphQL */ `
-        subscription SubscribeToSpaceUpdates($spaceID: ID!) {
-          spaceUpdates(spaceID: $spaceID) {
+    const subscriptionQuery = /* GraphQL */ `
+      subscription SubscribeToSpaceUpdates($spaceID: ID!) {
+        spaceUpdates(spaceID: $spaceID) {
+          spaceID
+          numUsers
+          space {
             spaceID
-            numUsers
-            space {
-              spaceID
-              spaceName
-              publicKey
-              certificate
-              recipe
-              iaas
-              region
-              version
-              isEgressNode
-            }
+            spaceName
+            publicKey
+            certificate
+            recipe
+            iaas
+            region
+            version
+            isEgressNode
           }
-        }`;
+        }
+      }`;
 
-      const observable: Observable<object> = <Observable<object>>API.graphql(
-        graphqlOperation(subscriptionQuery, { spaceID })
-      );
-      const subscription = observable.subscribe({
-        next: data => update(<SpaceUpdate>(<any>data).value.data.spaceUpdates),
-        error: data => error(data.error)
-      });
-      this.subscriptions[subscriptionKey] = subscription;
-
-    } else {
-      this.logger.debug('Subscription exists:', subscriptionKey);
-    }      
+    const observable: Observable<object> = <Observable<object>>API.graphql(
+      graphqlOperation(subscriptionQuery, { spaceID })
+    );
+    const subscription = observable.subscribe({
+      next: data => update(<SpaceUpdate>(<any>data).value.data.spaceUpdates),
+      error: data => error(data.error)
+    });
+    this.logger.debug('Creating subscription:', subscriptionKey);
+    this.subscriptions[subscriptionKey] = subscription;
   }
 
   async unsubscribeFromSpaceUpdates(
     spaceID: string,
   ) {
-    const subscription = this.subscriptions[`spaceUpdates(spaceID: ${spaceID})`];
-    if (subscription) {
-      await subscription.unsubscribe();
-    }
+    await this.unsubscribe(`spaceUpdates(spaceID: ${spaceID})`);
   }
 
-  subscribeToSpaceUserUpdates(
+  async subscribeToSpaceUserUpdates(
     spaceID: string,
     userID: string,
     update: (data: SpaceUserUpdate) => void,
     error: (error: any) => void
   ) {
     const subscriptionKey = `spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`;
-    if (!this.subscriptions[subscriptionKey]) {
-
-      const subscriptionQuery = /* GraphQL */ `
-        subscription SubscribeToSpaceUserUpdates($spaceID: ID!, $userID: ID!) {
-          spaceUserUpdates(spaceID: $spaceID, userID: $userID) {
-            spaceID
-            userID
-            spaceUser {
-              isEgressNode
-              status
-              bytesUploaded
-              bytesDownloaded
-              lastConnectTime
-              lastConnectDeviceID
-            }
+    await this.unsubscribe(subscriptionKey);
+  
+    const subscriptionQuery = /* GraphQL */ `
+      subscription SubscribeToSpaceUserUpdates($spaceID: ID!, $userID: ID!) {
+        spaceUserUpdates(spaceID: $spaceID, userID: $userID) {
+          spaceID
+          userID
+          spaceUser {
+            isEgressNode
+            status
+            bytesUploaded
+            bytesDownloaded
+            lastConnectTime
+            lastConnectDeviceID
           }
-        }`;
+        }
+      }`;
 
-      const observable: Observable<object> = <Observable<object>>API.graphql(
-        graphqlOperation(subscriptionQuery, { spaceID, userID })
-      );
-      const subscription = observable.subscribe({
-        next: data => update(<SpaceUserUpdate>(<any>data).value.data.spaceUserUpdates),
-        error: data => error(data.error)
-      });
-      this.subscriptions[subscriptionKey] = subscription;
-
-    } else {
-      this.logger.debug('Subscription exists:', subscriptionKey);
-    }
+    const observable: Observable<object> = <Observable<object>>API.graphql(
+      graphqlOperation(subscriptionQuery, { spaceID, userID })
+    );
+    const subscription = observable.subscribe({
+      next: data => update(<SpaceUserUpdate>(<any>data).value.data.spaceUserUpdates),
+      error: data => error(data.error)
+    });
+    this.logger.debug('Creating subscription:', subscriptionKey);
+    this.subscriptions[subscriptionKey] = subscription;
   }
 
   async unsubscribeFromSpaceUserUpdates(
     spaceID: string,
     userID: string,
   ) {
-    const subscription = this.subscriptions[`spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`];
-    if (subscription) {
-      await subscription.unsubscribe();
-    }
+    await this.unsubscribe(`spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`);
   }
 
   async inviteSpaceUser(spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) {
@@ -909,6 +886,17 @@ export default class Provider implements ProviderInterface {
 
   async getAppInvitations() {
     return [];
+  }
+
+  private async unsubscribe(
+    subscriptionKey: string,
+  ) {
+    const subscription = this.subscriptions[subscriptionKey];
+    if (subscription) {
+      this.logger.debug('Deleting subscription:', subscriptionKey);
+      delete this.subscriptions[subscriptionKey];
+      await subscription.unsubscribe();
+    }
   }
 
   private handleErrorResponse(result: GraphQLResult, errorType: string, apiName: string): Error {

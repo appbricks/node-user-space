@@ -1,6 +1,8 @@
 import {
   DeviceUser,
-  SpaceUser
+  SpaceUser,
+  SpaceStatus,
+  UserAccessStatus
 } from './types';
 
 /**
@@ -8,6 +10,10 @@ import {
  */
 
 export interface DisplayType {
+  // allow instances of display type 
+  // to be accessed like a dictionary
+  [key: string]: any;
+
   updatedFields?: string[]
 }
 
@@ -33,7 +39,7 @@ export interface DeviceUserListItem extends DisplayType {
   userID: string
   userName: string
   fullName: string
-  status: string
+  status: UserAccessStatus
   dataUsageIn: string
   dataUsageOut: string
   lastAccessTime: string
@@ -44,7 +50,7 @@ export interface DeviceUserListItem extends DisplayType {
 
 export interface SpaceDetail extends DisplayType {
   name: string
-  status: string
+  status: SpaceStatus
   ownerAdmin: string
   clientsConnected: number
   dataUsageIn: string
@@ -64,7 +70,7 @@ export interface SpaceUserListItem extends DisplayType {
   userID: string
   userName: string
   fullName: string
-  status: string,
+  status: UserAccessStatus,
   dataUsageIn: string
   dataUsageOut: string
   lastConnectTime: string

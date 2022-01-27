@@ -97,14 +97,35 @@ const tester1 = {
   userID: '8353aa68-80ba-48fb-8594-7a1e871d9f79',
   userName: 'tester1'
 };
+const tester1Ref = <UserRef>{
+  userID: tester1.userID,
+  userName: tester1.userName,
+  firstName: null,
+  middleName: null,
+  familyName: null
+}
 const tester2 = {
   userID: 'd5b09bef-9c57-4049-a2b3-f8eb7cd43a07',
   userName: 'tester2'
 };
+const tester2Ref = <UserRef>{
+  userID: tester2.userID,
+  userName: tester2.userName,
+  firstName: null,
+  middleName: null,
+  familyName: null
+}
 const tester3 = {
   userID: '9db68649-fcd1-4612-a08c-4d148f1637f2',
   userName: 'tester3'
 };
+const tester3Ref = <UserRef>{
+  userID: tester3.userID,
+  userName: tester3.userName,
+  firstName: null,
+  middleName: null,
+  familyName: null
+}
 
 const userWithNullNameFields = (user: object) => {
   const nullName = {
@@ -370,7 +391,7 @@ it('invites users and takes them through the space association lifecycle', async
       {
         isOwner: false,
         status: 'pending',
-        space: space2
+        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);
   expect(await provider.getSpaceInvitations())
@@ -389,7 +410,7 @@ it('invites users and takes them through the space association lifecycle', async
       {
         isOwner: false,
         status: 'active',
-        space: space2
+        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);
   expect(await provider.leaveSpaceUser(space2.spaceID!))
@@ -402,7 +423,7 @@ it('invites users and takes them through the space association lifecycle', async
       {
         isOwner: false,
         status: 'inactive',
-        space: space2
+        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);
 });
@@ -425,7 +446,7 @@ it('deactivates a user associated with a space', async () => {
       {
         isOwner: false,
         status: 'inactive',
-        space: space2
+        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);
 });
@@ -448,7 +469,7 @@ it('activates a user associated with a space', async () => {
       {
         isOwner: false,
         status: 'active',
-        space: space2
+        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);  
 });
@@ -654,7 +675,7 @@ it('subscribes to device user updates', async () => {
       );
     },
     // error from invalid subscription request
-    {"errors": [{"message": "Connection failed: {\"errors\":[{\"message\":\"Given device was not found\"}]}"}]}
+    {"errors": [{"message": "Connection failed: {\"errors\":[{\"message\":\"Device is not associated with the current user\"}]}"}]}
   );
 });
 
@@ -785,7 +806,7 @@ it('subscribes to space user updates', async () => {
       );
     },
     // error from invalid subscription request
-    {"errors": [{"message": "Connection failed: {\"errors\":[{\"message\":\"Given space was not found\"}]}"}]}
+    {"errors": [{"message": "Connection failed: {\"errors\":[{\"message\":\"Space is not associated with the current user\"}]}"}]}
   );
 });
 
@@ -816,7 +837,7 @@ async function validateSubscription(
   };
 
   // create a good subscription
-  subscribe(update, error);
+  await subscribe(update, error);
   // wait for subscription to become active
   await sleep(500);
   expect(err).toBeUndefined();
@@ -848,14 +869,6 @@ beforeAll(async() => {
 
   try {
     await Auth.signIn('tester1', '@ppBr!cks2020');
-
-    const tester1Ref = <UserRef>{
-      userID: tester1.userID,
-      userName: tester1.userName,
-      firstName: null,
-      middleName: null,
-      familyName: null
-    }
 
     device1 = (d => { return { ...d, owner: tester1Ref }})(
       (<{data: AddDeviceMutation}> await API.graphql(
@@ -894,7 +907,7 @@ beforeAll(async() => {
       ))).data.addDevice!.deviceUser!.device!
     );
 
-    space1 =(s => { return { ...s, owner: tester1Ref }})(
+    space1 =(s => { return { ...s, owner: tester1Ref, admins: [ tester1Ref ] }})(
       (<{data: AddSpaceMutation}> await API.graphql(
         graphqlOperation(addSpace, <AddSpaceMutationVariables>{
           spaceName: 'tester1\'s space #1',
@@ -909,7 +922,7 @@ beforeAll(async() => {
         }
       ))).data.addSpace!.spaceUser!.space!
     );
-    space2 =(s => { return { ...s, owner: tester1Ref }})(
+    space2 =(s => { return { ...s, owner: tester1Ref, admins: [ tester1Ref ] }})(
       (<{data: AddSpaceMutation}> await API.graphql(
         graphqlOperation(addSpace, <AddSpaceMutationVariables>{
           spaceName: 'tester1\'s space #2',

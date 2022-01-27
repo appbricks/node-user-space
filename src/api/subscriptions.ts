@@ -112,6 +112,13 @@ export const spaceUpdates = /* GraphQL */ `
           middleName
           familyName
         }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region

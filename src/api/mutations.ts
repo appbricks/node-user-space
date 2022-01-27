@@ -441,6 +441,13 @@ export const inviteSpaceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
@@ -509,6 +516,13 @@ export const activateSpaceUser = /* GraphQL */ `
         spaceID
         spaceName
         owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
           userID
           userName
           firstName
@@ -589,6 +603,13 @@ export const deactivateSpaceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
@@ -657,6 +678,13 @@ export const deleteSpaceUser = /* GraphQL */ `
         spaceID
         spaceName
         owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
           userID
           userName
           firstName
@@ -742,6 +770,13 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
           middleName
           familyName
         }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
         recipe
         iaas
         region
@@ -810,6 +845,13 @@ export const leaveSpaceUser = /* GraphQL */ `
         spaceID
         spaceName
         owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
           userID
           userName
           firstName
@@ -989,6 +1031,13 @@ export const pushSpacesUpdate = /* GraphQL */ `
         spaceID
         spaceName
         owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
           userID
           userName
           firstName

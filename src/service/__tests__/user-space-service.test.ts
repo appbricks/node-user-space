@@ -13,13 +13,14 @@ import {
 import { StateTester } from '@appbricks/test-utils';
 
 import {
-  DeviceUser,
-  SpaceUser,
   UserAccessStatus,
+  DeviceUser,
   DeviceUpdate,
   DeviceUserUpdate,
+  SpaceStatus,
   SpaceUpdate,
-  SpaceUserUpdate
+  SpaceUser,
+  SpaceUserUpdate,
 } from '../../model/types';
 import { 
   DeviceDetail,
@@ -382,7 +383,7 @@ it('retrieves a user\'s list of spaces', async () => {
       const spaceInfoUpdated = {
         ...spaceDetail,
         name: "tom's space #1 updated",
-        status: "shutdown",
+        status: SpaceStatus.shutdown,
         version: "2.0.1",
         updatedFields: [ "name", "status", "version" ], 
       }
@@ -670,7 +671,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
         userID: "95e579be-a365-4268-bed0-17df80ef3dce",
         userName: "deb",
         fullName: "Deborah Plynk Sanders",
-        status: "pending",
+        status: UserAccessStatus.pending,
         dataUsageIn: "0 bytes",
         dataUsageOut: "0 bytes",
         lastAccessTime: "never"
@@ -695,7 +696,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
         userID: "d12935f9-55b3-4514-8346-baaf99d6e6fa",
         userName: "bob",
         fullName: "Bobby J. Brown",
-        status: "pending",
+        status: UserAccessStatus.pending,
         dataUsageIn: "0 bytes",
         dataUsageOut: "0 bytes",
         lastAccessTime: "never"
@@ -704,7 +705,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
         userID: "95e579be-a365-4268-bed0-17df80ef3dce",
         userName: "deb",
         fullName: "Deborah Plynk Sanders",
-        status: "active",
+        status: UserAccessStatus.active,
         dataUsageIn: "65 bytes",
         dataUsageOut: "56 bytes",
         lastAccessTime: dateTimeToLocale(date3),
@@ -730,7 +731,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
         userID: "a645c56e-f454-460f-8324-eff15357e973",
         userName: "tom",
         fullName: "Thomas T. Bradford",
-        status: "active",
+        status: UserAccessStatus.active,
         dataUsageIn: "836 bytes",
         dataUsageOut: "583 bytes",
         lastAccessTime: dateTimeToLocale(date3),
@@ -740,7 +741,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
         userID: "95e579be-a365-4268-bed0-17df80ef3dce",
         userName: "deb",
         fullName: "Deborah Plynk Sanders",
-        status: "pending",
+        status: UserAccessStatus.pending,
         lastSpaceConnectedTo: undefined,
         dataUsageIn: "0 bytes",
         dataUsageOut: "0 bytes",
@@ -753,7 +754,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
 const spacesDetail: { [spaceID: string]: SpaceDetail } = {
   "d83b7d95-5681-427d-a65a-5d8a868d72e9": {
     name: "tom's space #1",
-    status: "running",
+    status: SpaceStatus.running,
     ownerAdmin: "Thomas T. Bradford",
     clientsConnected: 2,
     dataUsageIn: "5.0 MiB",
@@ -769,7 +770,7 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         userID: "d12935f9-55b3-4514-8346-baaf99d6e6fa",
         userName: "bob",
         fullName: "Bobby J. Brown",
-        status: "pending",
+        status: UserAccessStatus.pending,
         dataUsageIn: "0 bytes",
         dataUsageOut: "0 bytes",
         lastConnectTime: "never"
@@ -778,7 +779,7 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         userID: "95e579be-a365-4268-bed0-17df80ef3dce",
         userName: "deb",
         fullName: "Deborah Plynk Sanders",
-        status: "active",
+        status: UserAccessStatus.active,
         dataUsageIn: "4.6 MiB",
         dataUsageOut: "3.2 MiB",
         lastConnectTime: dateTimeToLocale(date2)
@@ -787,7 +788,7 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
   },
   "9a5242dc-0681-4d67-9fe7-bdc691d1a18d": {
     name: "bob's space #2",
-    status: "running",
+    status: SpaceStatus.running,
     ownerAdmin: "Bobby J. Brown",
     clientsConnected: 1,
     dataUsageIn: "2.3 MiB",
@@ -803,7 +804,7 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         userID: "a645c56e-f454-460f-8324-eff15357e973",
         userName: "tom",
         fullName: "Thomas T. Bradford",
-        status: "active",
+        status: UserAccessStatus.active,
         dataUsageIn: "2.3 MiB",
         dataUsageOut: "7.9 MiB",
         lastConnectTime: dateTimeToLocale(date3)
@@ -812,7 +813,7 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         userID: "95e579be-a365-4268-bed0-17df80ef3dce",
         userName: "deb",
         fullName: "Deborah Plynk Sanders",
-        status: "pending",
+        status: UserAccessStatus.pending,
         dataUsageIn: "0 bytes",
         dataUsageOut: "0 bytes",
         lastConnectTime: "never"
