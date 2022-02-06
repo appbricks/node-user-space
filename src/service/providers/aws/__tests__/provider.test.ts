@@ -878,8 +878,8 @@ async function validateSubscription(
   const pushCmdOut = execSync(pushCmd).toString();
   console.log(`**** Begin Push results ****\n\n${pushCmdOut}\n\n**** End Push results ****`)
   
-  // wait updates to propagate to subscription
-  await sleep(2000);
+  // wait for updates to propagate to subscription
+  await sleep(5000);
   expect(err).toBeUndefined();
 
   await unsubscribe();
