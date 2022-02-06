@@ -142,6 +142,7 @@ let space1: Space;
 let space2: Space;
 
 it('searches for users with a name that has a given prefix', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   const result = <{data: UserSearchQuery}> await API.graphql(
@@ -156,6 +157,7 @@ it('searches for users with a name that has a given prefix', async () => {
 });
 
 it('retrieves a user\'s devices', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   expect(await provider.getUserDevices())
@@ -175,7 +177,7 @@ it('retrieves a user\'s devices', async () => {
                 bytesDownloaded: 0,
                 bytesUploaded: 0,
                 lastAccessTime: 0,
-                lastSpaceConnectedTo: ""
+                lastConnectSpace: null
               },
               {
                 user: userWithNullNameFields(tester2),
@@ -184,7 +186,7 @@ it('retrieves a user\'s devices', async () => {
                 bytesDownloaded: 0,
                 bytesUploaded: 0,
                 lastAccessTime: 0,
-                lastSpaceConnectedTo: ""
+                lastConnectSpace: null
               },
               {
                 user: userWithNullNameFields(tester3),
@@ -193,7 +195,7 @@ it('retrieves a user\'s devices', async () => {
                 bytesDownloaded: 0,
                 bytesUploaded: 0,
                 lastAccessTime: 0,
-                lastSpaceConnectedTo: ""
+                lastConnectSpace: null
               }
             ]
           }
@@ -214,7 +216,7 @@ it('retrieves a user\'s devices', async () => {
                 bytesDownloaded: 0,
                 bytesUploaded: 0,
                 lastAccessTime: 0,
-                lastSpaceConnectedTo: ""
+                lastConnectSpace: null
               }
             ]
           }
@@ -224,6 +226,7 @@ it('retrieves a user\'s devices', async () => {
 });
 
 it('retrieves device access requests for user\'s device', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   expect(
@@ -241,6 +244,7 @@ it('retrieves device access requests for user\'s device', async () => {
 });
 
 it('approves an access request for a device', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   expect(await provider.activateDeviceUser(device1.deviceID!, tester3.userID))
@@ -265,6 +269,7 @@ it('approves an access request for a device', async () => {
 });
 
 it('removes a user\'s access to a device', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   let deviceUser = (await provider.getUserDevices())
@@ -297,6 +302,7 @@ it('removes a user\'s access to a device', async () => {
 })
 
 it('deletes a users\'s device', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   await provider.deleteDevice(device1.deviceID!);
@@ -319,7 +325,7 @@ it('deletes a users\'s device', async () => {
                 bytesDownloaded: 0,
                 bytesUploaded: 0,
                 lastAccessTime: 0,
-                lastSpaceConnectedTo: ''
+                lastConnectSpace: null
               }
             ]
           }
@@ -329,6 +335,7 @@ it('deletes a users\'s device', async () => {
 });
 
 it('retrieves a user\'s spaces', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   expect(trimSpaceUsers(await provider.getUserSpaces()))
@@ -347,6 +354,7 @@ it('retrieves a user\'s spaces', async () => {
 });
 
 it('invites users and takes them through the space association lifecycle', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   // trim space fields
@@ -377,6 +385,7 @@ it('invites users and takes them through the space association lifecycle', async
   const spaceInvitedTo = (({ spaceID, spaceName, recipe, iaas, region, version }) => 
     { return { spaceID, spaceName, recipe, iaas, region, version } })(space2);
 
+  await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
   expect(await provider.getSpaceInvitations())
     .toEqual([{
@@ -385,6 +394,7 @@ it('invites users and takes them through the space association lifecycle', async
       isEgressNode: true,
     }]);
 
+  await Auth.signOut();
   await Auth.signIn('tester3', '@ppBr!cks2020');
   expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
@@ -433,6 +443,7 @@ it('deactivates a user associated with a space', async () => {
   // trim space fields
   const space = trimSpaceProps(space2);
 
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
   expect(await provider.deactivateSpaceUser(space.spaceID!, tester2.userID))
     .toEqual({
@@ -440,6 +451,7 @@ it('deactivates a user associated with a space', async () => {
       user: tester2
     });
   
+  await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
   expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
@@ -456,6 +468,7 @@ it('activates a user associated with a space', async () => {
   // trim space fields
   const space = trimSpaceProps(space2);
 
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
   expect(await provider.activateSpaceUser(space.spaceID!, tester2.userID))
     .toEqual({
@@ -463,6 +476,7 @@ it('activates a user associated with a space', async () => {
       user: tester2
     });
   
+  await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
   expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([
@@ -475,6 +489,7 @@ it('activates a user associated with a space', async () => {
 });
 
 it('deletes a user associated with a space', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   // trim space fields
@@ -485,13 +500,15 @@ it('deletes a user associated with a space', async () => {
       space,
       user: tester2
     });
-  
+
+  await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
   expect(trimSpaceUsers(await provider.getUserSpaces()))
     .toEqual([]);
 });
 
 it('deletes a user\'s space', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   await provider.deleteSpace(space1.spaceID!);
@@ -508,6 +525,7 @@ it('deletes a user\'s space', async () => {
 });
 
 it('subscribes to user updates', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   await validateSubscription(
@@ -570,6 +588,7 @@ it('subscribes to user updates', async () => {
 });
 
 it('subscribes to device updates', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   await validateSubscription(
@@ -623,6 +642,7 @@ it('subscribes to device updates', async () => {
 });
 
 it('subscribes to device user updates', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   await validateSubscription(
@@ -634,6 +654,10 @@ it('subscribes to device user updates', async () => {
         bytesUploaded
         bytesDownloaded
         lastAccessTime
+        lastConnectSpace {
+          spaceID
+          spaceName
+        }
       }
     }`, 
     JSON.stringify({
@@ -642,7 +666,8 @@ it('subscribes to device user updates', async () => {
       "status": "active",
       "bytesUploaded": 100,
       "bytesDownloaded": 100,
-      "lastAccessTime": Date.now()
+      "lastAccessTime": Date.now(),
+      "lastConnectSpaceID": space2.spaceID
     }), 
     // create valid subscription
     (update: (data: any) => void, error: (error: any) => void) => {
@@ -662,6 +687,8 @@ it('subscribes to device user updates', async () => {
       expect(data.deviceUser.bytesDownloaded).toEqual(100);
       expect(data.deviceUser.lastAccessTime).toBeGreaterThan(0);
       expect(data.deviceUser.lastAccessTime).toBeLessThanOrEqual(Date.now());
+      expect(data.deviceUser.lastConnectSpace?.spaceID).toEqual(space2.spaceID);
+      expect(data.deviceUser.lastConnectSpace?.spaceName).toEqual(space2.spaceName);
     },
     // unsubscribe
     () => provider.unsubscribeFromDeviceUserUpdates(device2!.deviceID!, tester1.userID),
@@ -680,6 +707,7 @@ it('subscribes to device user updates', async () => {
 });
 
 it('subscribes to space updates', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   await validateSubscription(
@@ -748,6 +776,7 @@ it('subscribes to space updates', async () => {
 });
 
 it('subscribes to space user updates', async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   await validateSubscription(
@@ -760,7 +789,10 @@ it('subscribes to space user updates', async () => {
         bytesUploaded
         bytesDownloaded
         lastConnectTime
-        lastConnectDeviceID
+        lastConnectDevice {
+          deviceID
+          deviceName
+        }
       }
     }`, 
     JSON.stringify({
@@ -771,7 +803,7 @@ it('subscribes to space user updates', async () => {
       "bytesUploaded": 150,
       "bytesDownloaded": 150,
       "lastConnectTime": Date.now(),
-      "lastConnectDeviceID": "device_$i"
+      "lastConnectDeviceID": device2.deviceID
     }), 
     // create valid subscription
     (update: (data: any) => void, error: (error: any) => void) => {
@@ -792,7 +824,8 @@ it('subscribes to space user updates', async () => {
       expect(data.spaceUser.bytesDownloaded).toEqual(150);
       expect(data.spaceUser.lastConnectTime).toBeGreaterThan(0);
       expect(data.spaceUser.lastConnectTime).toBeLessThanOrEqual(Date.now());
-      expect(data.spaceUser.lastConnectDeviceID).toMatch(/^device_[0-9]+$/);
+      expect(data.spaceUser.lastConnectDevice?.deviceID).toEqual(device2.deviceID);
+      expect(data.spaceUser.lastConnectDevice?.deviceName).toEqual(device2.deviceName);
     },
     // unsubscribe
     () => provider.unsubscribeFromSpaceUserUpdates(space2!.spaceID!, tester1.userID),
@@ -828,12 +861,12 @@ async function validateSubscription(
 
   const update = (data: any) => {
     updateCount++;
-    // console.log('Update', {data: JSON.stringify(data), updateCount});
+    console.log('Update', {data: JSON.stringify(data), updateCount});
     validateSuccess(data, updateCount);
   };
   const error = (error: any) => {
     err = error;
-    // console.log('Update Error', {data: JSON.stringify(error), updateCount});
+    console.log('Update Error', {data: JSON.stringify(error), updateCount});
   };
 
   // create a good subscription
@@ -842,10 +875,11 @@ async function validateSubscription(
   await sleep(500);
   expect(err).toBeUndefined();
 
-  execSync(pushCmd).toString();
+  const pushCmdOut = execSync(pushCmd).toString();
+  console.log(`**** Begin Push results ****\n\n${pushCmdOut}\n\n**** End Push results ****`)
   
   // wait updates to propagate to subscription
-  await sleep(500);
+  await sleep(2000);
   expect(err).toBeUndefined();
 
   await unsubscribe();
@@ -866,7 +900,6 @@ async function validateSubscription(
 
 // create test data
 beforeAll(async() => {
-
   try {
     await Auth.signIn('tester1', '@ppBr!cks2020');
 
@@ -907,37 +940,42 @@ beforeAll(async() => {
       ))).data.addDevice!.deviceUser!.device!
     );
 
-    space1 =(s => { return { ...s, owner: tester1Ref, admins: [ tester1Ref ] }})(
-      (<{data: AddSpaceMutation}> await API.graphql(
-        graphqlOperation(addSpace, <AddSpaceMutationVariables>{
-          spaceName: 'tester1\'s space #1',
-          spaceKey: {
-            certificateRequest: 'csr201',
-            publicKey: 'pub201'
-          },
-          recipe: 'recipe #1',
-          iaas: 'aws',
-          region: 'us-east-1',
-          isEgressNode: true
-        }
-      ))).data.addSpace!.spaceUser!.space!
+    space1 = (({ vpnType, ...s }) => s)(
+      (s => { return { ...s, owner: tester1Ref, admins: [ tester1Ref ] }})(
+        (<{data: AddSpaceMutation}> await API.graphql(
+          graphqlOperation(addSpace, <AddSpaceMutationVariables>{
+            spaceName: 'tester1\'s space #1',
+            spaceKey: {
+              certificateRequest: 'csr201',
+              publicKey: 'pub201'
+            },
+            recipe: 'recipe #1',
+            iaas: 'aws',
+            region: 'us-east-1',
+            isEgressNode: true
+          }
+        ))).data.addSpace!.spaceUser!.space!
+      )
     );
-    space2 =(s => { return { ...s, owner: tester1Ref, admins: [ tester1Ref ] }})(
-      (<{data: AddSpaceMutation}> await API.graphql(
-        graphqlOperation(addSpace, <AddSpaceMutationVariables>{
-          spaceName: 'tester1\'s space #2',
-          spaceKey: {
-            certificateRequest: 'csr202',
-            publicKey: 'pub202'
-          },
-          recipe: 'recipe #1',
-          iaas: 'gcp',
-          region: 'us-east1',
-          isEgressNode: true
-        }
-      ))).data.addSpace!.spaceUser!.space!
+    space2 = (({ vpnType, ...s }) => s)(
+      (s => { return { ...s, owner: tester1Ref, admins: [ tester1Ref ] }})(
+        (<{data: AddSpaceMutation}> await API.graphql(
+          graphqlOperation(addSpace, <AddSpaceMutationVariables>{
+            spaceName: 'tester1\'s space #2',
+            spaceKey: {
+              certificateRequest: 'csr202',
+              publicKey: 'pub202'
+            },
+            recipe: 'recipe #1',
+            iaas: 'gcp',
+            region: 'us-east1',
+            isEgressNode: true
+          }
+        ))).data.addSpace!.spaceUser!.space!
+      )
     );
 
+    await Auth.signOut();
     await Auth.signIn('tester2', '@ppBr!cks2020');
     await API.graphql(
       graphqlOperation(addDeviceUser, <AddDeviceUserMutationVariables>{
@@ -947,6 +985,7 @@ beforeAll(async() => {
         }
       }))
 
+    await Auth.signOut();
     await Auth.signIn('tester3', '@ppBr!cks2020');
     await API.graphql(
       graphqlOperation(addDeviceUser, <AddDeviceUserMutationVariables>{
@@ -962,28 +1001,12 @@ beforeAll(async() => {
 });
 
 afterAll(async () => {
+  await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
-  try { 
-    await API.graphql(graphqlOperation(deleteDevice, { deviceID: device2.deviceID })); 
-  } 
-  catch (error) { 
-    console.log(`device2 clean up error: ${error}`) 
-  }
-  try { 
-    await API.graphql(graphqlOperation(deleteDevice, { deviceID: device1.deviceID })); 
-  } catch (error) {
-    console.log(`device1 clean up error: ${error}`) 
-  }
-  try { 
-    await API.graphql(graphqlOperation(deleteSpace, { spaceID: space1.spaceID })); 
-  } catch (error) {
-    console.log(`space2 clean up error: ${error}`) 
-  }
-  try { 
-    await API.graphql(graphqlOperation(deleteSpace, { spaceID: space2.spaceID })); 
-  } catch (error) {
-    console.log(`space1 clean up error: ${error}`) 
-  }
+  try { await API.graphql(graphqlOperation(deleteDevice, { deviceID: device1.deviceID })); } catch (error) {}
+  try { await API.graphql(graphqlOperation(deleteDevice, { deviceID: device2.deviceID })); } catch (error) {}
+  try { await API.graphql(graphqlOperation(deleteSpace, { spaceID: space1.spaceID })); } catch (error) {}
+  try { await API.graphql(graphqlOperation(deleteSpace, { spaceID: space2.spaceID })); } catch (error) {}
 });
 
 const trimUserProps = (user: User) => <User>{ userID: user.userID, userName: user.userName };

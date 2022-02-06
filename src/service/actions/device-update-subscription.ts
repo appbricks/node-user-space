@@ -36,7 +36,7 @@ export const subscribeEpic = (csProvider: Provider): Epic => {
           data => {
             const numDeviceUsers = state$.value.userspace?.userDevices
               .find(du => du.device?.deviceID == deviceID)?.device?.users?.deviceUsers?.length
-            if (numDeviceUsers && numDeviceUsers != data.numUsers) {
+            if (data.numUsers && data.numUsers != numDeviceUsers) {
               update(createAction(GET_USER_DEVICES));
             } else {
               const device = data.device!;

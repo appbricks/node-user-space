@@ -13,8 +13,6 @@ export interface DisplayType {
   // allow instances of display type 
   // to be accessed like a dictionary
   [key: string]: any;
-
-  updatedFields?: string[]
 }
 
 export interface DeviceDetail extends DisplayType {
@@ -76,25 +74,4 @@ export interface SpaceUserListItem extends DisplayType {
   lastConnectTime: string
 
   spaceUser?: SpaceUser
-}
-
-/**
- * Given two display type instance the changed non-object
- * fields will be determined and added to the display type's
- * updated field list.
- * 
- * @param orig     the original unchanged display type instance
- * @param updated  the changed display type instance whose updatedFields
- *                 array will contain the change fields
- */
-export function setUpdatedFields<T extends DisplayType>(orig: T, updated: T) {
-  updated.updatedFields = [];
-  for (const [key, value] of Object.entries(orig)) {
-    if (typeof value != "object" && typeof value != "function") {
-      const o = <{[key: string]: any}>updated;
-      if (value != o[key]) {
-        updated.updatedFields.push(key);
-      }
-    }
-  }
 }

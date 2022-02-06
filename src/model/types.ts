@@ -68,11 +68,10 @@ export type DeviceUser = {
   user?: User,
   isOwner?: boolean | null,
   status?: UserAccessStatus | null,
-  wireguardPublicKey?: string | null,
   bytesUploaded?: number | null,
   bytesDownloaded?: number | null,
   lastAccessTime?: number | null,
-  lastSpaceConnectedTo?: string | null,
+  lastConnectSpace?: Space,
 };
 
 export type Device = {
@@ -104,39 +103,6 @@ export enum UserAccessStatus {
 }
 
 
-export type SpaceUsersConnection = {
-  __typename: "SpaceUsersConnection",
-  pageInfo?: PageInfo,
-  edges?:  Array<SpaceUsersEdge | null > | null,
-  totalCount?: number | null,
-  spaceUsers?:  Array<SpaceUser | null > | null,
-};
-
-export type SpaceUsersEdge = {
-  __typename: "SpaceUsersEdge",
-  node?: SpaceUser,
-};
-
-export type SpaceUser = {
-  __typename: "SpaceUser",
-  space?: Space,
-  user?: User,
-  isOwner?: boolean | null,
-  isAdmin?: boolean | null,
-  // User's that are neither owners or admin can
-  // connect to the space and access only apps
-  // they are allowed to access. If this flag
-  // is set then they can also use the space
-  // as the egress node for internet access.
-  isEgressNode?: boolean | null,
-  status?: UserAccessStatus | null,
-  bytesUploaded?: number | null,
-  bytesDownloaded?: number | null,
-  accessList?: AppUsersConnection,
-  lastConnectTime?: number | null,
-  lastConnectDeviceID?: string | null,
-};
-
 export type Space = {
   __typename: "Space",
   spaceID?: string,
@@ -154,6 +120,7 @@ export type Space = {
   ipAddress?: string | null,
   fqdn?: string | null,
   port?: number | null,
+  vpnType?: string | null,
   localCARoot?: string | null,
   apps?: SpaceAppsConnection,
   users?: SpaceUsersConnection,
@@ -205,6 +172,39 @@ export type AppUser = {
   lastAccessTime?: number | null,
 };
 
+export type SpaceUsersConnection = {
+  __typename: "SpaceUsersConnection",
+  pageInfo?: PageInfo,
+  edges?:  Array<SpaceUsersEdge | null > | null,
+  totalCount?: number | null,
+  spaceUsers?:  Array<SpaceUser | null > | null,
+};
+
+export type SpaceUsersEdge = {
+  __typename: "SpaceUsersEdge",
+  node?: SpaceUser,
+};
+
+export type SpaceUser = {
+  __typename: "SpaceUser",
+  space?: Space,
+  user?: User,
+  isOwner?: boolean | null,
+  isAdmin?: boolean | null,
+  // User's that are neither owners or admin can
+  // connect to the space and access only apps
+  // they are allowed to access. If this flag
+  // is set then they can also use the space
+  // as the egress node for internet access.
+  isEgressNode?: boolean | null,
+  status?: UserAccessStatus | null,
+  bytesUploaded?: number | null,
+  bytesDownloaded?: number | null,
+  accessList?: AppUsersConnection,
+  lastConnectTime?: number | null,
+  lastConnectDevice?: Device,
+};
+
 export enum SpaceStatus {
   undeployed = "undeployed",
   running = "running",
@@ -217,10 +217,6 @@ export enum SpaceStatus {
 export type DeviceInfo = {
   deviceType: string,
   clientVersion: string,
-};
-
-export type WireguardKey = {
-  wireguardPublicKey?: string | null,
 };
 
 export type DeviceII = {
@@ -356,11 +352,9 @@ export type UpdateUserKeyMutation = {
         __typename: "DeviceUser",
         isOwner?: boolean | null,
         status?: UserAccessStatus | null,
-        wireguardPublicKey?: string | null,
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
         lastAccessTime?: number | null,
-        lastSpaceConnectedTo?: string | null,
       } | null > | null,
     } | null,
     spaces?:  {
@@ -387,7 +381,77 @@ export type UpdateUserKeyMutation = {
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
         lastConnectTime?: number | null,
-        lastConnectDeviceID?: string | null,
+      } | null > | null,
+    } | null,
+    // A user's universal config is an encrypted
+    // document containing metadata of all spaces the
+    // user owns.
+    universalConfig?: string | null,
+  } | null,
+};
+
+export type UpdateUserConfigMutationVariables = {
+  universalConfig?: string,
+};
+
+export type UpdateUserConfigMutation = {
+  // Update the logged in user's universal config
+  updateUserConfig?:  {
+    __typename: "User",
+    userID: string,
+    userName: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    familyName?: string | null,
+    preferredName?: string | null,
+    emailAddress?: string | null,
+    mobilePhone?: string | null,
+    confirmed?: boolean | null,
+    publicKey?: string | null,
+    certificate?: string | null,
+    devices?:  {
+      __typename: "DeviceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      deviceUsers?:  Array< {
+        __typename: "DeviceUser",
+        isOwner?: boolean | null,
+        status?: UserAccessStatus | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastAccessTime?: number | null,
+      } | null > | null,
+    } | null,
+    spaces?:  {
+      __typename: "SpaceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      spaceUsers?:  Array< {
+        __typename: "SpaceUser",
+        isOwner?: boolean | null,
+        isAdmin?: boolean | null,
+        // User's that are neither owners or admin can
+        // connect to the space and access only apps
+        // they are allowed to access. If this flag
+        // is set then they can also use the space
+        // as the egress node for internet access.
+        isEgressNode?: boolean | null,
+        status?: UserAccessStatus | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
       } | null > | null,
     } | null,
     // A user's universal config is an encrypted
@@ -401,7 +465,6 @@ export type AddDeviceMutationVariables = {
   deviceName?: string,
   deviceInfo?: DeviceInfo,
   deviceKey?: Key,
-  accessKey?: WireguardKey,
 };
 
 export type AddDeviceMutation = {
@@ -441,18 +504,35 @@ export type AddDeviceMutation = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
-      wireguardPublicKey?: string | null,
       bytesUploaded?: number | null,
       bytesDownloaded?: number | null,
       lastAccessTime?: number | null,
-      lastSpaceConnectedTo?: string | null,
+      lastConnectSpace?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName: string,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
     },
   } | null,
 };
 
 export type AddDeviceUserMutationVariables = {
   deviceID?: string,
-  accessKey?: WireguardKey,
 };
 
 export type AddDeviceUserMutation = {
@@ -509,11 +589,53 @@ export type AddDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
-    lastSpaceConnectedTo?: string | null,
+    lastConnectSpace?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
   } | null,
 };
 
@@ -576,11 +698,53 @@ export type ActivateDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
-    lastSpaceConnectedTo?: string | null,
+    lastConnectSpace?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
   } | null,
 };
 
@@ -622,83 +786,11 @@ export type UpdateDeviceKeyMutation = {
         __typename: "DeviceUser",
         isOwner?: boolean | null,
         status?: UserAccessStatus | null,
-        wireguardPublicKey?: string | null,
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
         lastAccessTime?: number | null,
-        lastSpaceConnectedTo?: string | null,
       } | null > | null,
     } | null,
-  } | null,
-};
-
-export type UpdateDeviceUserKeyMutationVariables = {
-  deviceID?: string,
-  userID?: string | null,
-  accessKey?: WireguardKey,
-};
-
-export type UpdateDeviceUserKeyMutation = {
-  // Update the logged in user's wireguard key for
-  // the device. If the logged in user is the
-  // device owner then he/she can update the keys.
-  updateDeviceUserKey?:  {
-    __typename: "DeviceUser",
-    device?:  {
-      __typename: "Device",
-      deviceID: string,
-      deviceName: string,
-      owner?:  {
-        __typename: "UserRef",
-        userID: string,
-        userName?: string | null,
-        firstName?: string | null,
-        middleName?: string | null,
-        familyName?: string | null,
-      } | null,
-      // device info
-      deviceType?: string | null,
-      clientVersion?: string | null,
-      publicKey?: string | null,
-      certificate?: string | null,
-      users?:  {
-        __typename: "DeviceUsersConnection",
-        totalCount?: number | null,
-      } | null,
-    } | null,
-    user?:  {
-      __typename: "User",
-      userID: string,
-      userName: string,
-      firstName?: string | null,
-      middleName?: string | null,
-      familyName?: string | null,
-      preferredName?: string | null,
-      emailAddress?: string | null,
-      mobilePhone?: string | null,
-      confirmed?: boolean | null,
-      publicKey?: string | null,
-      certificate?: string | null,
-      devices?:  {
-        __typename: "DeviceUsersConnection",
-        totalCount?: number | null,
-      } | null,
-      spaces?:  {
-        __typename: "SpaceUsersConnection",
-        totalCount?: number | null,
-      } | null,
-      // A user's universal config is an encrypted
-      // document containing metadata of all spaces the
-      // user owns.
-      universalConfig?: string | null,
-    } | null,
-    isOwner?: boolean | null,
-    status?: UserAccessStatus | null,
-    wireguardPublicKey?: string | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
-    lastAccessTime?: number | null,
-    lastSpaceConnectedTo?: string | null,
   } | null,
 };
 
@@ -764,11 +856,53 @@ export type DeleteDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
-    lastSpaceConnectedTo?: string | null,
+    lastConnectSpace?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
   } | null,
 };
 
@@ -813,6 +947,7 @@ export type AddSpaceMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        vpnType?: string | null,
         localCARoot?: string | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
@@ -851,7 +986,16 @@ export type AddSpaceMutation = {
         totalCount?: number | null,
       } | null,
       lastConnectTime?: number | null,
-      lastConnectDeviceID?: string | null,
+      lastConnectDevice?:  {
+        __typename: "Device",
+        deviceID: string,
+        deviceName: string,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+      } | null,
     },
   } | null,
 };
@@ -898,6 +1042,7 @@ export type InviteSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -963,7 +1108,28 @@ export type InviteSpaceUserMutation = {
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null,
 };
 
@@ -1008,6 +1174,7 @@ export type ActivateSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -1073,7 +1240,28 @@ export type ActivateSpaceUserMutation = {
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null,
 };
 
@@ -1118,6 +1306,7 @@ export type DeactivateSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -1183,7 +1372,28 @@ export type DeactivateSpaceUserMutation = {
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null,
 };
 
@@ -1228,6 +1438,7 @@ export type DeleteSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -1293,7 +1504,28 @@ export type DeleteSpaceUserMutation = {
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null,
 };
 
@@ -1347,6 +1579,7 @@ export type AcceptSpaceUserInvitationMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -1412,7 +1645,28 @@ export type AcceptSpaceUserInvitationMutation = {
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null,
 };
 
@@ -1456,6 +1710,7 @@ export type LeaveSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -1521,7 +1776,28 @@ export type LeaveSpaceUserMutation = {
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null,
 };
 
@@ -1658,11 +1934,29 @@ export type PushDeviceUsersUpdateMutation = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
-      wireguardPublicKey?: string | null,
       bytesUploaded?: number | null,
       bytesDownloaded?: number | null,
       lastAccessTime?: number | null,
-      lastSpaceConnectedTo?: string | null,
+      lastConnectSpace?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName: string,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
     },
   } | null,
 };
@@ -1708,6 +2002,7 @@ export type PushSpacesUpdateMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -1749,6 +2044,7 @@ export type PushSpaceUsersUpdateMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        vpnType?: string | null,
         localCARoot?: string | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
@@ -1787,7 +2083,16 @@ export type PushSpaceUsersUpdateMutation = {
         totalCount?: number | null,
       } | null,
       lastConnectTime?: number | null,
-      lastConnectDeviceID?: string | null,
+      lastConnectDevice?:  {
+        __typename: "Device",
+        deviceID: string,
+        deviceName: string,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+      } | null,
     },
   } | null,
 };
@@ -1823,6 +2128,7 @@ export type PushAppsUpdateMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        vpnType?: string | null,
         localCARoot?: string | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
@@ -1964,11 +2270,9 @@ export type GetUserQuery = {
         __typename: "DeviceUser",
         isOwner?: boolean | null,
         status?: UserAccessStatus | null,
-        wireguardPublicKey?: string | null,
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
         lastAccessTime?: number | null,
-        lastSpaceConnectedTo?: string | null,
       } | null > | null,
     } | null,
     spaces?:  {
@@ -1995,7 +2299,6 @@ export type GetUserQuery = {
         bytesUploaded?: number | null,
         bytesDownloaded?: number | null,
         lastConnectTime?: number | null,
-        lastConnectDeviceID?: string | null,
       } | null > | null,
     } | null,
     // A user's universal config is an encrypted
@@ -2064,11 +2367,53 @@ export type GetDeviceQuery = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
-    lastSpaceConnectedTo?: string | null,
+    lastConnectSpace?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
   } | null,
 };
 
@@ -2112,6 +2457,7 @@ export type GetSpaceQuery = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -2177,7 +2523,28 @@ export type GetSpaceQuery = {
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null,
 };
 
@@ -2240,11 +2607,53 @@ export type GetDeviceAccessRequestsQuery = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    wireguardPublicKey?: string | null,
     bytesUploaded?: number | null,
     bytesDownloaded?: number | null,
     lastAccessTime?: number | null,
-    lastSpaceConnectedTo?: string | null,
+    lastConnectSpace?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
   } | null > | null,
 };
 
@@ -2284,6 +2693,7 @@ export type GetSpaceInvitationsQuery = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -2349,7 +2759,28 @@ export type GetSpaceInvitationsQuery = {
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
-    lastConnectDeviceID?: string | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName: string,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
   } | null > | null,
 };
 
@@ -2468,11 +2899,29 @@ export type DeviceUserUpdatesSubscription = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
-      wireguardPublicKey?: string | null,
       bytesUploaded?: number | null,
       bytesDownloaded?: number | null,
       lastAccessTime?: number | null,
-      lastSpaceConnectedTo?: string | null,
+      lastConnectSpace?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName: string,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
     },
   } | null,
 };
@@ -2518,6 +2967,7 @@ export type SpaceUpdatesSubscription = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      vpnType?: string | null,
       localCARoot?: string | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
@@ -2560,6 +3010,7 @@ export type SpaceUserUpdatesSubscription = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        vpnType?: string | null,
         localCARoot?: string | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
@@ -2598,7 +3049,16 @@ export type SpaceUserUpdatesSubscription = {
         totalCount?: number | null,
       } | null,
       lastConnectTime?: number | null,
-      lastConnectDeviceID?: string | null,
+      lastConnectDevice?:  {
+        __typename: "Device",
+        deviceID: string,
+        deviceName: string,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+      } | null,
     },
   } | null,
 };
@@ -2634,6 +3094,7 @@ export type AppUpdatesSubscription = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        vpnType?: string | null,
         localCARoot?: string | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,

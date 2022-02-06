@@ -296,7 +296,6 @@ export default class MockProvider implements ProviderInterface {
       bytesUploaded: 0,
       bytesDownloaded: 0,
       lastConnectTime: 0,
-      lastConnectDeviceID: null,
     }
 
     userToInvite!.spaces!.spaceUsers!.push(spaceUserInvite);
@@ -572,29 +571,24 @@ function loadMockData() {
     user: users[0],
     isOwner: true,
     status: UserAccessStatus.active,
-    wireguardPublicKey: 'tom\'s device #1 wg public key',
     bytesUploaded: 12,
     bytesDownloaded: 21,
     lastAccessTime: date3.getTime(),
-    lastSpaceConnectedTo: 'bob\'s space #2'
   }, {
     __typename: "DeviceUser",
     device: devices[1],
     user: users[0],
     isOwner: true,
     status: UserAccessStatus.active,
-    wireguardPublicKey: 'tom\'s device #2 wg public key',
     bytesUploaded: 34,
     bytesDownloaded: 43,
     lastAccessTime: date1.getTime(),
-    lastSpaceConnectedTo: 'tom\'s space #1'
   }, {
     __typename: "DeviceUser",
     device: devices[2],
     user: users[1],
     isOwner: true,
     status: UserAccessStatus.active,
-    wireguardPublicKey: 'bob\'s device #1 wg public key',
     bytesUploaded: 823,
     bytesDownloaded: 465,
     lastAccessTime: date2.getTime(),
@@ -604,18 +598,15 @@ function loadMockData() {
     user: users[0],
     isOwner: false,
     status: UserAccessStatus.active,
-    wireguardPublicKey: 'tom\'s wg public key for bob\'s device #1',
     bytesUploaded: 583,
     bytesDownloaded: 836,
     lastAccessTime: date3.getTime(),
-    lastSpaceConnectedTo: 'bob\'s space #2'
   }, {
     __typename: "DeviceUser",
     device: devices[1],
     user: users[1],
     isOwner: false,
     status: UserAccessStatus.pending,
-    wireguardPublicKey: 'bob\'s wg public key for tom\'s device #2',
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastAccessTime: 0,
@@ -625,7 +616,6 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     status: UserAccessStatus.pending,
-    wireguardPublicKey: 'deb\'s wg public key for tom\'s device #1',
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastAccessTime: 0,
@@ -635,18 +625,15 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     status: UserAccessStatus.active,
-    wireguardPublicKey: 'deb\'s wg public key for tom\'s device #2',
     bytesUploaded: 56,
     bytesDownloaded: 65,
     lastAccessTime: date3.getTime(),
-    lastSpaceConnectedTo: 'bob\'s space #2',
   }, {
     __typename: "DeviceUser",
     device: devices[2],
     user: users[2],
     isOwner: false,
     status: UserAccessStatus.pending,
-    wireguardPublicKey: 'deb\'s wg public key for bob\'s device #1',
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastAccessTime: 0,
@@ -656,7 +643,6 @@ function loadMockData() {
     user: users[1],
     isOwner: true,
     status: UserAccessStatus.active,
-    wireguardPublicKey: 'bob\'s device #2 wg public key',
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastAccessTime: 0,
@@ -666,7 +652,6 @@ function loadMockData() {
     user: users[0],
     isOwner: false,
     status: UserAccessStatus.pending,
-    wireguardPublicKey: 'tom\'s wg public key for bob\'s device #2',
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastAccessTime: 0,
@@ -676,7 +661,6 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     status: UserAccessStatus.pending,
-    wireguardPublicKey: 'deb\'s wg public key for bob\'s device #2',
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastAccessTime: 0,
@@ -804,6 +788,11 @@ function loadMockData() {
     lastSeen: 0,
   } ];
 
+  deviceUsers[0].lastConnectSpace = (({ users, ...s }) => s)(spaces[2]);
+  deviceUsers[1].lastConnectSpace = (({ users, ...s }) => s)(spaces[0]);
+  deviceUsers[3].lastConnectSpace = (({ users, ...s }) => s)(spaces[2]);
+  deviceUsers[6].lastConnectSpace = (({ users, ...s }) => s)(spaces[2]);
+
   const spaceUsers: SpaceUser[] = [ {
     __typename: "SpaceUser",
     space: spaces[0],
@@ -815,7 +804,6 @@ function loadMockData() {
     bytesUploaded: 9833378,
     bytesDownloaded: 387393,
     lastConnectTime: date3.getTime(),
-    lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
     space: spaces[1],
@@ -827,7 +815,6 @@ function loadMockData() {
     bytesUploaded: 33939,
     bytesDownloaded: 33834,
     lastConnectTime: 1621457410097,
-    lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
     space: spaces[2],
@@ -839,7 +826,6 @@ function loadMockData() {
     bytesUploaded: 98333388,
     bytesDownloaded: 89333484,
     lastConnectTime: date1.getTime(),
-    lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
     space: spaces[1],
@@ -851,7 +837,6 @@ function loadMockData() {
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastConnectTime: 0,
-    lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
     space: spaces[2],
@@ -863,7 +848,6 @@ function loadMockData() {
     bytesUploaded: 8239884,
     bytesDownloaded: 2389343,
     lastConnectTime: date3.getTime(),
-    lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
     space: spaces[0],
@@ -875,7 +859,6 @@ function loadMockData() {
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastConnectTime: 0,
-    lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
     space: spaces[0],
@@ -887,7 +870,6 @@ function loadMockData() {
     bytesUploaded: 3388393,
     bytesDownloaded: 4857729,
     lastConnectTime: date2.getTime(),
-    lastConnectDeviceID: null,
   }, {
     __typename: "SpaceUser",
     space: spaces[2],
@@ -899,7 +881,6 @@ function loadMockData() {
     bytesUploaded: 0,
     bytesDownloaded: 0,
     lastConnectTime: 0,
-    lastConnectDeviceID: null,
   } ]
 
   spaces[0].users = {

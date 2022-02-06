@@ -24,8 +24,7 @@ import {
   DeviceDetail,
   DeviceUserListItem,
   SpaceDetail,
-  SpaceUserListItem,
-  setUpdatedFields
+  SpaceUserListItem
 } from '../model/display';
 
 import Provider from './provider';
@@ -401,7 +400,7 @@ const deviceDetail = (device: Device): DeviceDetail => {
       if (deviceUser!.lastAccessTime! > lastAccessedTime) {
         lastAccessedTime = deviceUser!.lastAccessTime!;
         lastAccessedBy = fullName(deviceUser!.user!);
-        lastSpaceConnectedTo = deviceUser!.lastSpaceConnectedTo!;
+        lastSpaceConnectedTo = deviceUser!.lastConnectSpace?.spaceName || '';
       }
       if (deviceUser!.lastAccessTime! >= startOfMonth) {
         // only add usage values for current month
@@ -440,7 +439,7 @@ const deviceUserListItem = (deviceUser: DeviceUser): DeviceUserListItem => {
     bytesUploaded,
     bytesDownloaded,
     lastAccessTime,
-    lastSpaceConnectedTo
+    lastConnectSpace
   } = deviceUser;
 
   const {
@@ -455,7 +454,7 @@ const deviceUserListItem = (deviceUser: DeviceUser): DeviceUserListItem => {
     userName,
     fullName: fullName(user!),
     status,
-    lastSpaceConnectedTo,
+    lastSpaceConnectedTo: lastConnectSpace?.spaceName || '',
     dataUsageIn: bytesToSize(bytesDownloaded!),
     dataUsageOut: bytesToSize(bytesUploaded!),
     lastAccessTime: lastAccessTime && lastAccessTime > 0
@@ -539,13 +538,11 @@ const updateDeviceUserListItem = (
         updatedDetail.lastAccessedTime = deviceUser.lastAccessTime;
         updatedDetail.lastAccessed = updatedItem.lastAccessTime;
         updatedDetail.lastAccessedBy = fullName(updatedItem.deviceUser!.user!);
-        if (deviceUser.lastSpaceConnectedTo) {
-          updatedDetail.lastSpaceConnectedTo = deviceUser.lastSpaceConnectedTo;
-        }
       }
     }
-    if (deviceUser.lastSpaceConnectedTo) {
-      updatedItem.lastSpaceConnectedTo = deviceUser.lastSpaceConnectedTo;
+    if (deviceUser.lastConnectSpace) {
+      updatedDetail.lastSpaceConnectedTo = deviceUser.lastConnectSpace?.spaceName || '';
+      updatedItem.lastSpaceConnectedTo = deviceUser.lastConnectSpace?.spaceName || '';
     }
 
     // setUpdatedFields<DeviceDetail>(detail, updatedDetail);

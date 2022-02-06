@@ -87,11 +87,27 @@ export const deviceUserUpdates = /* GraphQL */ `
         }
         isOwner
         status
-        wireguardPublicKey
         bytesUploaded
         bytesDownloaded
         lastAccessTime
-        lastSpaceConnectedTo
+        lastConnectSpace {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          status
+          lastSeen
+        }
       }
     }
   }
@@ -129,6 +145,7 @@ export const spaceUpdates = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        vpnType
         localCARoot
         apps {
           totalCount
@@ -161,6 +178,7 @@ export const spaceUserUpdates = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          vpnType
           localCARoot
           status
           lastSeen
@@ -189,7 +207,14 @@ export const spaceUserUpdates = /* GraphQL */ `
           totalCount
         }
         lastConnectTime
-        lastConnectDeviceID
+        lastConnectDevice {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+        }
       }
     }
   }
@@ -218,6 +243,7 @@ export const appUpdates = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          vpnType
           localCARoot
           status
           lastSeen

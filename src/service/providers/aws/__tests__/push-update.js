@@ -50,7 +50,7 @@ function pushUpdate() {
   };
   const j = i;
   gqlClient.mutate({mutation, variables})
-    .then(data => console.log({data: data.data, updateCount: j}))
+    .then(data => console.log(JSON.stringify({data: data.data, updateCount: j})))
     .catch(error => console.error(error));  
 
   if (++i < numUpdates) {

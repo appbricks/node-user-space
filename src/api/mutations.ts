@@ -25,11 +25,9 @@ export const updateUserKey = /* GraphQL */ `
         deviceUsers {
           isOwner
           status
-          wireguardPublicKey
           bytesUploaded
           bytesDownloaded
           lastAccessTime
-          lastSpaceConnectedTo
         }
       }
       spaces {
@@ -46,7 +44,54 @@ export const updateUserKey = /* GraphQL */ `
           bytesUploaded
           bytesDownloaded
           lastConnectTime
-          lastConnectDeviceID
+        }
+      }
+      universalConfig
+    }
+  }
+`;
+export const updateUserConfig = /* GraphQL */ `
+  mutation UpdateUserConfig($universalConfig: String!) {
+    updateUserConfig(universalConfig: $universalConfig) {
+      userID
+      userName
+      firstName
+      middleName
+      familyName
+      preferredName
+      emailAddress
+      mobilePhone
+      confirmed
+      publicKey
+      certificate
+      devices {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        deviceUsers {
+          isOwner
+          status
+          bytesUploaded
+          bytesDownloaded
+          lastAccessTime
+        }
+      }
+      spaces {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        spaceUsers {
+          isOwner
+          isAdmin
+          isEgressNode
+          status
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
         }
       }
       universalConfig
@@ -58,13 +103,11 @@ export const addDevice = /* GraphQL */ `
     $deviceName: String!
     $deviceInfo: DeviceInfo!
     $deviceKey: Key!
-    $accessKey: WireguardKey!
   ) {
     addDevice(
       deviceName: $deviceName
       deviceInfo: $deviceInfo
       deviceKey: $deviceKey
-      accessKey: $accessKey
     ) {
       idKey
       deviceUser {
@@ -92,18 +135,34 @@ export const addDevice = /* GraphQL */ `
         }
         isOwner
         status
-        wireguardPublicKey
         bytesUploaded
         bytesDownloaded
         lastAccessTime
-        lastSpaceConnectedTo
+        lastConnectSpace {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          status
+          lastSeen
+        }
       }
     }
   }
 `;
 export const addDeviceUser = /* GraphQL */ `
-  mutation AddDeviceUser($deviceID: ID!, $accessKey: WireguardKey!) {
-    addDeviceUser(deviceID: $deviceID, accessKey: $accessKey) {
+  mutation AddDeviceUser($deviceID: ID!) {
+    addDeviceUser(deviceID: $deviceID) {
       device {
         deviceID
         deviceName
@@ -144,11 +203,47 @@ export const addDeviceUser = /* GraphQL */ `
       }
       isOwner
       status
-      wireguardPublicKey
       bytesUploaded
       bytesDownloaded
       lastAccessTime
-      lastSpaceConnectedTo
+      lastConnectSpace {
+        spaceID
+        spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        vpnType
+        localCARoot
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
     }
   }
 `;
@@ -195,11 +290,47 @@ export const activateDeviceUser = /* GraphQL */ `
       }
       isOwner
       status
-      wireguardPublicKey
       bytesUploaded
       bytesDownloaded
       lastAccessTime
-      lastSpaceConnectedTo
+      lastConnectSpace {
+        spaceID
+        spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        vpnType
+        localCARoot
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
     }
   }
 `;
@@ -228,72 +359,11 @@ export const updateDeviceKey = /* GraphQL */ `
         deviceUsers {
           isOwner
           status
-          wireguardPublicKey
           bytesUploaded
           bytesDownloaded
           lastAccessTime
-          lastSpaceConnectedTo
         }
       }
-    }
-  }
-`;
-export const updateDeviceUserKey = /* GraphQL */ `
-  mutation UpdateDeviceUserKey(
-    $deviceID: ID!
-    $userID: ID
-    $accessKey: WireguardKey!
-  ) {
-    updateDeviceUserKey(
-      deviceID: $deviceID
-      userID: $userID
-      accessKey: $accessKey
-    ) {
-      device {
-        deviceID
-        deviceName
-        owner {
-          userID
-          userName
-          firstName
-          middleName
-          familyName
-        }
-        deviceType
-        clientVersion
-        publicKey
-        certificate
-        users {
-          totalCount
-        }
-      }
-      user {
-        userID
-        userName
-        firstName
-        middleName
-        familyName
-        preferredName
-        emailAddress
-        mobilePhone
-        confirmed
-        publicKey
-        certificate
-        devices {
-          totalCount
-        }
-        spaces {
-          totalCount
-        }
-        universalConfig
-      }
-      isOwner
-      status
-      wireguardPublicKey
-      bytesUploaded
-      bytesDownloaded
-      lastAccessTime
-      lastSpaceConnectedTo
     }
   }
 `;
@@ -340,11 +410,47 @@ export const deleteDeviceUser = /* GraphQL */ `
       }
       isOwner
       status
-      wireguardPublicKey
       bytesUploaded
       bytesDownloaded
       lastAccessTime
-      lastSpaceConnectedTo
+      lastConnectSpace {
+        spaceID
+        spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        ipAddress
+        fqdn
+        port
+        vpnType
+        localCARoot
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
     }
   }
 `;
@@ -385,6 +491,7 @@ export const addSpace = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          vpnType
           localCARoot
           status
           lastSeen
@@ -413,7 +520,14 @@ export const addSpace = /* GraphQL */ `
           totalCount
         }
         lastConnectTime
-        lastConnectDeviceID
+        lastConnectDevice {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+        }
       }
     }
   }
@@ -458,6 +572,7 @@ export const inviteSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        vpnType
         localCARoot
         apps {
           totalCount
@@ -505,7 +620,24 @@ export const inviteSpaceUser = /* GraphQL */ `
         }
       }
       lastConnectTime
-      lastConnectDeviceID
+      lastConnectDevice {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        users {
+          totalCount
+        }
+      }
     }
   }
 `;
@@ -539,6 +671,7 @@ export const activateSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        vpnType
         localCARoot
         apps {
           totalCount
@@ -586,7 +719,24 @@ export const activateSpaceUser = /* GraphQL */ `
         }
       }
       lastConnectTime
-      lastConnectDeviceID
+      lastConnectDevice {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        users {
+          totalCount
+        }
+      }
     }
   }
 `;
@@ -620,6 +770,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        vpnType
         localCARoot
         apps {
           totalCount
@@ -667,7 +818,24 @@ export const deactivateSpaceUser = /* GraphQL */ `
         }
       }
       lastConnectTime
-      lastConnectDeviceID
+      lastConnectDevice {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        users {
+          totalCount
+        }
+      }
     }
   }
 `;
@@ -701,6 +869,7 @@ export const deleteSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        vpnType
         localCARoot
         apps {
           totalCount
@@ -748,7 +917,24 @@ export const deleteSpaceUser = /* GraphQL */ `
         }
       }
       lastConnectTime
-      lastConnectDeviceID
+      lastConnectDevice {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        users {
+          totalCount
+        }
+      }
     }
   }
 `;
@@ -787,6 +973,7 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        vpnType
         localCARoot
         apps {
           totalCount
@@ -834,7 +1021,24 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         }
       }
       lastConnectTime
-      lastConnectDeviceID
+      lastConnectDevice {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        users {
+          totalCount
+        }
+      }
     }
   }
 `;
@@ -868,6 +1072,7 @@ export const leaveSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        vpnType
         localCARoot
         apps {
           totalCount
@@ -915,7 +1120,24 @@ export const leaveSpaceUser = /* GraphQL */ `
         }
       }
       lastConnectTime
-      lastConnectDeviceID
+      lastConnectDevice {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        users {
+          totalCount
+        }
+      }
     }
   }
 `;
@@ -1012,11 +1234,27 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
         }
         isOwner
         status
-        wireguardPublicKey
         bytesUploaded
         bytesDownloaded
         lastAccessTime
-        lastSpaceConnectedTo
+        lastConnectSpace {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          status
+          lastSeen
+        }
       }
     }
   }
@@ -1054,6 +1292,7 @@ export const pushSpacesUpdate = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        vpnType
         localCARoot
         apps {
           totalCount
@@ -1086,6 +1325,7 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          vpnType
           localCARoot
           status
           lastSeen
@@ -1114,7 +1354,14 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
           totalCount
         }
         lastConnectTime
-        lastConnectDeviceID
+        lastConnectDevice {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+        }
       }
     }
   }
@@ -1143,6 +1390,7 @@ export const pushAppsUpdate = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          vpnType
           localCARoot
           status
           lastSeen

@@ -36,7 +36,7 @@ export const subscribeEpic = (csProvider: Provider): Epic => {
           data => {
             const numSpaceUsers = state$.value.userspace?.userSpaces
               .find(du => du.space?.spaceID == spaceID)?.space?.users?.spaceUsers?.length
-            if (numSpaceUsers && numSpaceUsers != data.numUsers) {
+            if (data.numUsers && data.numUsers != numSpaceUsers) {
               update(createAction(GET_USER_SPACES));
             } else {
               const space = data.space!;

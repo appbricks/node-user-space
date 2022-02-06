@@ -176,7 +176,10 @@ export default class Provider implements ProviderInterface {
                     bytesUploaded
                     bytesDownloaded
                     lastAccessTime
-                    lastSpaceConnectedTo
+                    lastConnectSpace {
+                      spaceID
+                      spaceName
+                    }
                   }
                 }
               }
@@ -268,6 +271,10 @@ export default class Provider implements ProviderInterface {
             bytesUploaded
             bytesDownloaded
             lastAccessTime
+            lastConnectSpace {
+              spaceID
+              spaceName
+            }
           }
         }
       }`;
@@ -473,7 +480,10 @@ export default class Provider implements ProviderInterface {
                     bytesUploaded
                     bytesDownloaded
                     lastConnectTime
-                    lastConnectDeviceID
+                    lastConnectDevice {
+                      deviceID
+                      deviceName
+                    }
                   }
                 }
               }
@@ -524,6 +534,8 @@ export default class Provider implements ProviderInterface {
             region
             version
             isEgressNode
+            status
+            lastSeen
           }
         }
       }`;
@@ -565,7 +577,10 @@ export default class Provider implements ProviderInterface {
             bytesUploaded
             bytesDownloaded
             lastConnectTime
-            lastConnectDeviceID
+            lastConnectDevice {
+              deviceID
+              deviceName
+            }
           }
         }
       }`;
