@@ -170,4 +170,9 @@ export default interface Provider {
    * logged in user has received.
    */
   getAppInvitations(): Promise<AppUser[]>;
+
+  /**
+   * Unsubscribe from all active subscriptions
+   */
+  unsubscribeAll(): Promise<void>;
 }

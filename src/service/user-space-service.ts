@@ -58,6 +58,7 @@ import * as deleteSpace from './actions/delete-space';
 import * as getSpaceInvitations from './actions/get-space-invitations';
 import * as acceptSpaceInvitation from './actions/accept-space-invitation';
 import * as leaveSpace from './actions/leave-space';
+import * as resetState from './actions/reset-state';
 
 type UserSpacePayload =
   actions.UserSearchPayload |
@@ -214,6 +215,7 @@ export default class UserSpaceService {
       getSpaceInvitations.epic(this.csProvider),
       acceptSpaceInvitation.epic(this.csProvider),
       leaveSpace.epic(this.csProvider),
+      resetState.epic(this.csProvider),
     ];
   }
 

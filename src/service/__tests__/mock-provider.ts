@@ -420,6 +420,10 @@ export default class MockProvider implements ProviderInterface {
   async getAppInvitations() {
     return [];
   }
+
+  async unsubscribeAll() {
+    return
+  }
 }
 
 // Mock Data

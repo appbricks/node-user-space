@@ -903,6 +903,13 @@ export default class Provider implements ProviderInterface {
     return [];
   }
 
+  async unsubscribeAll() {    
+    for (const subscriptionKey in this.subscriptions) {
+      await this.unsubscribe(subscriptionKey);
+    }
+    return
+  }
+
   private async unsubscribe(
     subscriptionKey: string,
   ) {
