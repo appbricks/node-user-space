@@ -418,7 +418,7 @@ const deviceDetail = (device: Device): DeviceDetail => {
     version: device.clientVersion!,
     ownerAdmin: fullName(device.owner!),
     lastAccessed: lastAccessedTime > 0
-      ? dateTimeToLocale(lastAccessedDataTime, true)
+      ? dateTimeToLocale(lastAccessedDataTime, false)
       : 'never',
     lastAccessedBy,
     lastSpaceConnectedTo,
@@ -479,7 +479,7 @@ const updateDeviceDetail = (
   if (device.clientVersion) {
     updatedDetail.version = device.clientVersion!;
   }
-  // setUpdatedFields<DeviceDetail>(detail, updatedDetail);
+
   return updatedDetail;
 }
 
@@ -545,8 +545,6 @@ const updateDeviceUserListItem = (
       updatedItem.lastSpaceConnectedTo = deviceUser.lastConnectSpace?.spaceName || '';
     }
 
-    // setUpdatedFields<DeviceDetail>(detail, updatedDetail);
-    // setUpdatedFields<DeviceUserListItem>(item, updatedItem);
     return updatedDetail;
   }
 }
@@ -585,6 +583,9 @@ const spaceDetail = (space: Space): SpaceDetail => {
     name: space.spaceName!,
     status: space.status!,
     ownerAdmin: fullName(space.owner!),
+    lastSeen: space.lastSeen && space.lastSeen > 0
+      ? dateTimeToLocale(new Date(space.lastSeen), false)
+      : 'never',
     clientsConnected,
     dataUsageIn: bytesToSize(bytesDownloaded),
     dataUsageOut: bytesToSize(bytesUploaded),
@@ -605,7 +606,8 @@ const spaceUserListItem = (spaceUser: SpaceUser): SpaceUserListItem => {
     status,
     bytesUploaded,
     bytesDownloaded,
-    lastConnectTime
+    lastConnectTime,
+    lastConnectDevice
   } = spaceUser!;
 
   const {
@@ -625,6 +627,7 @@ const spaceUserListItem = (spaceUser: SpaceUser): SpaceUserListItem => {
     lastConnectTime: lastConnectTime && lastConnectTime > 0
       ? dateTimeToLocale(dateTime)
       : 'never',
+    lastDeviceConnected: lastConnectDevice?.deviceName || '',
     spaceUser
   }
 }
@@ -641,10 +644,13 @@ const updateSpaceDetail = (
   if (space.status) {
     updatedDetail.status = space.status!;
   }
+  if (space.lastSeen && space.lastSeen > 0) {
+    updatedDetail.lastSeen = dateTimeToLocale(new Date(space.lastSeen), false);
+  }
   if (space.version) {
     updatedDetail.version = space.version!;
   }
-  // setUpdatedFields<SpaceDetail>(detail, updatedDetail);
+
   return updatedDetail;
 }
 
@@ -700,9 +706,10 @@ const updateSpaceUserListItem = (
       const dateTime = new Date(spaceUser.lastConnectTime);
       updatedItem.lastConnectTime = dateTimeToLocale(dateTime);
     }
+    if (spaceUser.lastConnectDevice) {
+      updatedItem.lastDeviceConnected = spaceUser.lastConnectDevice?.deviceName || '';
+    }
 
-    // setUpdatedFields<SpaceDetail>(detail, updatedDetail);
-    // setUpdatedFields<SpaceUserListItem>(item, updatedItem);
     return updatedDetail;
   }
 }

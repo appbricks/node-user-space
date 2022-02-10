@@ -50,6 +50,7 @@ export interface SpaceDetail extends DisplayType {
   name: string
   status: SpaceStatus
   ownerAdmin: string
+  lastSeen: string
   clientsConnected: number
   dataUsageIn: string
   dataUsageOut: string
@@ -72,6 +73,7 @@ export interface SpaceUserListItem extends DisplayType {
   dataUsageIn: string
   dataUsageOut: string
   lastConnectTime: string
+  lastDeviceConnected: string
 
   spaceUser?: SpaceUser
 }
