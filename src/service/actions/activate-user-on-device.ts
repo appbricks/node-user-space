@@ -2,12 +2,12 @@ import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
 import { 
-  NOOP,
   SUCCESS,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpicFanOut 
+  serviceEpicFanOut,
+  onSuccessAction
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -16,7 +16,6 @@ import {
   DeviceUserPayload,
   ACTIVATE_USER_ON_DEVICE,
   GET_USER_DEVICES,
-  GET_DEVICE_ACCESS_REQUESTS
 } from '../actions';
 import { UserSpaceStateProps } from '../state';
 
@@ -35,12 +34,7 @@ export const epic = (csProvider: Provider): Epic => {
       },
       getUserDevices: async (action, state$, callSync) => {
         // wait for activation service call to complete
-        let dependsAction = await callSync['activateUserOnDevice'];
-        if (dependsAction.type == SUCCESS) {
-          return createAction(GET_USER_DEVICES);
-        } else {
-          return createAction(NOOP);
-        }
+        return await onSuccessAction(callSync['activateUserOnDevice'], createAction(GET_USER_DEVICES));
       }
     }
   );

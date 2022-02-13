@@ -3,11 +3,11 @@ import { Epic } from 'redux-observable';
 
 import { 
   SUCCESS,
-  NOOP,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpicFanOut 
+  serviceEpicFanOut ,
+  onSuccessAction
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -32,13 +32,8 @@ export const epic = (csProvider: Provider): Epic => {
         return createFollowUpAction(action, SUCCESS);  
       },
       getUserDevices: async (action, state$, callSync) => {
-        // wait for activation service call to complete
-        let dependsAction = await callSync['deleteDevice'];
-        if (dependsAction.type == SUCCESS) {
-          return createAction(GET_USER_DEVICES);
-        } else {
-          return createAction(NOOP);
-        }
+        // wait for delete device service call to complete
+        return await onSuccessAction(callSync['deleteDevice'], createAction(GET_USER_DEVICES));
       }
     }
   );

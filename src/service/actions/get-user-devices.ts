@@ -38,7 +38,13 @@ export const epic = (csProvider: Provider): Epic => {
         return createFollowUpAction<DeviceUsersPayload>(action, SUCCESS, { deviceUsers });
       },
       subscribeToDeviceUpdates: async (action, state$, callSync) => {
-        let dependsAction = await callSync['getUserDevices'];
+        let dependsAction: Action;
+        try {
+          dependsAction = await callSync['getUserDevices'];
+        } catch (error) {
+          return createAction(NOOP);
+        }
+        
         if (dependsAction.type == SUCCESS) {
 
           const [ unsubscribeDevices, subscribeDevices ] = calculateDiffs(
@@ -54,7 +60,13 @@ export const epic = (csProvider: Provider): Epic => {
         return createAction(NOOP);
       },
       subscribeToDeviceTelemetry: async (action, state$, callSync) => {
-        let dependsAction = await callSync['getUserDevices'];
+        let dependsAction: Action;
+        try {
+          dependsAction = await callSync['getUserDevices'];
+        } catch (error) {
+          return createAction(NOOP);
+        }
+
         if (dependsAction.type == SUCCESS) {
 
           const [ unsubscribeDeviceUsers, subscribeDeviceUsers ] = calculateDiffs(

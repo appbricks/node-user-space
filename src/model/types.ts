@@ -77,7 +77,7 @@ export type DeviceUser = {
 export type Device = {
   __typename: "Device",
   deviceID?: string,
-  deviceName?: string,
+  deviceName?: string | null,
   owner?: UserRef,
   // device info
   deviceType?: string | null,
@@ -106,7 +106,7 @@ export enum UserAccessStatus {
 export type Space = {
   __typename: "Space",
   spaceID?: string,
-  spaceName?: string,
+  spaceName?: string | null,
   owner?: UserRef,
   admins?:  Array<UserRef | null > | null,
   recipe?: string | null,
@@ -477,7 +477,7 @@ export type AddDeviceMutation = {
       device?:  {
         __typename: "Device",
         deviceID: string,
-        deviceName: string,
+        deviceName?: string | null,
         // device info
         deviceType?: string | null,
         clientVersion?: string | null,
@@ -510,7 +510,7 @@ export type AddDeviceMutation = {
       lastConnectSpace?:  {
         __typename: "Space",
         spaceID: string,
-        spaceName: string,
+        spaceName?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -542,7 +542,7 @@ export type AddDeviceUserMutation = {
     device?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -595,7 +595,7 @@ export type AddDeviceUserMutation = {
     lastConnectSpace?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -651,7 +651,7 @@ export type ActivateDeviceUserMutation = {
     device?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -704,7 +704,7 @@ export type ActivateDeviceUserMutation = {
     lastConnectSpace?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -758,7 +758,7 @@ export type UpdateDeviceKeyMutation = {
   updateDeviceKey?:  {
     __typename: "Device",
     deviceID: string,
-    deviceName: string,
+    deviceName?: string | null,
     owner?:  {
       __typename: "UserRef",
       userID: string,
@@ -809,7 +809,7 @@ export type DeleteDeviceUserMutation = {
     device?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -862,7 +862,7 @@ export type DeleteDeviceUserMutation = {
     lastConnectSpace?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -935,7 +935,7 @@ export type AddSpaceMutation = {
       space?:  {
         __typename: "Space",
         spaceID: string,
-        spaceName: string,
+        spaceName?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -989,7 +989,7 @@ export type AddSpaceMutation = {
       lastConnectDevice?:  {
         __typename: "Device",
         deviceID: string,
-        deviceName: string,
+        deviceName?: string | null,
         // device info
         deviceType?: string | null,
         clientVersion?: string | null,
@@ -1014,7 +1014,7 @@ export type InviteSpaceUserMutation = {
     space?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1111,7 +1111,7 @@ export type InviteSpaceUserMutation = {
     lastConnectDevice?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1146,7 +1146,7 @@ export type ActivateSpaceUserMutation = {
     space?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1243,7 +1243,7 @@ export type ActivateSpaceUserMutation = {
     lastConnectDevice?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1278,7 +1278,7 @@ export type DeactivateSpaceUserMutation = {
     space?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1375,7 +1375,7 @@ export type DeactivateSpaceUserMutation = {
     lastConnectDevice?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1410,7 +1410,7 @@ export type DeleteSpaceUserMutation = {
     space?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1507,7 +1507,7 @@ export type DeleteSpaceUserMutation = {
     lastConnectDevice?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1551,7 +1551,7 @@ export type AcceptSpaceUserInvitationMutation = {
     space?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1648,7 +1648,7 @@ export type AcceptSpaceUserInvitationMutation = {
     lastConnectDevice?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1682,7 +1682,7 @@ export type LeaveSpaceUserMutation = {
     space?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1779,7 +1779,7 @@ export type LeaveSpaceUserMutation = {
     lastConnectDevice?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1871,7 +1871,7 @@ export type PushDevicesUpdateMutation = {
     device:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -1907,7 +1907,7 @@ export type PushDeviceUsersUpdateMutation = {
       device?:  {
         __typename: "Device",
         deviceID: string,
-        deviceName: string,
+        deviceName?: string | null,
         // device info
         deviceType?: string | null,
         clientVersion?: string | null,
@@ -1940,7 +1940,7 @@ export type PushDeviceUsersUpdateMutation = {
       lastConnectSpace?:  {
         __typename: "Space",
         spaceID: string,
-        spaceName: string,
+        spaceName?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -1974,7 +1974,7 @@ export type PushSpacesUpdateMutation = {
     space:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2032,7 +2032,7 @@ export type PushSpaceUsersUpdateMutation = {
       space?:  {
         __typename: "Space",
         spaceID: string,
-        spaceName: string,
+        spaceName?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -2086,7 +2086,7 @@ export type PushSpaceUsersUpdateMutation = {
       lastConnectDevice?:  {
         __typename: "Device",
         deviceID: string,
-        deviceName: string,
+        deviceName?: string | null,
         // device info
         deviceType?: string | null,
         clientVersion?: string | null,
@@ -2116,7 +2116,7 @@ export type PushAppsUpdateMutation = {
       space?:  {
         __typename: "Space",
         spaceID: string,
-        spaceName: string,
+        spaceName?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -2219,7 +2219,7 @@ export type AuthDeviceQuery = {
     device?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2320,7 +2320,7 @@ export type GetDeviceQuery = {
     device?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2373,7 +2373,7 @@ export type GetDeviceQuery = {
     lastConnectSpace?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2429,7 +2429,7 @@ export type GetSpaceQuery = {
     space?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2526,7 +2526,7 @@ export type GetSpaceQuery = {
     lastConnectDevice?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2560,7 +2560,7 @@ export type GetDeviceAccessRequestsQuery = {
     device?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2613,7 +2613,7 @@ export type GetDeviceAccessRequestsQuery = {
     lastConnectSpace?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2665,7 +2665,7 @@ export type GetSpaceInvitationsQuery = {
     space?:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2762,7 +2762,7 @@ export type GetSpaceInvitationsQuery = {
     lastConnectDevice?:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2835,7 +2835,7 @@ export type DeviceUpdatesSubscription = {
     device:  {
       __typename: "Device",
       deviceID: string,
-      deviceName: string,
+      deviceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2872,7 +2872,7 @@ export type DeviceUserUpdatesSubscription = {
       device?:  {
         __typename: "Device",
         deviceID: string,
-        deviceName: string,
+        deviceName?: string | null,
         // device info
         deviceType?: string | null,
         clientVersion?: string | null,
@@ -2905,7 +2905,7 @@ export type DeviceUserUpdatesSubscription = {
       lastConnectSpace?:  {
         __typename: "Space",
         spaceID: string,
-        spaceName: string,
+        spaceName?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -2939,7 +2939,7 @@ export type SpaceUpdatesSubscription = {
     space:  {
       __typename: "Space",
       spaceID: string,
-      spaceName: string,
+      spaceName?: string | null,
       owner?:  {
         __typename: "UserRef",
         userID: string,
@@ -2998,7 +2998,7 @@ export type SpaceUserUpdatesSubscription = {
       space?:  {
         __typename: "Space",
         spaceID: string,
-        spaceName: string,
+        spaceName?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -3052,7 +3052,7 @@ export type SpaceUserUpdatesSubscription = {
       lastConnectDevice?:  {
         __typename: "Device",
         deviceID: string,
-        deviceName: string,
+        deviceName?: string | null,
         // device info
         deviceType?: string | null,
         clientVersion?: string | null,
@@ -3082,7 +3082,7 @@ export type AppUpdatesSubscription = {
       space?:  {
         __typename: "Space",
         spaceID: string,
-        spaceName: string,
+        spaceName?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,

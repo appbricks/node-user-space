@@ -2,12 +2,12 @@ import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
 import { 
-  NOOP,
   SUCCESS,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpicFanOut 
+  serviceEpicFanOut,
+  onSuccessAction
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -34,12 +34,7 @@ export const epic = (csProvider: Provider): Epic => {
       },
       getUserSpaces: async (action, state$, callSync) => {
         // wait for activation service call to complete
-        let dependsAction = await callSync['grantUserAccessToSpace'];
-        if (dependsAction.type == SUCCESS) {
-          return createAction(GET_USER_SPACES);
-        } else {
-          return createAction(NOOP);
-        }
+        return await onSuccessAction(callSync['grantUserAccessToSpace'], createAction(GET_USER_SPACES));
       }
     }
   );

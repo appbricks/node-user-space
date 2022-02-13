@@ -3,11 +3,11 @@ import { Epic } from 'redux-observable';
 
 import { 
   SUCCESS,
-  NOOP,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpicFanOut 
+  serviceEpicFanOut,
+  onSuccessAction
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -15,8 +15,7 @@ import {
   DeviceUserIDPayload,
   DeviceUserPayload,
   DELETE_USER_FROM_DEVICE,
-  GET_USER_DEVICES,
-  GET_DEVICE_ACCESS_REQUESTS
+  GET_USER_DEVICES
 } from '../actions';
 import { UserSpaceStateProps } from '../state';
 
@@ -33,13 +32,8 @@ export const epic = (csProvider: Provider): Epic => {
         return createFollowUpAction<DeviceUserPayload>(action, SUCCESS, { deviceUser });
       },
       getUserDevices: async (action, state$, callSync) => {
-        // wait for activation service call to complete
-        let dependsAction = await callSync['deleteUserFromDevice'];
-        if (dependsAction.type == SUCCESS) {
-          return createAction(GET_USER_DEVICES);
-        } else {
-          return createAction(NOOP);
-        }
+        // wait for delete device user service call to complete
+        return await onSuccessAction(callSync['deleteUserFromDevice'], createAction(GET_USER_DEVICES));
       }
     }
   );

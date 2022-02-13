@@ -38,7 +38,13 @@ export const epic = (csProvider: Provider): Epic => {
         return createFollowUpAction<SpaceUsersPayload>(action, SUCCESS, { spaceUsers });
       },
       subscribeToSpaceUpdates: async (action, state$, callSync) => {
-        let dependsAction = await callSync['getUserSpaces'];
+        let dependsAction: Action;
+        try {
+          dependsAction = await callSync['getUserSpaces'];
+        } catch (error) {
+          return createAction(NOOP);
+        }
+
         if (dependsAction.type == SUCCESS) {
 
           const [ unsubscribeSpaces, subscribeSpaces ] = calculateDiffs(
@@ -54,7 +60,13 @@ export const epic = (csProvider: Provider): Epic => {
         return createAction(NOOP);
       },
       subscribeToSpaceTelemetry: async (action, state$, callSync) => {
-        let dependsAction = await callSync['getUserSpaces'];
+        let dependsAction: Action;
+        try {
+          dependsAction = await callSync['getUserSpaces'];
+        } catch (error) {
+          return createAction(NOOP);
+        }
+
         if (dependsAction.type == SUCCESS) {
 
           const [ unsubscribeSpaceUsers, subscribeSpaceUsers ] = calculateDiffs(

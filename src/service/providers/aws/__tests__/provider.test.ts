@@ -861,12 +861,12 @@ async function validateSubscription(
 
   const update = (data: any) => {
     updateCount++;
-    console.log('Update', {data: JSON.stringify(data), updateCount});
+    // console.log('Update', {data: JSON.stringify(data), updateCount});
     validateSuccess(data, updateCount);
   };
   const error = (error: any) => {
     err = error;
-    console.log('Update Error', {data: JSON.stringify(error), updateCount});
+    // console.log('Update Error', {data: JSON.stringify(error), updateCount});
   };
 
   // create a good subscription
@@ -876,7 +876,7 @@ async function validateSubscription(
   expect(err).toBeUndefined();
 
   const pushCmdOut = execSync(pushCmd).toString();
-  console.log(`**** Begin Push results ****\n\n${pushCmdOut}\n\n**** End Push results ****`)
+  // console.log(`**** Begin Push results ****\n\n${pushCmdOut}\n\n**** End Push results ****`)
   
   // wait for updates to propagate to subscription
   await sleep(5000);

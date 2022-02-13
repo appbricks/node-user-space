@@ -626,11 +626,12 @@ it('deletes a space', async () => {
 
 const devicesDetail: { [deviceID: string]: DeviceDetail } = {
   "c5021ecb-7c69-4950-a53c-fd4d5ca73b6f": {
+    deviceID: "c5021ecb-7c69-4950-a53c-fd4d5ca73b6f",
     name: "tom's device #1",
     type: "MacBook",
     version: "app/darwin:arm64/1.5.0",
     ownerAdmin: "Thomas T. Bradford",
-    lastAccessed: dateTimeToLocale(date3, true),
+    lastAccessed: dateTimeToLocale(date3, false),
     lastAccessedBy: "Thomas T. Bradford",
     lastSpaceConnectedTo: "bob's space #2",
     dataUsageIn: "21 bytes",
@@ -661,11 +662,12 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
     ]
   },
   "ed3e2219-ff72-4405-88fb-8dab24030770": {
+    deviceID: "ed3e2219-ff72-4405-88fb-8dab24030770",
     name: "tom's device #2",
     type: "iPhone",
     version: "client/ios:arm64/1.1.0",
     ownerAdmin: "Thomas T. Bradford",
-    lastAccessed: dateTimeToLocale(date3, true),
+    lastAccessed: dateTimeToLocale(date3, false),
     lastAccessedBy: "Deborah Plynk Sanders",
     lastSpaceConnectedTo: "bob's space #2",
     dataUsageIn: "65 bytes",
@@ -681,7 +683,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
         status: UserAccessStatus.active,
         dataUsageIn: "43 bytes",
         dataUsageOut: "34 bytes",
-        lastAccessTime: dateTimeToLocale(date1, true),
+        lastAccessTime: dateTimeToLocale(date1),
         lastSpaceConnectedTo: "tom's space #1"
       },
       {
@@ -707,11 +709,12 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
     ]
   },
   "f25b8176-dbb7-4a8a-b08d-5f8e56cc4303": {
+    deviceID: "f25b8176-dbb7-4a8a-b08d-5f8e56cc4303",
     name: "bob's device #1",
     type: "UbuntuServer",
     version: "cli/linux:amd64/1.5.0",
     ownerAdmin: "Bobby J. Brown",
-    lastAccessed: dateTimeToLocale(date3, true),
+    lastAccessed: dateTimeToLocale(date3, false),
     lastAccessedBy: "Thomas T. Bradford",
     lastSpaceConnectedTo: "bob's space #2",
     dataUsageIn: "1.3 KiB",
@@ -756,9 +759,11 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
 
 const spacesDetail: { [spaceID: string]: SpaceDetail } = {
   "d83b7d95-5681-427d-a65a-5d8a868d72e9": {
+    spaceID: "d83b7d95-5681-427d-a65a-5d8a868d72e9",
     name: "tom's space #1",
     status: SpaceStatus.running,
     ownerAdmin: "Thomas T. Bradford",
+    lastSeen: "never",
     clientsConnected: 2,
     dataUsageIn: "5.0 MiB",
     dataUsageOut: "12.6 MiB",
@@ -776,7 +781,8 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         status: UserAccessStatus.active,
         dataUsageIn: "378.3 KiB",
         dataUsageOut: "9.4 MiB",
-        lastConnectTime: dateTimeToLocale(date3)
+        lastConnectTime: dateTimeToLocale(date3),
+        lastDeviceConnected: ""
       },
       {
         userID: "d12935f9-55b3-4514-8346-baaf99d6e6fa",
@@ -785,7 +791,8 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         status: UserAccessStatus.pending,
         dataUsageIn: "0 bytes",
         dataUsageOut: "0 bytes",
-        lastConnectTime: "never"
+        lastConnectTime: "never",
+        lastDeviceConnected: ""
       },
       {
         userID: "95e579be-a365-4268-bed0-17df80ef3dce",
@@ -794,14 +801,17 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         status: UserAccessStatus.active,
         dataUsageIn: "4.6 MiB",
         dataUsageOut: "3.2 MiB",
-        lastConnectTime: dateTimeToLocale(date2)
+        lastConnectTime: dateTimeToLocale(date2),
+        lastDeviceConnected: ""
       }
     ]
   },
   "9a5242dc-0681-4d67-9fe7-bdc691d1a18d": {
+    spaceID: "9a5242dc-0681-4d67-9fe7-bdc691d1a18d",
     name: "bob's space #2",
     status: SpaceStatus.running,
     ownerAdmin: "Bobby J. Brown",
+    lastSeen: "never",
     clientsConnected: 1,
     dataUsageIn: "2.3 MiB",
     dataUsageOut: "7.9 MiB",
@@ -819,7 +829,8 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         status: UserAccessStatus.active,
         dataUsageIn: "85.2 MiB",
         dataUsageOut: "93.8 MiB",
-        lastConnectTime: dateTimeToLocale(date1)
+        lastConnectTime: dateTimeToLocale(date1),
+        lastDeviceConnected: ""
       },
       {
         userID: "a645c56e-f454-460f-8324-eff15357e973",
@@ -828,7 +839,8 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         status: UserAccessStatus.active,
         dataUsageIn: "2.3 MiB",
         dataUsageOut: "7.9 MiB",
-        lastConnectTime: dateTimeToLocale(date3)
+        lastConnectTime: dateTimeToLocale(date3),
+        lastDeviceConnected: ""
       },
       {
         userID: "95e579be-a365-4268-bed0-17df80ef3dce",
@@ -837,7 +849,8 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
         status: UserAccessStatus.pending,
         dataUsageIn: "0 bytes",
         dataUsageOut: "0 bytes",
-        lastConnectTime: "never"
+        lastConnectTime: "never",
+        lastDeviceConnected: ""
       }
     ]
   }

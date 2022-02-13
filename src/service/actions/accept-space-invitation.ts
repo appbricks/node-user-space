@@ -2,12 +2,12 @@ import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
 import { 
-  NOOP,
   SUCCESS,
   Action, 
   createAction, 
   createFollowUpAction, 
-  serviceEpicFanOut 
+  serviceEpicFanOut,
+  onSuccessAction
 } from '@appbricks/utils';
 
 import Provider from '../provider';
@@ -35,21 +35,11 @@ export const epic = (csProvider: Provider): Epic => {
       },
       getSpaceInvitations: async (action, state$, callSync) => {
         // wait for accept service call to complete
-        let dependsAction = await callSync['acceptSpaceInvitation'];
-        if (dependsAction.type == SUCCESS) {
-          return createAction(GET_SPACE_INVITATIONS);
-        } else {
-          return createAction(NOOP);
-        }
+        return await onSuccessAction(callSync['acceptSpaceInvitation'], createAction(GET_SPACE_INVITATIONS));
       },
       getUserSpaces: async (action, state$, callSync) => {
         // wait for accept service call to complete
-        let dependsAction = await callSync['acceptSpaceInvitation'];
-        if (dependsAction.type == SUCCESS) {
-          return createAction(GET_USER_SPACES);
-        } else {
-          return createAction(NOOP);
-        }
+        return await onSuccessAction(callSync['acceptSpaceInvitation'], createAction(GET_USER_SPACES));
       }
     }
   );
