@@ -16,6 +16,7 @@ export interface DisplayType {
 }
 
 export interface DeviceDetail extends DisplayType {
+  deviceID: string
   name: string
   type: string
   version: string
@@ -47,6 +48,7 @@ export interface DeviceUserListItem extends DisplayType {
 }
 
 export interface SpaceDetail extends DisplayType {
+  spaceID: string
   name: string
   status: SpaceStatus
   ownerAdmin: string
