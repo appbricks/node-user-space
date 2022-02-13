@@ -27,6 +27,7 @@ import {
   ERROR_GET_DEVICE_ACCESS_REQUESTS,
   ERROR_ACTIVATE_DEVICE_USER,
   ERROR_DELETE_DEVICE_USER,
+  ERROR_DELETE_DEVICE,
   ERROR_GET_USER_SPACES,
   ERROR_INVITE_SPACE_USER,
   ERROR_ACTIVATE_SPACE_USER,
@@ -415,12 +416,12 @@ export default class Provider implements ProviderInterface {
       if (result.data) {
         this.logger.debug('Device deleted:', result.data);
       } else {
-        throw this.handleErrorResponse(result, ERROR_DELETE_DEVICE_USER, 'deleteDevice')
+        throw this.handleErrorResponse(result, ERROR_DELETE_DEVICE, 'deleteDevice')
       }
 
     } catch (error) {
       this.logger.error('deleteDevice API call returned error: ', error);
-      throw new Error(ERROR_DELETE_DEVICE_USER, error);
+      throw new Error(ERROR_DELETE_DEVICE, error);
     }
   }
 
