@@ -415,6 +415,7 @@ const deviceDetail = (device: Device): DeviceDetail => {
   const lastAccessedDataTime = new Date(lastAccessedTime || 0);
 
   return {
+    deviceID: device.deviceID!,
     name: device.deviceName!,
     type: device.deviceType!,
     version: device.clientVersion!,
@@ -582,6 +583,7 @@ const spaceDetail = (space: Space): SpaceDetail => {
   });
 
   return {
+    spaceID: space.spaceID!,
     name: space.spaceName!,
     status: space.status!,
     ownerAdmin: fullName(space.owner!),
