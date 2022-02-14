@@ -23,6 +23,9 @@ import {
 import {
   UserSpaceStateProps
 } from '../state';
+import { 
+  DeviceUser 
+} from '../../model/types';
 
 export const action =
   (dispatch: redux.Dispatch<redux.Action>) =>
@@ -69,17 +72,24 @@ export const epic = (csProvider: Provider): Epic => {
 
         if (dependsAction.type == SUCCESS) {
 
+          const subscriptionList = (deviceUsers: DeviceUser[]) =>
+            deviceUsers
+              .filter(du => du.isOwner)
+              // for owned devices enumerate the device's users
+              .flatMap(
+                du1 => du1.device!.users!.deviceUsers!.map(
+                  du2 => du1!.device!.deviceID! + '|' + du2!.user!.userID!
+                )
+              )
+              .concat(
+                deviceUsers
+                  .filter(du => !du.isOwner)
+                  .map(du =>du!.device!.deviceID! + '|' + du!.user!.userID!)
+              );
+
           const [ unsubscribeDeviceUsers, subscribeDeviceUsers ] = calculateDiffs(
-            state$.value.userspace!.userDevices.flatMap(
-              du1 => du1.device!.users!.deviceUsers!.map(
-                du2 => du1!.device!.deviceID! + '|' + du2!.user!.userID!
-              )
-            ),
-            (<DeviceUsersPayload>dependsAction.payload).deviceUsers.flatMap(
-              du1 => du1.device!.users!.deviceUsers!.map(
-                du2 => du1!.device!.deviceID! + '|' + du2!.user!.userID!
-              )
-            )
+            subscriptionList(state$.value.userspace!.userDevices),
+            subscriptionList((<DeviceUsersPayload>dependsAction.payload).deviceUsers)
           );
           if (unsubscribeDeviceUsers.length > 0 || subscribeDeviceUsers.length > 0) {
             return createAction<DeviceTelemetrySubscriptionPayload>(SUBSCRIBE_TO_DEVICE_TELEMETRY, {

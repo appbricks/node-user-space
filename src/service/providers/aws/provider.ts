@@ -148,6 +148,16 @@ export default class Provider implements ProviderInterface {
             deviceUsers {
               isOwner
               status
+              bytesUploaded
+              bytesDownloaded
+              lastAccessTime
+              lastConnectSpace {
+                spaceID
+                spaceName
+              }
+              user {
+                userID
+              }
               device {
                 deviceID
                 deviceName
@@ -434,7 +444,19 @@ export default class Provider implements ProviderInterface {
             totalCount
             spaceUsers {
               isOwner
+              isAdmin
+              isEgressNode
               status
+              bytesUploaded
+              bytesDownloaded
+              lastConnectTime
+              lastConnectDevice {
+                deviceID
+                deviceName
+              }
+              user {
+                userID
+              }
               space {
                 spaceID
                 spaceName

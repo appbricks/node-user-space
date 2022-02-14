@@ -165,6 +165,11 @@ it('retrieves a user\'s devices', async () => {
       {
         isOwner: true,
         status: 'active',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastAccessTime: 0,
+        lastConnectSpace: null,
+        user: { userID: tester1.userID },
         device: {
           ...device1,
           users: {
@@ -204,6 +209,11 @@ it('retrieves a user\'s devices', async () => {
       {
         isOwner: true,
         status: 'active',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastAccessTime: 0,
+        lastConnectSpace: null,
+        user: { userID: tester1.userID },
         device: {
           ...device2,
           users: {
@@ -313,6 +323,11 @@ it('deletes a users\'s device', async () => {
       {
         isOwner: true,
         status: 'active',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastAccessTime: 0,
+        lastConnectSpace: null,
+        user: { userID: tester1.userID },
         device: {
           ...device2,
           users: {
@@ -342,12 +357,26 @@ it('retrieves a user\'s spaces', async () => {
     .toEqual([
       {
         isOwner: true,
+        isAdmin: true,
+        isEgressNode: true,
         status: 'active',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastConnectTime: 0,
+        lastConnectDevice: null,
+        user: { userID: tester1.userID },
         space: space1
       },
       {
         isOwner: true,
+        isAdmin: true,
+        isEgressNode: true,
         status: 'active',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastConnectTime: 0,
+        lastConnectDevice: null,
+        user: { userID: tester1.userID },
         space: space2
       }
     ]);
@@ -400,7 +429,14 @@ it('invites users and takes them through the space association lifecycle', async
     .toEqual([
       {
         isOwner: false,
+        isAdmin: false,
+        isEgressNode: true,
         status: 'pending',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastConnectTime: 0,
+        lastConnectDevice: null,
+        user: { userID: tester3.userID },
         space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);
@@ -419,7 +455,14 @@ it('invites users and takes them through the space association lifecycle', async
     .toEqual([
       {
         isOwner: false,
+        isAdmin: false,
+        isEgressNode: true,
         status: 'active',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastConnectTime: 0,
+        lastConnectDevice: null,
+        user: { userID: tester3.userID },
         space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);
@@ -432,7 +475,14 @@ it('invites users and takes them through the space association lifecycle', async
     .toEqual([
       {
         isOwner: false,
+        isAdmin: false,
+        isEgressNode: true,
         status: 'inactive',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastConnectTime: 0,
+        lastConnectDevice: null,  
+        user: { userID: tester3.userID },
         space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);
@@ -457,7 +507,14 @@ it('deactivates a user associated with a space', async () => {
     .toEqual([
       {
         isOwner: false,
+        isAdmin: true,
+        isEgressNode: true,
         status: 'inactive',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastConnectTime: 0,
+        lastConnectDevice: null,  
+        user: { userID: tester2.userID },
         space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);
@@ -482,7 +539,14 @@ it('activates a user associated with a space', async () => {
     .toEqual([
       {
         isOwner: false,
+        isAdmin: true,
+        isEgressNode: true,
         status: 'active',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastConnectTime: 0,
+        lastConnectDevice: null,  
+        user: { userID: tester2.userID },
         space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);  
@@ -518,7 +582,14 @@ it('deletes a user\'s space', async () => {
     .toEqual([
       {
         isOwner: true,
+        isAdmin: true,
+        isEgressNode: true,
         status: 'active',
+        bytesUploaded: 0,
+        bytesDownloaded: 0,
+        lastConnectTime: 0,
+        lastConnectDevice: null,  
+        user: { userID: tester1.userID },
         space: space2
       }
     ]);

@@ -18,6 +18,7 @@ export interface DisplayType {
 export interface DeviceDetail extends DisplayType {
   deviceID: string
   name: string
+  accessStatus: UserAccessStatus
   type: string
   version: string
   ownerAdmin: string
@@ -27,6 +28,7 @@ export interface DeviceDetail extends DisplayType {
   dataUsageIn: string
   dataUsageOut: string
 
+  isOwned: boolean
   bytesDownloaded: number
   bytesUploaded: number
   lastAccessedTime: number
@@ -50,6 +52,7 @@ export interface DeviceUserListItem extends DisplayType {
 export interface SpaceDetail extends DisplayType {
   spaceID: string
   name: string
+  accessStatus: UserAccessStatus
   status: SpaceStatus
   ownerAdmin: string
   lastSeen: string
@@ -61,6 +64,7 @@ export interface SpaceDetail extends DisplayType {
   location: string
   version: string
 
+  isOwned: boolean
   bytesDownloaded: number
   bytesUploaded: number
 

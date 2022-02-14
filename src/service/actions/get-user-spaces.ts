@@ -23,6 +23,9 @@ import {
 import {
   UserSpaceStateProps
 } from '../state';
+import {
+  SpaceUser
+} from '../../model/types';
 
 export const action =
   (dispatch: redux.Dispatch<redux.Action>) =>
@@ -48,8 +51,8 @@ export const epic = (csProvider: Provider): Epic => {
         if (dependsAction.type == SUCCESS) {
 
           const [ unsubscribeSpaces, subscribeSpaces ] = calculateDiffs(
-            state$.value.userspace!.userSpaces.map(du => du.space!.spaceID!),
-            (<SpaceUsersPayload>dependsAction.payload).spaceUsers.map(du => du.space!.spaceID!)
+            state$.value.userspace!.userSpaces.map(su => su.space!.spaceID!),
+            (<SpaceUsersPayload>dependsAction.payload).spaceUsers.map(su => su.space!.spaceID!)
           );
           if (unsubscribeSpaces.length > 0 || subscribeSpaces.length > 0) {
             return createAction<SpaceUpdateSubscriptionPayload>(SUBSCRIBE_TO_SPACE_UPDATES, {
@@ -69,17 +72,24 @@ export const epic = (csProvider: Provider): Epic => {
 
         if (dependsAction.type == SUCCESS) {
 
+          const subscriptionList = (spaceUsers: SpaceUser[]) =>
+            spaceUsers
+              .filter(su => su.isOwner)
+              // for owned spaces enumerate the space's users
+              .flatMap(
+                su1 => su1.space!.users!.spaceUsers!.map(
+                  su2 => su1!.space!.spaceID! + '|' + su2!.user!.userID!
+                )
+              )
+              .concat(
+                spaceUsers
+                  .filter(su => !su.isOwner)
+                  .map(su =>su!.space!.spaceID! + '|' + su!.user!.userID!)
+              );
+              
           const [ unsubscribeSpaceUsers, subscribeSpaceUsers ] = calculateDiffs(
-            state$.value.userspace!.userSpaces.flatMap(
-              du1 => du1.space!.users!.spaceUsers!.map(
-                du2 => du1!.space!.spaceID! + '|' + du2!.user!.userID!
-              )
-            ),
-            (<SpaceUsersPayload>dependsAction.payload).spaceUsers.flatMap(
-              du1 => du1.space!.users!.spaceUsers!.map(
-                du2 => du1!.space!.spaceID! + '|' + du2!.user!.userID!
-              )
-            )
+            subscriptionList(state$.value.userspace!.userSpaces),
+            subscriptionList((<SpaceUsersPayload>dependsAction.payload).spaceUsers)
           );
           if (unsubscribeSpaceUsers.length > 0 || subscribeSpaceUsers.length > 0) {
             return createAction<SpaceTelemetrySubscriptionPayload>(SUBSCRIBE_TO_SPACE_TELEMETRY, {

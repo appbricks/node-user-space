@@ -160,7 +160,7 @@ it('searches a list of users', async () => {
   expect(getState().userSearchResult).toBeUndefined();
 });
 
-it('retrieves a user\'s list of devices', async () => {
+it('retrieves a users list of devices', async () => {
   mockProvider.setLoggedInUser('tom');
 
   stateTester.expectStateTest(GET_USER_DEVICES, ActionResult.pending);
@@ -218,19 +218,19 @@ it('retrieves a user\'s list of devices', async () => {
     (counter, state, status) => {
 
       // update expected value and compare with actual
-      const detail = devicesDetail["f25b8176-dbb7-4a8a-b08d-5f8e56cc4303"]
+      const detail = devicesDetail["ed3e2219-ff72-4405-88fb-8dab24030770"]
       const detailUpdated = {
         ...detail,
-        lastAccessed: dateTimeToLocale(new Date(updateTime), true),
+        lastAccessed: dateTimeToLocale(new Date(updateTime), false),
         lastSpaceConnectedTo: "bob's space #1",
-        dataUsageIn: "1.8 KiB",
-        dataUsageOut: "1.6 KiB",
-        bytesDownloaded: 1813,
-        bytesUploaded: 1655,
+        dataUsageIn: "1.3 KiB",
+        dataUsageOut: "832 bytes",
+        bytesDownloaded: 1348,
+        bytesUploaded: 832,
         lastAccessedTime: updateTime,
       }
       detailUpdated.users.find((item, i, users) => {
-        if (item.userID == "a645c56e-f454-460f-8324-eff15357e973") {
+        if (item.userID == "95e579be-a365-4268-bed0-17df80ef3dce") {
           item.lastSpaceConnectedTo = "bob's space #1";
           item.dataUsageIn = "1.3 KiB";
           item.dataUsageOut = "832 bytes";
@@ -239,15 +239,15 @@ it('retrieves a user\'s list of devices', async () => {
         }
         return false;
       });
-      devicesDetail["f25b8176-dbb7-4a8a-b08d-5f8e56cc4303"] = <DeviceDetail>detailUpdated;
+      devicesDetail["ed3e2219-ff72-4405-88fb-8dab24030770"] = <DeviceDetail>detailUpdated;
 
       logger.trace('state.devices after telemetry update', JSON.stringify(state.devices, skipRefs, 2));
       expect(state.devices).toMatchObject(devicesDetail);
     }
   )
   mockProvider.pushSubscriptionUpdate(<DeviceUserUpdate>{
-    deviceID: "f25b8176-dbb7-4a8a-b08d-5f8e56cc4303",
-    userID: "a645c56e-f454-460f-8324-eff15357e973",
+    deviceID: "ed3e2219-ff72-4405-88fb-8dab24030770",
+    userID: "95e579be-a365-4268-bed0-17df80ef3dce",
     deviceUser: {
       bytesDownloaded: 1348,
       bytesUploaded: 832,
@@ -257,7 +257,7 @@ it('retrieves a user\'s list of devices', async () => {
         spaceName: "bob's space #1"
       }
     }
-  }, "f25b8176-dbb7-4a8a-b08d-5f8e56cc4303", "a645c56e-f454-460f-8324-eff15357e973");
+  }, "ed3e2219-ff72-4405-88fb-8dab24030770", "95e579be-a365-4268-bed0-17df80ef3dce");
   await stateTester.done();
 });
 
@@ -400,40 +400,40 @@ it('retrieves a users list of spaces', async () => {
     (counter, state, status) => {
 
       // update expected value and compare with actual
-      const detail = spacesDetail["9a5242dc-0681-4d67-9fe7-bdc691d1a18d"]
+      const detail = spacesDetail["d83b7d95-5681-427d-a65a-5d8a868d72e9"]
       const detailUpdated = {
         ...detail,
-        dataUsageIn: "2.6 MiB",
-        dataUsageOut: "8.3 MiB",
-        bytesDownloaded: 2762977,
-        bytesUploaded: 8663340,
+        dataUsageIn: "5.6 MiB",
+        dataUsageOut: "16.7 MiB",
+        bytesDownloaded: 5819939,
+        bytesUploaded: 17487730,
       }
       detailUpdated.users.find((item, i, users) => {
         if (item.userID == "95e579be-a365-4268-bed0-17df80ef3dce") {
           item.status = UserAccessStatus.active;
-          item.dataUsageIn = "364.9 KiB";
-          item.dataUsageOut = "413.5 KiB";
+          item.dataUsageIn = "5.2 MiB";
+          item.dataUsageOut = "7.3 MiB";
           item.lastConnectTime = dateTimeToLocale(new Date(updateTime), true);
           return true;
         }
         return false;
       });
-      spacesDetail["9a5242dc-0681-4d67-9fe7-bdc691d1a18d"] = <SpaceDetail>detailUpdated;
+      spacesDetail["d83b7d95-5681-427d-a65a-5d8a868d72e9"] = <SpaceDetail>detailUpdated;
 
       logger.trace('state.spaces after telemetry update', JSON.stringify(state.spaces, skipRefs(), 2));
       expect(state.spaces).toMatchObject(spacesDetail);
     }
   )
   mockProvider.pushSubscriptionUpdate(<SpaceUserUpdate>{
-    spaceID: "9a5242dc-0681-4d67-9fe7-bdc691d1a18d",
+    spaceID: "d83b7d95-5681-427d-a65a-5d8a868d72e9",
     userID: "95e579be-a365-4268-bed0-17df80ef3dce",
     spaceUser: {
       status: "active",
-      bytesDownloaded: 373634,
-      bytesUploaded: 423456,
+      bytesDownloaded: 5432546,
+      bytesUploaded: 7654352,
       lastConnectTime: updateTime,
     }
-  }, "9a5242dc-0681-4d67-9fe7-bdc691d1a18d", "95e579be-a365-4268-bed0-17df80ef3dce");
+  }, "d83b7d95-5681-427d-a65a-5d8a868d72e9", "95e579be-a365-4268-bed0-17df80ef3dce");
   await stateTester.done();
 });
 
@@ -628,6 +628,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
   "c5021ecb-7c69-4950-a53c-fd4d5ca73b6f": {
     deviceID: "c5021ecb-7c69-4950-a53c-fd4d5ca73b6f",
     name: "tom's device #1",
+    accessStatus: UserAccessStatus.active,
     type: "MacBook",
     version: "app/darwin:arm64/1.5.0",
     ownerAdmin: "Thomas T. Bradford",
@@ -636,6 +637,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
     lastSpaceConnectedTo: "bob's space #2",
     dataUsageIn: "21 bytes",
     dataUsageOut: "12 bytes",
+    isOwned: true,
     bytesDownloaded: 21,
     bytesUploaded: 12,
     lastAccessedTime: date3.getTime(),
@@ -664,6 +666,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
   "ed3e2219-ff72-4405-88fb-8dab24030770": {
     deviceID: "ed3e2219-ff72-4405-88fb-8dab24030770",
     name: "tom's device #2",
+    accessStatus: UserAccessStatus.active,
     type: "iPhone",
     version: "client/ios:arm64/1.1.0",
     ownerAdmin: "Thomas T. Bradford",
@@ -672,6 +675,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
     lastSpaceConnectedTo: "bob's space #2",
     dataUsageIn: "65 bytes",
     dataUsageOut: "56 bytes",
+    isOwned: true,
     bytesDownloaded: 65,
     bytesUploaded: 56,
     lastAccessedTime: date3.getTime(),
@@ -711,49 +715,20 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
   "f25b8176-dbb7-4a8a-b08d-5f8e56cc4303": {
     deviceID: "f25b8176-dbb7-4a8a-b08d-5f8e56cc4303",
     name: "bob's device #1",
+    accessStatus: UserAccessStatus.active,
     type: "UbuntuServer",
     version: "cli/linux:amd64/1.5.0",
     ownerAdmin: "Bobby J. Brown",
     lastAccessed: dateTimeToLocale(date3, false),
-    lastAccessedBy: "Thomas T. Bradford",
+    lastAccessedBy: "",
     lastSpaceConnectedTo: "bob's space #2",
-    dataUsageIn: "1.3 KiB",
-    dataUsageOut: "1.4 KiB",
-    bytesDownloaded: 1301,
-    bytesUploaded: 1406,
+    dataUsageIn: "836 bytes",
+    dataUsageOut: "583 bytes",
+    isOwned: false,
+    bytesDownloaded: 836,
+    bytesUploaded: 583,
     lastAccessedTime: date3.getTime(),
-    users: [
-      {
-        userID: "d12935f9-55b3-4514-8346-baaf99d6e6fa",
-        userName: "bob",
-        fullName: "Bobby J. Brown",
-        status: UserAccessStatus.active,
-        dataUsageIn: "465 bytes",
-        dataUsageOut: "823 bytes",
-        lastAccessTime: dateTimeToLocale(date2),
-        lastSpaceConnectedTo: ""
-      },
-      {
-        userID: "a645c56e-f454-460f-8324-eff15357e973",
-        userName: "tom",
-        fullName: "Thomas T. Bradford",
-        status: UserAccessStatus.active,
-        dataUsageIn: "836 bytes",
-        dataUsageOut: "583 bytes",
-        lastAccessTime: dateTimeToLocale(date3),
-        lastSpaceConnectedTo: "bob's space #2"
-      },
-      {
-        userID: "95e579be-a365-4268-bed0-17df80ef3dce",
-        userName: "deb",
-        fullName: "Deborah Plynk Sanders",
-        status: UserAccessStatus.pending,
-        lastSpaceConnectedTo: '',
-        dataUsageIn: "0 bytes",
-        dataUsageOut: "0 bytes",
-        lastAccessTime: "never"
-      }
-    ]
+    users: []
   }
 };
 
@@ -761,6 +736,7 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
   "d83b7d95-5681-427d-a65a-5d8a868d72e9": {
     spaceID: "d83b7d95-5681-427d-a65a-5d8a868d72e9",
     name: "tom's space #1",
+    accessStatus: UserAccessStatus.active,
     status: SpaceStatus.running,
     ownerAdmin: "Thomas T. Bradford",
     lastSeen: "never",
@@ -771,6 +747,7 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
     type: "recipe #1",
     location: "us-east-1",
     version: "2.0.0",
+    isOwned: true,
     bytesDownloaded: 5245122,
     bytesUploaded: 13221771,
     users: [
@@ -809,50 +786,21 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
   "9a5242dc-0681-4d67-9fe7-bdc691d1a18d": {
     spaceID: "9a5242dc-0681-4d67-9fe7-bdc691d1a18d",
     name: "bob's space #2",
+    accessStatus: UserAccessStatus.active,
     status: SpaceStatus.running,
     ownerAdmin: "Bobby J. Brown",
     lastSeen: "never",
-    clientsConnected: 1,
+    clientsConnected: 0,
     dataUsageIn: "2.3 MiB",
     dataUsageOut: "7.9 MiB",
     cloudProvider: "gcp",
     type: "recipe #2",
     location: "us-east1",
     version: "1.2.0",
+    isOwned: false,
     bytesDownloaded: 2389343,
     bytesUploaded: 8239884,
-    users: [
-      {
-        userID: "d12935f9-55b3-4514-8346-baaf99d6e6fa",
-        userName: "bob",
-        fullName: "Bobby J. Brown",
-        status: UserAccessStatus.active,
-        dataUsageIn: "85.2 MiB",
-        dataUsageOut: "93.8 MiB",
-        lastConnectTime: dateTimeToLocale(date1),
-        lastDeviceConnected: ""
-      },
-      {
-        userID: "a645c56e-f454-460f-8324-eff15357e973",
-        userName: "tom",
-        fullName: "Thomas T. Bradford",
-        status: UserAccessStatus.active,
-        dataUsageIn: "2.3 MiB",
-        dataUsageOut: "7.9 MiB",
-        lastConnectTime: dateTimeToLocale(date3),
-        lastDeviceConnected: ""
-      },
-      {
-        userID: "95e579be-a365-4268-bed0-17df80ef3dce",
-        userName: "deb",
-        fullName: "Deborah Plynk Sanders",
-        status: UserAccessStatus.pending,
-        dataUsageIn: "0 bytes",
-        dataUsageOut: "0 bytes",
-        lastConnectTime: "never",
-        lastDeviceConnected: ""
-      }
-    ]
+    users: []
   }
 };
 

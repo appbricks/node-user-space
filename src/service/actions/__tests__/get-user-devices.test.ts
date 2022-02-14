@@ -54,11 +54,19 @@ it('dispatches an action to retrieve the logged in user tom\'s devices', async (
   const subDeviceIDs = deviceUsers.map(
     du => du.device!.deviceID
   ).sort();
-  const subDeviceUserIDs = deviceUsers.flatMap(
-    du1 => du1.device!.users!.deviceUsers!.map(
-      du2 => du1.device!.deviceID + '|' + du2!.user!.userID
+  const subDeviceUserIDs = deviceUsers
+    .filter(du => du.isOwner)
+    .flatMap(
+      du1 => du1.device!.users!.deviceUsers!.map(
+        du2 => du1.device!.deviceID + '|' + du2!.user!.userID
+      )
     )
-  ).sort();
+    .concat(
+      deviceUsers
+        .filter(du => !du.isOwner)
+        .map(du => du.device!.deviceID + '|' + du!.user!.userID)
+    )
+    .sort();
 
   const testSubDevice1 = deviceUsers[0].device!;
   const testSubDeviceUser1 = testSubDevice1.users!.deviceUsers![0]!;

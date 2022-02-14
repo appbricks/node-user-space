@@ -54,11 +54,19 @@ it('dispatches an action to retrieve the logged in user tom\'s spaces', async ()
   const subSpaceIDs = spaceUsers.map(
     su => su.space!.spaceID
   ).sort();
-  const subSpaceUserIDs = spaceUsers.flatMap(
-    su1 => su1.space!.users!.spaceUsers!.map(
-      su2 => su1.space!.spaceID + '|' + su2!.user!.userID
+  const subSpaceUserIDs = spaceUsers
+    .filter(su => su.isOwner)
+    .flatMap(
+      su1 => su1.space!.users!.spaceUsers!.map(
+        su2 => su1.space!.spaceID + '|' + su2!.user!.userID
+      )
     )
-  ).sort();
+    .concat(
+      spaceUsers
+        .filter(su => !su.isOwner)
+        .map(su => su.space!.spaceID + '|' + su!.user!.userID)
+    )
+    .sort();
 
   const testSubSpace1 = spaceUsers[0].space!;
   const testSubSpaceUser1 = testSubSpace1.users!.spaceUsers![0]!;
