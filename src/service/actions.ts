@@ -119,7 +119,7 @@ export interface UserSpaceActionProps {
     getUserDevices: () => actions.Action
     getDeviceAccessRequests: (deviceID: string) => actions.Action
     activateUserOnDevice: (deviceID: string, userID: string) => actions.Action
-    deleteUserFromDevice: (deviceID: string, userID: string) => actions.Action
+    deleteUserFromDevice: (deviceID: string, userID?: string) => actions.Action
     deleteDevice: (deviceID: string) => actions.Action
 
     // space owner actions
@@ -127,7 +127,7 @@ export interface UserSpaceActionProps {
     inviteUserToSpace: (spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) => actions.Action
     grantUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
     removeUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
-    deleteUserFromSpace: (spaceID: string, userID: string) => actions.Action
+    deleteUserFromSpace: (spaceID: string, userID?: string) => actions.Action
     deleteSpace: (spaceID: string) => actions.Action
 
     // space guest actions 

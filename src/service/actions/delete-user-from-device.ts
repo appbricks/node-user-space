@@ -20,7 +20,7 @@ import {
 import { UserSpaceStateProps } from '../state';
 
 export const action = 
-  (dispatch: redux.Dispatch<redux.Action>, deviceID: string, userID: string) => 
+  (dispatch: redux.Dispatch<redux.Action>, deviceID: string, userID?: string) => 
     dispatch(createAction(DELETE_USER_FROM_DEVICE, <DeviceUserIDPayload>{ deviceID, userID }));
 
 export const epic = (csProvider: Provider): Epic => {

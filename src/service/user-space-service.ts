@@ -156,7 +156,7 @@ export default class UserSpaceService {
           getDeviceAccessRequests.action(dispatch, deviceID),
         activateUserOnDevice: (deviceID: string, userID: string) =>
           activateUserOnDevice.action(dispatch, deviceID, userID),
-        deleteUserFromDevice: (deviceID: string, userID: string) =>
+        deleteUserFromDevice: (deviceID: string, userID?: string) =>
           deleteUserFromDevice.action(dispatch, deviceID, userID),
         deleteDevice: (deviceID: string) =>
           deleteDevice.action(dispatch, deviceID),
@@ -170,7 +170,7 @@ export default class UserSpaceService {
           grantUserAccessToSpace.action(dispatch, spaceID, userID),
         removeUserAccessToSpace: (spaceID: string, userID: string) =>
           removeUserAccessToSpace.action(dispatch, spaceID, userID),
-        deleteUserFromSpace: (spaceID: string, userID: string) =>
+        deleteUserFromSpace: (spaceID: string, userID?: string) =>
           deleteUserFromSpace.action(dispatch, spaceID, userID),
         deleteSpace: (spaceID: string) =>
           deleteSpace.action(dispatch, spaceID),
