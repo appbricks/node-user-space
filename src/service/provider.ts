@@ -82,7 +82,7 @@ export default interface Provider {
   /**
    * Deletes the given user from the device.
    */
-  deleteDeviceUser(deviceID: string, userID: string): Promise<DeviceUser>;
+  deleteDeviceUser(deviceID: string, userID?: string): Promise<DeviceUser>;
 
   /**
    * Deletes the given device
@@ -134,7 +134,7 @@ export default interface Provider {
   /**
    * Remove user's access to the given space.
    */
-  deleteSpaceUser(spaceID: string, userID: string): Promise<SpaceUser>;
+  deleteSpaceUser(spaceID: string, userID?: string): Promise<SpaceUser>;
 
   /**
    * Deletes the give space and all user

@@ -375,10 +375,10 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async deleteDeviceUser(deviceID: string, userID: string) {
+  async deleteDeviceUser(deviceID: string, userID?: string) {
 
     const deleteDeviceUser = /* GraphQL */ `
-      mutation DeleteDeviceUser($deviceID: ID!, $userID: ID!) {
+      mutation DeleteDeviceUser($deviceID: ID!, $userID: ID) {
         deleteDeviceUser(deviceID: $deviceID, userID: $userID) {
           device {
             deviceID
@@ -750,10 +750,10 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async deleteSpaceUser(spaceID: string, userID: string) {
+  async deleteSpaceUser(spaceID: string, userID?: string) {
 
     const deleteSpaceUser = /* GraphQL */ `
-      mutation DeleteSpaceUser($spaceID: ID!, $userID: ID!) {
+      mutation DeleteSpaceUser($spaceID: ID!, $userID: ID) {
         deleteSpaceUser(spaceID: $spaceID, userID: $userID) {
           space {
             spaceID
