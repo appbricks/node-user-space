@@ -536,21 +536,18 @@ const updateDeviceUserListItem = (
           updatedDetail.accessStatus = deviceUser.status;
         }
         updatedItem.status = deviceUser.status!;
-        updatedItem.deviceUser!.status = deviceUser.status!;
       }
       if (deviceUser.bytesDownloaded) {
         updatedDetail.bytesDownloaded -= item.deviceUser!.bytesDownloaded!;
         updatedDetail.bytesDownloaded += deviceUser.bytesDownloaded;
         updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
         updatedItem.dataUsageIn = bytesToSize(deviceUser.bytesDownloaded!);
-        updatedItem.deviceUser!.bytesDownloaded = deviceUser.bytesDownloaded
       }
       if (deviceUser.bytesUploaded) {
         updatedDetail.bytesUploaded -= item.deviceUser!!.bytesUploaded!;
         updatedDetail.bytesUploaded += deviceUser.bytesUploaded;
         updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
         updatedItem.dataUsageOut = bytesToSize(deviceUser.bytesUploaded!);
-        updatedItem.deviceUser!.bytesUploaded = deviceUser.bytesUploaded
       }
       if (deviceUser.lastAccessTime) {
         const dateTime = new Date(deviceUser.lastAccessTime);
@@ -672,6 +669,7 @@ const spaceUserListItem = (spaceUser: SpaceUser): SpaceUserListItem => {
     userName,
     fullName: fullName(user!),
     status,
+    egressAllowed: spaceUser.isEgressNode ? 'yes' : 'no',
     dataUsageIn: bytesToSize(bytesDownloaded!),
     dataUsageOut: bytesToSize(bytesUploaded!),
     lastConnectTime: lastConnectTime && lastConnectTime > 0
@@ -741,21 +739,21 @@ const updateSpaceUserListItem = (
           updatedDetail.accessStatus = spaceUser.status;
         }
         updatedItem.status = spaceUser.status!;
-        updatedItem.spaceUser!.status = spaceUser.status!;
+      }
+      if (spaceUser.isEgressNode !== undefined && spaceUser.isEgressNode !== null) {
+        updatedItem.egressAllowed = spaceUser.isEgressNode ? 'yes' : 'no';
       }
       if (spaceUser.bytesDownloaded) {
         updatedDetail.bytesDownloaded -= item.spaceUser!.bytesDownloaded!;
         updatedDetail.bytesDownloaded += spaceUser.bytesDownloaded;
         updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
         updatedItem.dataUsageIn = bytesToSize(spaceUser.bytesDownloaded!);
-        updatedItem.spaceUser!.bytesDownloaded = spaceUser.bytesDownloaded
       }
       if (spaceUser.bytesUploaded) {
         updatedDetail.bytesUploaded -= item.spaceUser!.bytesUploaded!;
         updatedDetail.bytesUploaded += spaceUser.bytesUploaded;
         updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
         updatedItem.dataUsageOut = bytesToSize(spaceUser.bytesUploaded!);
-        updatedItem.spaceUser!.bytesUploaded = spaceUser.bytesUploaded
       }
       if (spaceUser.lastConnectTime) {
         const dateTime = new Date(spaceUser.lastConnectTime);
@@ -769,6 +767,9 @@ const updateSpaceUserListItem = (
   } else {
     if (spaceUser.status) {
       updatedDetail.accessStatus = spaceUser.status;
+    }
+    if (spaceUser.isEgressNode !== undefined && spaceUser.isEgressNode !== null) {
+      updatedDetail.egressAllowed = spaceUser.isEgressNode ? 'yes' : 'no';
     }
     if (spaceUser.bytesDownloaded) {
       updatedDetail.bytesDownloaded = spaceUser.bytesDownloaded;

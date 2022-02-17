@@ -76,6 +76,7 @@ export interface SpaceUserListItem extends DisplayType {
   userName: string
   fullName: string
   status: UserAccessStatus,
+  egressAllowed: string
   dataUsageIn: string
   dataUsageOut: string
   lastConnectTime: string
