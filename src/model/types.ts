@@ -84,6 +84,10 @@ export type Device = {
   clientVersion?: string | null,
   publicKey?: string | null,
   certificate?: string | null,
+  // common configuration associated
+  // with the device such as default
+  // settings for new device users
+  settings?: string | null,
   users?: DeviceUsersConnection,
 };
 
@@ -116,6 +120,10 @@ export type Space = {
   publicKey?: string | null,
   certificate?: string | null,
   isEgressNode?: boolean | null,
+  // common configuration associated
+  // with the space such as default
+  // settings for new space users
+  settings?: string | null,
   // space node
   ipAddress?: string | null,
   fqdn?: string | null,
@@ -483,6 +491,10 @@ export type AddDeviceMutation = {
         clientVersion?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -518,6 +530,10 @@ export type AddDeviceMutation = {
         publicKey?: string | null,
         certificate?: string | null,
         isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
         // space node
         ipAddress?: string | null,
         fqdn?: string | null,
@@ -556,6 +572,10 @@ export type AddDeviceUserMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -619,6 +639,10 @@ export type AddDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -665,6 +689,10 @@ export type ActivateDeviceUserMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -728,6 +756,10 @@ export type ActivateDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -744,52 +776,6 @@ export type ActivateDeviceUserMutation = {
       } | null,
       status?: SpaceStatus | null,
       lastSeen?: number | null,
-    } | null,
-  } | null,
-};
-
-export type UpdateDeviceKeyMutationVariables = {
-  deviceID?: string,
-  deviceKey?: Key,
-};
-
-export type UpdateDeviceKeyMutation = {
-  // Update the keys for an owned device
-  updateDeviceKey?:  {
-    __typename: "Device",
-    deviceID: string,
-    deviceName?: string | null,
-    owner?:  {
-      __typename: "UserRef",
-      userID: string,
-      userName?: string | null,
-      firstName?: string | null,
-      middleName?: string | null,
-      familyName?: string | null,
-    } | null,
-    // device info
-    deviceType?: string | null,
-    clientVersion?: string | null,
-    publicKey?: string | null,
-    certificate?: string | null,
-    users?:  {
-      __typename: "DeviceUsersConnection",
-      pageInfo:  {
-        __typename: "PageInfo",
-        // When paginating forwards, are there more items?
-        hasNextPage: boolean,
-        // When paginating backwards, are there more items?
-        hasPreviousePage: boolean,
-      },
-      totalCount?: number | null,
-      deviceUsers?:  Array< {
-        __typename: "DeviceUser",
-        isOwner?: boolean | null,
-        status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
-        lastAccessTime?: number | null,
-      } | null > | null,
     } | null,
   } | null,
 };
@@ -823,6 +809,10 @@ export type DeleteDeviceUserMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -886,6 +876,10 @@ export type DeleteDeviceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -916,6 +910,58 @@ export type DeleteDeviceMutation = {
   deleteDevice?: Array< string | null > | null,
 };
 
+export type UpdateDeviceMutationVariables = {
+  deviceID?: string,
+  deviceKey?: Key | null,
+  clientVersion?: string | null,
+  settings?: string | null,
+};
+
+export type UpdateDeviceMutation = {
+  // Update device
+  updateDevice?:  {
+    __typename: "Device",
+    deviceID: string,
+    deviceName?: string | null,
+    owner?:  {
+      __typename: "UserRef",
+      userID: string,
+      userName?: string | null,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+    } | null,
+    // device info
+    deviceType?: string | null,
+    clientVersion?: string | null,
+    publicKey?: string | null,
+    certificate?: string | null,
+    // common configuration associated
+    // with the device such as default
+    // settings for new device users
+    settings?: string | null,
+    users?:  {
+      __typename: "DeviceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      deviceUsers?:  Array< {
+        __typename: "DeviceUser",
+        isOwner?: boolean | null,
+        status?: UserAccessStatus | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastAccessTime?: number | null,
+      } | null > | null,
+    } | null,
+  } | null,
+};
+
 export type AddSpaceMutationVariables = {
   spaceName?: string,
   spaceKey?: Key,
@@ -943,6 +989,10 @@ export type AddSpaceMutation = {
         publicKey?: string | null,
         certificate?: string | null,
         isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
         // space node
         ipAddress?: string | null,
         fqdn?: string | null,
@@ -995,6 +1045,10 @@ export type AddSpaceMutation = {
         clientVersion?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
       } | null,
     },
   } | null,
@@ -1003,7 +1057,6 @@ export type AddSpaceMutation = {
 export type InviteSpaceUserMutationVariables = {
   spaceID?: string,
   userID?: string,
-  isAdmin?: boolean,
   isEgressNode?: boolean,
 };
 
@@ -1038,6 +1091,10 @@ export type InviteSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -1125,6 +1182,10 @@ export type InviteSpaceUserMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1170,6 +1231,10 @@ export type ActivateSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -1257,6 +1322,10 @@ export type ActivateSpaceUserMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1302,6 +1371,10 @@ export type DeactivateSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -1389,6 +1462,10 @@ export type DeactivateSpaceUserMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1399,7 +1476,7 @@ export type DeactivateSpaceUserMutation = {
 
 export type DeleteSpaceUserMutationVariables = {
   spaceID?: string,
-  userID?: string,
+  userID?: string | null,
 };
 
 export type DeleteSpaceUserMutation = {
@@ -1434,6 +1511,10 @@ export type DeleteSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -1521,6 +1602,10 @@ export type DeleteSpaceUserMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1575,6 +1660,10 @@ export type AcceptSpaceUserInvitationMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -1662,6 +1751,10 @@ export type AcceptSpaceUserInvitationMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1706,6 +1799,10 @@ export type LeaveSpaceUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -1793,6 +1890,245 @@ export type LeaveSpaceUserMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
+  } | null,
+};
+
+export type UpdateSpaceMutationVariables = {
+  spaceID?: string,
+  spaceKey?: Key | null,
+  version?: string | null,
+  settings?: string | null,
+};
+
+export type UpdateSpaceMutation = {
+  // Update space
+  updateSpace?:  {
+    __typename: "Space",
+    spaceID: string,
+    spaceName?: string | null,
+    owner?:  {
+      __typename: "UserRef",
+      userID: string,
+      userName?: string | null,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+    } | null,
+    admins?:  Array< {
+      __typename: "UserRef",
+      userID: string,
+      userName?: string | null,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+    } | null > | null,
+    recipe?: string | null,
+    iaas?: string | null,
+    region?: string | null,
+    version?: string | null,
+    publicKey?: string | null,
+    certificate?: string | null,
+    isEgressNode?: boolean | null,
+    // common configuration associated
+    // with the space such as default
+    // settings for new space users
+    settings?: string | null,
+    // space node
+    ipAddress?: string | null,
+    fqdn?: string | null,
+    port?: number | null,
+    vpnType?: string | null,
+    localCARoot?: string | null,
+    apps?:  {
+      __typename: "SpaceAppsConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      spaceApps?:  Array< {
+        __typename: "App",
+        appID: string,
+        appName: string,
+        recipe: string,
+        iaas: string,
+        region: string,
+      } | null > | null,
+    } | null,
+    users?:  {
+      __typename: "SpaceUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      spaceUsers?:  Array< {
+        __typename: "SpaceUser",
+        isOwner?: boolean | null,
+        isAdmin?: boolean | null,
+        // User's that are neither owners or admin can
+        // connect to the space and access only apps
+        // they are allowed to access. If this flag
+        // is set then they can also use the space
+        // as the egress node for internet access.
+        isEgressNode?: boolean | null,
+        status?: UserAccessStatus | null,
+        bytesUploaded?: number | null,
+        bytesDownloaded?: number | null,
+        lastConnectTime?: number | null,
+      } | null > | null,
+    } | null,
+    status?: SpaceStatus | null,
+    lastSeen?: number | null,
+  } | null,
+};
+
+export type UpdateSpaceUserMutationVariables = {
+  spaceID?: string,
+  isEgressNode?: boolean | null,
+};
+
+export type UpdateSpaceUserMutation = {
+  // Update space user
+  updateSpaceUser?:  {
+    __typename: "SpaceUser",
+    space?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName?: string | null,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      userID: string,
+      userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
+      emailAddress?: string | null,
+      mobilePhone?: string | null,
+      confirmed?: boolean | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      // A user's universal config is an encrypted
+      // document containing metadata of all spaces the
+      // user owns.
+      universalConfig?: string | null,
+    } | null,
+    isOwner?: boolean | null,
+    isAdmin?: boolean | null,
+    // User's that are neither owners or admin can
+    // connect to the space and access only apps
+    // they are allowed to access. If this flag
+    // is set then they can also use the space
+    // as the egress node for internet access.
+    isEgressNode?: boolean | null,
+    status?: UserAccessStatus | null,
+    bytesUploaded?: number | null,
+    bytesDownloaded?: number | null,
+    accessList?:  {
+      __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
+    } | null,
+    lastConnectTime?: number | null,
+    lastConnectDevice?:  {
+      __typename: "Device",
+      deviceID: string,
+      deviceName?: string | null,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1885,6 +2221,10 @@ export type PushDevicesUpdateMutation = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1913,6 +2253,10 @@ export type PushDeviceUsersUpdateMutation = {
         clientVersion?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -1948,6 +2292,10 @@ export type PushDeviceUsersUpdateMutation = {
         publicKey?: string | null,
         certificate?: string | null,
         isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
         // space node
         ipAddress?: string | null,
         fqdn?: string | null,
@@ -1998,6 +2346,10 @@ export type PushSpacesUpdateMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -2040,6 +2392,10 @@ export type PushSpaceUsersUpdateMutation = {
         publicKey?: string | null,
         certificate?: string | null,
         isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
         // space node
         ipAddress?: string | null,
         fqdn?: string | null,
@@ -2092,6 +2448,10 @@ export type PushSpaceUsersUpdateMutation = {
         clientVersion?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
       } | null,
     },
   } | null,
@@ -2124,6 +2484,10 @@ export type PushAppsUpdateMutation = {
         publicKey?: string | null,
         certificate?: string | null,
         isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
         // space node
         ipAddress?: string | null,
         fqdn?: string | null,
@@ -2233,6 +2597,10 @@ export type AuthDeviceQuery = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2334,6 +2702,10 @@ export type GetDeviceQuery = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2397,6 +2769,10 @@ export type GetDeviceQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -2453,6 +2829,10 @@ export type GetSpaceQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -2540,6 +2920,10 @@ export type GetSpaceQuery = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2574,6 +2958,10 @@ export type GetDeviceAccessRequestsQuery = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2637,6 +3025,10 @@ export type GetDeviceAccessRequestsQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -2689,6 +3081,10 @@ export type GetSpaceInvitationsQuery = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -2776,6 +3172,10 @@ export type GetSpaceInvitationsQuery = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2849,6 +3249,10 @@ export type DeviceUpdatesSubscription = {
       clientVersion?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2878,6 +3282,10 @@ export type DeviceUserUpdatesSubscription = {
         clientVersion?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -2913,6 +3321,10 @@ export type DeviceUserUpdatesSubscription = {
         publicKey?: string | null,
         certificate?: string | null,
         isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
         // space node
         ipAddress?: string | null,
         fqdn?: string | null,
@@ -2963,6 +3375,10 @@ export type SpaceUpdatesSubscription = {
       publicKey?: string | null,
       certificate?: string | null,
       isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
       // space node
       ipAddress?: string | null,
       fqdn?: string | null,
@@ -3006,6 +3422,10 @@ export type SpaceUserUpdatesSubscription = {
         publicKey?: string | null,
         certificate?: string | null,
         isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
         // space node
         ipAddress?: string | null,
         fqdn?: string | null,
@@ -3058,6 +3478,10 @@ export type SpaceUserUpdatesSubscription = {
         clientVersion?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
       } | null,
     },
   } | null,
@@ -3090,6 +3514,10 @@ export type AppUpdatesSubscription = {
         publicKey?: string | null,
         certificate?: string | null,
         isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
         // space node
         ipAddress?: string | null,
         fqdn?: string | null,

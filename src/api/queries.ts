@@ -31,6 +31,7 @@ export const authDevice = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -103,6 +104,7 @@ export const getDevice = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -156,6 +158,7 @@ export const getDevice = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -200,6 +203,7 @@ export const getSpace = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -265,6 +269,7 @@ export const getSpace = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -289,6 +294,7 @@ export const getDeviceAccessRequests = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -342,6 +348,7 @@ export const getDeviceAccessRequests = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -386,6 +393,7 @@ export const getSpaceInvitations = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -451,6 +459,7 @@ export const getSpaceInvitations = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }

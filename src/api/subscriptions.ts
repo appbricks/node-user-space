@@ -50,6 +50,7 @@ export const deviceUpdates = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -70,6 +71,7 @@ export const deviceUserUpdates = /* GraphQL */ `
           clientVersion
           publicKey
           certificate
+          settings
         }
         user {
           userID
@@ -100,6 +102,7 @@ export const deviceUserUpdates = /* GraphQL */ `
           publicKey
           certificate
           isEgressNode
+          settings
           ipAddress
           fqdn
           port
@@ -142,6 +145,7 @@ export const spaceUpdates = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -175,6 +179,7 @@ export const spaceUserUpdates = /* GraphQL */ `
           publicKey
           certificate
           isEgressNode
+          settings
           ipAddress
           fqdn
           port
@@ -214,6 +219,7 @@ export const spaceUserUpdates = /* GraphQL */ `
           clientVersion
           publicKey
           certificate
+          settings
         }
       }
     }
@@ -240,6 +246,7 @@ export const appUpdates = /* GraphQL */ `
           publicKey
           certificate
           isEgressNode
+          settings
           ipAddress
           fqdn
           port

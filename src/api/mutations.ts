@@ -118,6 +118,7 @@ export const addDevice = /* GraphQL */ `
           clientVersion
           publicKey
           certificate
+          settings
         }
         user {
           userID
@@ -148,6 +149,7 @@ export const addDevice = /* GraphQL */ `
           publicKey
           certificate
           isEgressNode
+          settings
           ipAddress
           fqdn
           port
@@ -177,6 +179,7 @@ export const addDeviceUser = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -230,6 +233,7 @@ export const addDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -264,6 +268,7 @@ export const activateDeviceUser = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -317,6 +322,7 @@ export const activateDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -330,39 +336,6 @@ export const activateDeviceUser = /* GraphQL */ `
         }
         status
         lastSeen
-      }
-    }
-  }
-`;
-export const updateDeviceKey = /* GraphQL */ `
-  mutation UpdateDeviceKey($deviceID: ID!, $deviceKey: Key!) {
-    updateDeviceKey(deviceID: $deviceID, deviceKey: $deviceKey) {
-      deviceID
-      deviceName
-      owner {
-        userID
-        userName
-        firstName
-        middleName
-        familyName
-      }
-      deviceType
-      clientVersion
-      publicKey
-      certificate
-      users {
-        pageInfo {
-          hasNextPage
-          hasPreviousePage
-        }
-        totalCount
-        deviceUsers {
-          isOwner
-          status
-          bytesUploaded
-          bytesDownloaded
-          lastAccessTime
-        }
       }
     }
   }
@@ -384,6 +357,7 @@ export const deleteDeviceUser = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -437,6 +411,7 @@ export const deleteDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -457,6 +432,50 @@ export const deleteDeviceUser = /* GraphQL */ `
 export const deleteDevice = /* GraphQL */ `
   mutation DeleteDevice($deviceID: ID!) {
     deleteDevice(deviceID: $deviceID)
+  }
+`;
+export const updateDevice = /* GraphQL */ `
+  mutation UpdateDevice(
+    $deviceID: ID!
+    $deviceKey: Key
+    $clientVersion: String
+    $settings: String
+  ) {
+    updateDevice(
+      deviceID: $deviceID
+      deviceKey: $deviceKey
+      clientVersion: $clientVersion
+      settings: $settings
+    ) {
+      deviceID
+      deviceName
+      owner {
+        userID
+        userName
+        firstName
+        middleName
+        familyName
+      }
+      deviceType
+      clientVersion
+      publicKey
+      certificate
+      settings
+      users {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        deviceUsers {
+          isOwner
+          status
+          bytesUploaded
+          bytesDownloaded
+          lastAccessTime
+        }
+      }
+    }
   }
 `;
 export const addSpace = /* GraphQL */ `
@@ -488,6 +507,7 @@ export const addSpace = /* GraphQL */ `
           publicKey
           certificate
           isEgressNode
+          settings
           ipAddress
           fqdn
           port
@@ -527,6 +547,7 @@ export const addSpace = /* GraphQL */ `
           clientVersion
           publicKey
           certificate
+          settings
         }
       }
     }
@@ -536,13 +557,11 @@ export const inviteSpaceUser = /* GraphQL */ `
   mutation InviteSpaceUser(
     $spaceID: ID!
     $userID: ID!
-    $isAdmin: Boolean!
     $isEgressNode: Boolean!
   ) {
     inviteSpaceUser(
       spaceID: $spaceID
       userID: $userID
-      isAdmin: $isAdmin
       isEgressNode: $isEgressNode
     ) {
       space {
@@ -569,6 +588,7 @@ export const inviteSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -634,6 +654,7 @@ export const inviteSpaceUser = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -668,6 +689,7 @@ export const activateSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -733,6 +755,7 @@ export const activateSpaceUser = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -767,6 +790,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -832,6 +856,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -840,7 +865,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
   }
 `;
 export const deleteSpaceUser = /* GraphQL */ `
-  mutation DeleteSpaceUser($spaceID: ID!, $userID: ID!) {
+  mutation DeleteSpaceUser($spaceID: ID!, $userID: ID) {
     deleteSpaceUser(spaceID: $spaceID, userID: $userID) {
       space {
         spaceID
@@ -866,6 +891,7 @@ export const deleteSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -931,6 +957,7 @@ export const deleteSpaceUser = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -970,6 +997,7 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -1035,6 +1063,7 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -1069,6 +1098,7 @@ export const leaveSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -1134,6 +1164,185 @@ export const leaveSpaceUser = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
+        users {
+          totalCount
+        }
+      }
+    }
+  }
+`;
+export const updateSpace = /* GraphQL */ `
+  mutation UpdateSpace(
+    $spaceID: ID!
+    $spaceKey: Key
+    $version: String
+    $settings: String
+  ) {
+    updateSpace(
+      spaceID: $spaceID
+      spaceKey: $spaceKey
+      version: $version
+      settings: $settings
+    ) {
+      spaceID
+      spaceName
+      owner {
+        userID
+        userName
+        firstName
+        middleName
+        familyName
+      }
+      admins {
+        userID
+        userName
+        firstName
+        middleName
+        familyName
+      }
+      recipe
+      iaas
+      region
+      version
+      publicKey
+      certificate
+      isEgressNode
+      settings
+      ipAddress
+      fqdn
+      port
+      vpnType
+      localCARoot
+      apps {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        spaceApps {
+          appID
+          appName
+          recipe
+          iaas
+          region
+        }
+      }
+      users {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        spaceUsers {
+          isOwner
+          isAdmin
+          isEgressNode
+          status
+          bytesUploaded
+          bytesDownloaded
+          lastConnectTime
+        }
+      }
+      status
+      lastSeen
+    }
+  }
+`;
+export const updateSpaceUser = /* GraphQL */ `
+  mutation UpdateSpaceUser($spaceID: ID!, $isEgressNode: Boolean) {
+    updateSpaceUser(spaceID: $spaceID, isEgressNode: $isEgressNode) {
+      space {
+        spaceID
+        spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        settings
+        ipAddress
+        fqdn
+        port
+        vpnType
+        localCARoot
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
+      user {
+        userID
+        userName
+        firstName
+        middleName
+        familyName
+        preferredName
+        emailAddress
+        mobilePhone
+        confirmed
+        publicKey
+        certificate
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
+        universalConfig
+      }
+      isOwner
+      isAdmin
+      isEgressNode
+      status
+      bytesUploaded
+      bytesDownloaded
+      accessList {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        appUsers {
+          lastAccessTime
+        }
+      }
+      lastConnectTime
+      lastConnectDevice {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        settings
         users {
           totalCount
         }
@@ -1197,6 +1406,7 @@ export const pushDevicesUpdate = /* GraphQL */ `
         clientVersion
         publicKey
         certificate
+        settings
         users {
           totalCount
         }
@@ -1217,6 +1427,7 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
           clientVersion
           publicKey
           certificate
+          settings
         }
         user {
           userID
@@ -1247,6 +1458,7 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
           publicKey
           certificate
           isEgressNode
+          settings
           ipAddress
           fqdn
           port
@@ -1289,6 +1501,7 @@ export const pushSpacesUpdate = /* GraphQL */ `
         publicKey
         certificate
         isEgressNode
+        settings
         ipAddress
         fqdn
         port
@@ -1322,6 +1535,7 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
           publicKey
           certificate
           isEgressNode
+          settings
           ipAddress
           fqdn
           port
@@ -1361,6 +1575,7 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
           clientVersion
           publicKey
           certificate
+          settings
         }
       }
     }
@@ -1387,6 +1602,7 @@ export const pushAppsUpdate = /* GraphQL */ `
           publicKey
           certificate
           isEgressNode
+          settings
           ipAddress
           fqdn
           port
