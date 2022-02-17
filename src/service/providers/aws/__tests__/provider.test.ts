@@ -161,14 +161,10 @@ it('retrieves a user\'s devices', async () => {
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   expect(await provider.getUserDevices())
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: true,
         status: 'active',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastAccessTime: 0,
-        lastConnectSpace: null,
         user: { userID: tester1.userID },
         device: {
           ...device1,
@@ -319,14 +315,10 @@ it('deletes a users\'s device', async () => {
 
   // should return remaining device only
   expect(await provider.getUserDevices())
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: true,
         status: 'active',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastAccessTime: 0,
-        lastConnectSpace: null,
         user: { userID: tester1.userID },
         device: {
           ...device2,
@@ -354,16 +346,12 @@ it('retrieves a user\'s spaces', async () => {
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
   expect(trimSpaceUsers(await provider.getUserSpaces()))
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: true,
         isAdmin: true,
         isEgressNode: true,
         status: 'active',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastConnectTime: 0,
-        lastConnectDevice: null,
         user: { userID: tester1.userID },
         space: space1
       },
@@ -372,10 +360,6 @@ it('retrieves a user\'s spaces', async () => {
         isAdmin: true,
         isEgressNode: true,
         status: 'active',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastConnectTime: 0,
-        lastConnectDevice: null,
         user: { userID: tester1.userID },
         space: space2
       }
@@ -389,16 +373,16 @@ it('invites users and takes them through the space association lifecycle', async
   // trim space fields
   const space = trimSpaceProps(space2);
 
-  expect(await provider.inviteSpaceUser(space.spaceID!, tester2.userID!, true, true))
+  expect(await provider.inviteSpaceUser(space.spaceID!, tester2.userID!, true))
     .toEqual({
       space,
       user: tester2,
       isOwner: false,
-      isAdmin: true,
+      isAdmin: false,
       isEgressNode: true,
       status: 'pending'
     });
-  expect(await provider.inviteSpaceUser(space.spaceID!, tester3.userID!, false, true))
+  expect(await provider.inviteSpaceUser(space.spaceID!, tester3.userID!, true))
     .toEqual({
       space,
       user: tester3,
@@ -419,31 +403,24 @@ it('invites users and takes them through the space association lifecycle', async
   expect(await provider.getSpaceInvitations())
     .toEqual([{
       space: spaceInvitedTo,
-      isAdmin: true,
       isEgressNode: true,
     }]);
 
   await Auth.signOut();
   await Auth.signIn('tester3', '@ppBr!cks2020');
   expect(trimSpaceUsers(await provider.getUserSpaces()))
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: false,
-        isAdmin: false,
         isEgressNode: true,
         status: 'pending',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastConnectTime: 0,
-        lastConnectDevice: null,
         user: { userID: tester3.userID },
-        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
+        space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
       }
     ]);
   expect(await provider.getSpaceInvitations())
     .toEqual([{
       space: spaceInvitedTo,
-      isAdmin: false,
       isEgressNode: true,
     }]);
   expect(await provider.acceptSpaceUserInvitation(space2.spaceID!))
@@ -452,18 +429,13 @@ it('invites users and takes them through the space association lifecycle', async
       user: tester3
     });
   expect(trimSpaceUsers(await provider.getUserSpaces()))
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: false,
-        isAdmin: false,
         isEgressNode: true,
         status: 'active',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastConnectTime: 0,
-        lastConnectDevice: null,
         user: { userID: tester3.userID },
-        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
+        space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
       }
     ]);
   expect(await provider.leaveSpaceUser(space2.spaceID!))
@@ -472,18 +444,13 @@ it('invites users and takes them through the space association lifecycle', async
       user: tester3
     });
   expect(trimSpaceUsers(await provider.getUserSpaces()))
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: false,
-        isAdmin: false,
         isEgressNode: true,
         status: 'inactive',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastConnectTime: 0,
-        lastConnectDevice: null,  
         user: { userID: tester3.userID },
-        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
+        space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
       }
     ]);
 });
@@ -504,18 +471,13 @@ it('deactivates a user associated with a space', async () => {
   await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
   expect(trimSpaceUsers(await provider.getUserSpaces()))
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: false,
-        isAdmin: true,
         isEgressNode: true,
         status: 'inactive',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastConnectTime: 0,
-        lastConnectDevice: null,  
         user: { userID: tester2.userID },
-        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
+        space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
       }
     ]);
 });
@@ -536,18 +498,13 @@ it('activates a user associated with a space', async () => {
   await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
   expect(trimSpaceUsers(await provider.getUserSpaces()))
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: false,
-        isAdmin: true,
         isEgressNode: true,
         status: 'active',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastConnectTime: 0,
-        lastConnectDevice: null,  
         user: { userID: tester2.userID },
-        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
+        space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
       }
     ]);  
 });
@@ -579,16 +536,12 @@ it('deletes a user\'s space', async () => {
   
   // expect only remaining space
   expect(trimSpaceUsers(await provider.getUserSpaces()))
-    .toEqual([
+    .toMatchObject([
       {
         isOwner: true,
         isAdmin: true,
         isEgressNode: true,
         status: 'active',
-        bytesUploaded: 0,
-        bytesDownloaded: 0,
-        lastConnectTime: 0,
-        lastConnectDevice: null,  
         user: { userID: tester1.userID },
         space: space2
       }
