@@ -73,7 +73,6 @@ export interface SpaceIDPayload {
 export interface SpaceInvitationPayload {
   spaceID: string
   userID: string
-  isAdmin: boolean 
   isEgressNode: boolean
 };
 

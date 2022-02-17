@@ -146,7 +146,7 @@ export default interface Provider {
    * Invite the a user to a space owned by
    * the logged in user
    */
-  inviteSpaceUser(spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean): Promise<SpaceUser>;
+  inviteSpaceUser(spaceID: string, userID: string, isEgressNode: boolean): Promise<SpaceUser>;
 
   /**
    * Accepts the invitation to the given

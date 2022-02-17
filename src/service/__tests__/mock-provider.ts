@@ -271,7 +271,7 @@ export default class MockProvider implements ProviderInterface {
       .filter(spaceUser => spaceUser!.status == UserAccessStatus.pending);
   }
 
-  async inviteSpaceUser(spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) {
+  async inviteSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {
     const spaceOwner = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
     if (!spaceOwner) {
@@ -290,7 +290,6 @@ export default class MockProvider implements ProviderInterface {
       space: spaceOwner.space,
       user: userToInvite,
       isOwner: false,
-      isAdmin: isAdmin,
       isEgressNode: isEgressNode,
       status: UserAccessStatus.pending,
       bytesUploaded: 0,

@@ -20,8 +20,8 @@ import {
 import { UserSpaceStateProps } from '../state';
 
 export const action = 
-  (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) => 
-    dispatch(createAction(INVITE_USER_TO_SPACE, <SpaceInvitationPayload>{ spaceID, userID, isAdmin, isEgressNode }));
+  (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID: string, isEgressNode: boolean) => 
+    dispatch(createAction(INVITE_USER_TO_SPACE, <SpaceInvitationPayload>{ spaceID, userID, isEgressNode }));
 
 export const epic = (csProvider: Provider): Epic => {
 
@@ -30,7 +30,7 @@ export const epic = (csProvider: Provider): Epic => {
     {
       inviteUserToSpace: async (action, state$, callSync) => {
         const args = action.payload!;
-        const spaceUser = await csProvider.inviteSpaceUser(args.spaceID, args.userID, args.isAdmin, args.isEgressNode);
+        const spaceUser = await csProvider.inviteSpaceUser(args.spaceID, args.userID, args.isEgressNode);
         return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
       },
       getUserSpaces: async (action, state$, callSync) => {

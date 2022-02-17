@@ -172,6 +172,7 @@ export default class Provider implements ProviderInterface {
                 clientVersion
                 publicKey
                 certificate
+                settings
                 users {
                   totalCount
                   deviceUsers {
@@ -481,9 +482,11 @@ export default class Provider implements ProviderInterface {
                 publicKey
                 certificate
                 isEgressNode
+                settings
                 ipAddress
                 fqdn
                 port
+                vpnType
                 localCARoot                
                 status
                 lastSeen
@@ -626,19 +629,17 @@ export default class Provider implements ProviderInterface {
     await this.unsubscribe(`spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`);
   }
 
-  async inviteSpaceUser(spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) {
+  async inviteSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {
 
     const inviteSpaceUser = /* GraphQL */ `
       mutation InviteSpaceUser(
         $spaceID: ID!
         $userID: ID!
-        $isAdmin: Boolean!
         $isEgressNode: Boolean!
       ) {
         inviteSpaceUser(
           spaceID: $spaceID
           userID: $userID
-          isAdmin: $isAdmin
           isEgressNode: $isEgressNode
         ) {
           space {
@@ -662,7 +663,6 @@ export default class Provider implements ProviderInterface {
           graphqlOperation(inviteSpaceUser, {
             spaceID,
             userID,
-            isAdmin,
             isEgressNode
           })
         );
@@ -822,7 +822,6 @@ export default class Provider implements ProviderInterface {
             region
             version
           }
-          isAdmin
           isEgressNode
         }
       }`;
