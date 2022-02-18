@@ -28,6 +28,8 @@ export interface DeviceDetail extends DisplayType {
   dataUsageIn: string
   dataUsageOut: string
 
+  settings: DisplayType
+
   isOwned: boolean
   bytesDownloaded: number
   bytesUploaded: number
@@ -64,11 +66,17 @@ export interface SpaceDetail extends DisplayType {
   location: string
   version: string
 
+  spaceDefaults: SpaceDefaults
+
   isOwned: boolean
   bytesDownloaded: number
   bytesUploaded: number
 
   users: SpaceUserListItem[]
+}
+
+export interface SpaceDefaults extends DisplayType {
+  isEgressNode: boolean
 }
 
 export interface SpaceUserListItem extends DisplayType {

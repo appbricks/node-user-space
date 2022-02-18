@@ -1,6 +1,8 @@
 import { 
   UserRef,
+  Device,
   DeviceUser,
+  Space,
   SpaceUser,
   App,
   AppUser,
@@ -8,7 +10,8 @@ import {
   DeviceUpdate,
   DeviceUserUpdate,
   SpaceUpdate,
-  SpaceUserUpdate
+  SpaceUserUpdate,
+  Key
 } from '../model/types';
 
 /**
@@ -90,6 +93,11 @@ export default interface Provider {
   deleteDevice(deviceID: string): Promise<void>;
 
   /**
+   * Updates a device
+   */
+  updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string): Promise<Device>;
+
+  /**
    * Returns list of spaces the current
    * logged in user can connect to.
    */
@@ -142,6 +150,16 @@ export default interface Provider {
    */
   deleteSpace(spaceID: string): Promise<void>;
 
+  /**
+   * Updates a space
+   */
+  updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string): Promise<Space>;
+
+   /**
+    * Updates a space user
+    */
+  updateSpaceUser(spaceID: string, userID?: string, isEgressNode?: boolean): Promise<SpaceUser>;
+ 
   /**
    * Invite the a user to a space owned by
    * the logged in user

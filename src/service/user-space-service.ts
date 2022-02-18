@@ -17,10 +17,12 @@ import {
   DeviceUser,
   Space,
   SpaceUser,
-  SpaceStatus
+  SpaceStatus,
+  Key
 } from '../model/types';
 
 import {
+  DisplayType,
   DeviceDetail,
   DeviceUserListItem,
   SpaceDetail,
@@ -47,6 +49,7 @@ import * as getDeviceAccessRequests from './actions/get-device-access-requests';
 import * as activateUserOnDevice from './actions/activate-user-on-device';
 import * as deleteUserFromDevice from './actions/delete-user-from-device';
 import * as deleteDevice from './actions/delete-device';
+import * as updateDevice from './actions/update-device';
 import * as getUserSpaces from './actions/get-user-spaces';
 import * as spaceUpdates from './actions/space-updates-subscription';
 import * as spaceTelemetry from './actions/space-telemetry-subscription';
@@ -58,6 +61,8 @@ import * as deleteSpace from './actions/delete-space';
 import * as getSpaceInvitations from './actions/get-space-invitations';
 import * as acceptSpaceInvitation from './actions/accept-space-invitation';
 import * as leaveSpace from './actions/leave-space';
+import * as updateSpace from './actions/update-space';
+import * as updateSpaceUser from './actions/update-space-user';
 import * as resetState from './actions/reset-state';
 
 type UserSpacePayload =
@@ -110,6 +115,7 @@ export default class UserSpaceService {
       .add(actions.DELETE_USER_FROM_DEVICE)
       .add(actions.DELETE_USER_FROM_SPACE)
       .add(actions.DELETE_DEVICE)
+      .add(actions.UPDATE_DEVICE)
       .add(actions.SUBSCRIBE_TO_DEVICE_UPDATES)
       .add(actions.SUBSCRIBE_TO_DEVICE_TELEMETRY)
       .add(actions.GET_USER_SPACES)
@@ -122,6 +128,8 @@ export default class UserSpaceService {
       .add(actions.GET_SPACE_INVITATIONS)
       .add(actions.ACCEPT_SPACE_INVITATION)
       .add(actions.LEAVE_SPACE)
+      .add(actions.UPDATE_SPACE)
+      .add(actions.UPDATE_SPACE_USER)
       .add(actions.GET_USER_APPS)
       .add(actions.GET_APP_INVITATIONS)
   }
@@ -160,12 +168,14 @@ export default class UserSpaceService {
           deleteUserFromDevice.action(dispatch, deviceID, userID),
         deleteDevice: (deviceID: string) =>
           deleteDevice.action(dispatch, deviceID),
+        updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) =>
+          updateDevice.action(dispatch, deviceID, deviceKey, clientVersion, settings),
 
         // space owner actions
         getUserSpaces: () =>
           getUserSpaces.action(dispatch),
-        inviteUserToSpace: (spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) =>
-          inviteUserToSpace.action(dispatch, spaceID, userID, isAdmin, isEgressNode),
+        inviteUserToSpace: (spaceID: string, userID: string, isEgressNode: boolean) =>
+          inviteUserToSpace.action(dispatch, spaceID, userID, isEgressNode),
         grantUserAccessToSpace: (spaceID: string, userID: string) =>
           grantUserAccessToSpace.action(dispatch, spaceID, userID),
         removeUserAccessToSpace: (spaceID: string, userID: string) =>
@@ -174,6 +184,10 @@ export default class UserSpaceService {
           deleteUserFromSpace.action(dispatch, spaceID, userID),
         deleteSpace: (spaceID: string) =>
           deleteSpace.action(dispatch, spaceID),
+        updateSpace: (spaceID: string, deviceKey?: Key, version?: string, settings?: DisplayType) =>
+          updateSpace.action(dispatch, spaceID, deviceKey, version, settings),
+        updateSpaceUser: (spaceID: string, userID?: string, isEgressNode?: boolean) =>
+          updateSpaceUser.action(dispatch, spaceID, userID, isEgressNode),
 
         // space guest actions
         getSpaceInvitations: () =>
@@ -202,6 +216,7 @@ export default class UserSpaceService {
       activateUserOnDevice.epic(this.csProvider),
       deleteUserFromDevice.epic(this.csProvider),
       deleteDevice.epic(this.csProvider),
+      updateDevice.epic(this.csProvider),
       deviceUpdates.subscribeEpic(this.csProvider),
       deviceTelemetry.subscribeEpic(this.csProvider),
       getUserSpaces.epic(this.csProvider),
@@ -210,6 +225,8 @@ export default class UserSpaceService {
       removeUserAccessToSpace.epic(this.csProvider),
       deleteUserFromSpace.epic(this.csProvider),
       deleteSpace.epic(this.csProvider),
+      updateSpace.epic(this.csProvider),
+      updateSpaceUser.epic(this.csProvider),
       spaceUpdates.subscribeEpic(this.csProvider),
       spaceTelemetry.subscribeEpic(this.csProvider),
       getSpaceInvitations.epic(this.csProvider),
@@ -439,6 +456,7 @@ const deviceDetail = (deviceUser: DeviceUser): DeviceDetail => {
     lastSpaceConnectedTo,
     dataUsageIn: bytesToSize(bytesDownloaded),
     dataUsageOut: bytesToSize(bytesUploaded),
+    settings: device.settings ? JSON.parse(device.settings) : {},
     isOwned: deviceUser.isOwner!,
     bytesDownloaded,
     bytesUploaded,
@@ -494,6 +512,9 @@ const updateDeviceDetail = (
   }
   if (device.clientVersion) {
     updatedDetail.version = device.clientVersion!;
+  }
+  if (device.settings) {
+    updatedDetail.settings = JSON.parse(device.settings);
   }
 
   return updatedDetail;
@@ -639,6 +660,7 @@ const spaceDetail = (spaceUser: SpaceUser): SpaceDetail => {
     type: space.recipe!,
     location: space.region!,
     version: space.version!,
+    spaceDefaults: space.settings ? JSON.parse(space.settings) : { isEgressNode: false },
     isOwned: spaceUser.isOwner!,
     bytesDownloaded,
     bytesUploaded,
@@ -697,6 +719,9 @@ const updateSpaceDetail = (
   }
   if (space.version) {
     updatedDetail.version = space.version!;
+  }
+  if (space.settings) {
+    updatedDetail.spaceDefaults = JSON.parse(space.settings);
   }
 
   return updatedDetail;

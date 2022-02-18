@@ -341,6 +341,32 @@ it('deletes a users\'s device', async () => {
     ]);
 });
 
+it('updates a users\'s device', async () => {
+  await Auth.signOut();
+  await Auth.signIn('tester1', '@ppBr!cks2020');
+
+  await provider.updateDevice(
+    device2.deviceID!, 
+    {
+      publicKey: 'pub112',
+      certificateRequest: 'csr112'
+    },
+    'client/ios:arm64/1.8.0',
+    '{"someSetting":"someValue"}'
+  );
+
+  // should return remaining device only
+  expect((await provider.getUserDevices()).find(du => du.device!.deviceID == device2.deviceID))
+    .toMatchObject({
+      device: {
+        ...device2,
+        publicKey: 'pub112',
+        clientVersion: 'client/ios:arm64/1.8.0',
+        settings: '{"someSetting":"someValue"}'  
+      }
+    });
+});
+
 it('retrieves a user\'s spaces', async () => {
   await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
@@ -546,6 +572,49 @@ it('deletes a user\'s space', async () => {
         space: space2
       }
     ]);
+});
+
+it('updates a users\'s space', async () => {
+  await Auth.signOut();
+  await Auth.signIn('tester1', '@ppBr!cks2020');
+
+  await provider.updateSpace(
+    space2.spaceID!, 
+    {
+      publicKey: 'pub222',
+      certificateRequest: 'csr222'
+    },
+    '2.2.2',
+    '{"someSetting":"someValue"}'
+  );
+
+  // should return remaining device only
+  expect((await provider.getUserSpaces()).find(su => su.space!.spaceID == space2.spaceID))
+    .toMatchObject({
+      space: {
+        ...space2,
+        publicKey: 'pub222',
+        version: '2.2.2',
+        settings: '{"someSetting":"someValue"}'  
+      }
+    });
+});
+
+it('updates a users\'s space association', async () => {
+  await Auth.signOut();
+  await Auth.signIn('tester1', '@ppBr!cks2020');
+
+  await provider.updateSpaceUser(
+    space2.spaceID!, 
+    undefined,
+    true
+  );
+
+  // should return remaining device only
+  expect((await provider.getUserSpaces()).find(su => su.space!.spaceID == space2.spaceID))
+    .toMatchObject({
+      isEgressNode: true
+    });
 });
 
 it('subscribes to user updates', async () => {

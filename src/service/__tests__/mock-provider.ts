@@ -13,7 +13,8 @@ import {
   DeviceUserUpdate,
   SpaceUpdate,
   SpaceUserUpdate,
-  SpaceStatus
+  SpaceStatus,
+  Key
 } from '../../model/types';
 
 import { UserSpaceActionProps } from '../actions';
@@ -245,6 +246,17 @@ export default class MockProvider implements ProviderInterface {
     });
   }
 
+  async updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string) {
+    const device = this.user!.devices!.deviceUsers!
+      .find(deviceUser => deviceUser!.device!.deviceID == deviceID)!.device!;
+
+    device.publicKey = deviceKey?.publicKey;
+    device.clientVersion = clientVersion;
+    device.settings = settings;
+
+    return device;
+  }
+
   async getUserSpaces() {
     return <SpaceUser[]>this.user!.spaces!.spaceUsers!
       .filter(spaceUser => spaceUser!.status == UserAccessStatus.active)
@@ -388,6 +400,26 @@ export default class MockProvider implements ProviderInterface {
         });
       }
     });
+  }
+
+  async updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string) {
+    const space = this.user!.spaces!.spaceUsers!
+      .find(spaceUser => spaceUser!.space!.spaceID == spaceID)!.space!;
+
+    space.publicKey = spaceKey?.publicKey;
+    space.version = version;
+    space.settings = settings;
+
+    return space;
+  }
+
+  async updateSpaceUser(spaceID: string, userID?: string, isEgressNode?: boolean) {
+    const spaceUser = this.user!.spaces!.spaceUsers!
+      .find(spaceUser => spaceUser!.space!.spaceID == spaceID)!.space!.users!.spaceUsers!
+      .find(spaceUser => spaceUser!.user!.userID == userID)!;
+
+    spaceUser.isEgressNode = isEgressNode;
+    return spaceUser;
   }
 
   async acceptSpaceUserInvitation(spaceID: string) {

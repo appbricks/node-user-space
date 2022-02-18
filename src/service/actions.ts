@@ -7,7 +7,11 @@ import {
   DeviceUser,
   Space,
   SpaceUser,
+  Key
 } from '../model/types';
+import {
+  DisplayType
+} from '../model/display';
 
 export interface UserSearchPayload {
   namePrefix: string,
@@ -61,6 +65,13 @@ export interface DeviceTelemetrySubscriptionPayload {
   unsubscribeDeviceUsers: { deviceID: string, userID: string }[]
 };
 
+export interface DeviceUpdatePayload {
+  deviceID: string
+  deviceKey?: Key
+  clientVersion?: string
+  settings?: DisplayType
+}
+
 export interface SpaceUserIDPayload {
   spaceID: string
   userID?: string
@@ -102,6 +113,19 @@ export interface SpaceTelemetrySubscriptionPayload {
   unsubscribeSpaceUsers: { spaceID: string, userID: string }[]
 };
 
+export interface SpaceUpdatePayload {
+  spaceID: string
+  spaceKey?: Key
+  version?: string
+  settings?: DisplayType
+}
+
+export interface SpaceUserUpdatePayload {
+  spaceID: string
+  userID?: string
+  isEgressNode?: boolean
+}
+
 export interface AppIDPayload {
   spaceID: string
 };
@@ -120,14 +144,17 @@ export interface UserSpaceActionProps {
     activateUserOnDevice: (deviceID: string, userID: string) => actions.Action
     deleteUserFromDevice: (deviceID: string, userID?: string) => actions.Action
     deleteDevice: (deviceID: string) => actions.Action
+    updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) => actions.Action
 
     // space owner actions
     getUserSpaces: () => actions.Action
-    inviteUserToSpace: (spaceID: string, userID: string, isAdmin: boolean, isEgressNode: boolean) => actions.Action
+    inviteUserToSpace: (spaceID: string, userID: string, isEgressNode: boolean) => actions.Action
     grantUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
     removeUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
     deleteUserFromSpace: (spaceID: string, userID?: string) => actions.Action
     deleteSpace: (spaceID: string) => actions.Action
+    updateSpace: (spaceID: string, spaceKey?: Key, version?: string, settings?: DisplayType) => actions.Action
+    updateSpaceUser: (spaceID: string, userID?: string, isEgressNode?: boolean) => actions.Action
 
     // space guest actions 
     getSpaceInvitations: () => actions.Action
@@ -153,6 +180,7 @@ export const GET_DEVICE_ACCESS_REQUESTS = 'userspace/GET_DEVICE_ACCESS_REQUESTS'
 export const ACTIVATE_USER_ON_DEVICE = 'userspace/ACTIVATE_USER_ON_DEVICE';
 export const DELETE_USER_FROM_DEVICE = 'userspace/DELETE_USER_FROM_DEVICE';
 export const DELETE_DEVICE = 'userspace/DELETE_DEVICE';
+export const UPDATE_DEVICE = 'userspace/UPDATE_DEVICE';
 export const SUBSCRIBE_TO_DEVICE_UPDATES = 'userspace/SUBSCRIBE_TO_DEVICE_UPDATES';
 export const DEVICE_UPDATE = 'userspace/DEVICE_UPDATE';
 export const SUBSCRIBE_TO_DEVICE_TELEMETRY = 'userspace/SUBSCRIBE_TO_DEVICE_TELEMETRY';
@@ -164,6 +192,8 @@ export const GRANT_USER_ACCESS_TO_SPACE = 'userspace/GRANT_USER_ACCESS_TO_SPACE'
 export const REMOVE_USER_ACCESS_TO_SPACE = 'userspace/REMOVE_USER_ACCESS_TO_SPACE';
 export const DELETE_USER_FROM_SPACE = 'userspace/DELETE_USER_FROM_SPACE';
 export const DELETE_SPACE = 'userspace/DELETE_SPACE';
+export const UPDATE_SPACE = 'userspace/UPDATE_SPACE';
+export const UPDATE_SPACE_USER = 'userspace/UPDATE_SPACE_USER';
 export const SUBSCRIBE_TO_SPACE_UPDATES = 'userspace/SUBSCRIBE_TO_SPACE_UPDATES';
 export const SPACE_UPDATE = 'userspace/SPACE_UPDATE';
 export const SUBSCRIBE_TO_SPACE_TELEMETRY = 'userspace/SUBSCRIBE_TO_SPACE_TELEMETRY';

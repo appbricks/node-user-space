@@ -12,13 +12,16 @@ import ProviderInterface from '../../provider';
 import {
   UserRef,
   User,
+  Device,
   DeviceUser,
+  Space,
   SpaceUser,
   UserUpdate,
   DeviceUpdate,
   DeviceUserUpdate,
   SpaceUpdate,
-  SpaceUserUpdate
+  SpaceUserUpdate,
+  Key
 } from '../../../model/types';
 
 import {
@@ -28,6 +31,7 @@ import {
   ERROR_ACTIVATE_DEVICE_USER,
   ERROR_DELETE_DEVICE_USER,
   ERROR_DELETE_DEVICE,
+  ERROR_UPDATE_DEVICE,
   ERROR_GET_USER_SPACES,
   ERROR_INVITE_SPACE_USER,
   ERROR_ACTIVATE_SPACE_USER,
@@ -36,7 +40,9 @@ import {
   ERROR_DELETE_SPACE,
   ERROR_GET_SPACE_INVITATIONS,
   ERROR_ACCEPT_SPACE_USER_INVITATION,
-  ERROR_LEAVE_SPACE_USER
+  ERROR_LEAVE_SPACE_USER,
+  ERROR_UPDATE_SPACE,
+  ERROR_UPDATE_SPACE_USER
 } from '../../constants';
 
 /**
@@ -436,6 +442,41 @@ export default class Provider implements ProviderInterface {
     }
   }
 
+  async updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string) {
+
+    const updateDevice = /* GraphQL */ `
+      mutation updateDevice($deviceID: ID!, $deviceKey: Key, $clientVersion: String, $settings: String) {
+        updateDevice(deviceID: $deviceID, deviceKey: $deviceKey, clientVersion: $clientVersion, settings: $settings) {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+        }
+      }
+    `;
+
+    try {
+      const result = <GraphQLResult<{ updateDevice: Device }>>
+        await this.api.graphql(
+          graphqlOperation(updateDevice, { deviceID, deviceKey, clientVersion, settings })
+        );
+      if (result.data) {
+        const device = <Device>result.data.updateDevice;
+        this.logger.debug('Updated device:', device);
+        return device;
+      } else {
+        throw this.handleErrorResponse(result, ERROR_UPDATE_DEVICE, 'updateDevice')
+      }
+
+    } catch (error) {
+      this.logger.error('updateDevice API call returned error: ', error);
+      throw new Error(ERROR_UPDATE_DEVICE, error);
+    }
+  }
+
   async getUserSpaces() {
 
     const getUser = /* GraphQL */ `
@@ -487,7 +528,7 @@ export default class Provider implements ProviderInterface {
                 fqdn
                 port
                 vpnType
-                localCARoot                
+                localCARoot
                 status
                 lastSeen
                 users {
@@ -553,13 +594,14 @@ export default class Provider implements ProviderInterface {
           space {
             spaceID
             spaceName
-            publicKey
-            certificate
             recipe
             iaas
             region
             version
+            publicKey
+            certificate
             isEgressNode
+            settings
             status
             lastSeen
           }
@@ -591,7 +633,7 @@ export default class Provider implements ProviderInterface {
   ) {
     const subscriptionKey = `spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`;
     await this.unsubscribe(subscriptionKey);
-  
+
     const subscriptionQuery = /* GraphQL */ `
       subscription SubscribeToSpaceUserUpdates($spaceID: ID!, $userID: ID!) {
         spaceUserUpdates(spaceID: $spaceID, userID: $userID) {
@@ -809,6 +851,78 @@ export default class Provider implements ProviderInterface {
       }
   }
 
+  async updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string) {
+
+    const updateSpace = /* GraphQL */ `
+      mutation updateSpace($spaceID: ID!, $spaceKey: Key, $version: String, $settings: String) {
+        updateSpace(spaceID: $spaceID, spaceKey: $spaceKey, version: $version, settings: $settings) {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          status
+          lastSeen
+        }
+      }
+    `;
+
+    try {
+      const result = <GraphQLResult<{ updateSpace: Space }>>
+        await this.api.graphql(
+          graphqlOperation(updateSpace, { spaceID, spaceKey, version, settings })
+        );
+      if (result.data) {
+        const space = <Space>result.data.updateSpace;
+        this.logger.debug('Updated space:', space);
+        return space;
+      } else {
+        throw this.handleErrorResponse(result, ERROR_UPDATE_SPACE, 'updateSpace')
+      }
+
+    } catch (error) {
+      this.logger.error('updateSpace API call returned error: ', error);
+      throw new Error(ERROR_UPDATE_SPACE, error);
+    }
+  }
+
+  async updateSpaceUser(spaceID: string, userID?: string, isEgressNode?: boolean) {
+
+    const updateSpaceUser = /* GraphQL */ `
+      mutation updateSpaceUser($spaceID: ID!, $userID: ID, $isEgressNode: Boolean) {
+        updateSpaceUser(spaceID: $spaceID, userID: $userID, isEgressNode: $isEgressNode) {
+          isOwner
+          isAdmin
+          isEgressNode
+          status
+        }
+      }
+    `;
+
+    try {
+      const result = <GraphQLResult<{ updateSpaceUser: SpaceUser }>>
+        await this.api.graphql(
+          graphqlOperation(updateSpaceUser, { spaceID, userID, isEgressNode })
+        );
+      if (result.data) {
+        const spaceUser = <SpaceUser>result.data.updateSpaceUser;
+        this.logger.debug('Updated space user:', spaceUser);
+        return spaceUser;
+      } else {
+        throw this.handleErrorResponse(result, ERROR_UPDATE_SPACE_USER, 'updateSpaceUser')
+      }
+
+    } catch (error) {
+      this.logger.error('updateSpaceUser API call returned error: ', error);
+      throw new Error(ERROR_UPDATE_SPACE_USER, error);
+    }
+  }
+
   async getSpaceInvitations() {
 
     const getSpaceInvitations = /* GraphQL */ `
@@ -925,7 +1039,7 @@ export default class Provider implements ProviderInterface {
     return [];
   }
 
-  async unsubscribeAll() {    
+  async unsubscribeAll() {
     for (const subscriptionKey in this.subscriptions) {
       await this.unsubscribe(subscriptionKey);
     }
