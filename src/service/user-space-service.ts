@@ -428,16 +428,16 @@ const deviceDetail = (deviceUser: DeviceUser): DeviceDetail => {
         }
         if (deviceUser!.lastAccessTime! >= startOfMonth) {
           // only add usage values for current month
-          bytesDownloaded += deviceUser!.bytesDownloaded!;
-          bytesUploaded += deviceUser!.bytesUploaded!;
+          bytesDownloaded += parseInt(deviceUser!.bytesDownloaded!, 10);
+          bytesUploaded += parseInt(deviceUser!.bytesUploaded!, 10);
         }
       }
     });  
   } else {
     lastAccessedTime = deviceUser.lastAccessTime!;
     lastSpaceConnectedTo = deviceUser.lastConnectSpace?.spaceName! || '';
-    bytesDownloaded = deviceUser.bytesDownloaded!;
-    bytesUploaded = deviceUser.bytesUploaded!;
+    bytesDownloaded = parseInt(deviceUser.bytesDownloaded!, 10);
+    bytesUploaded = parseInt(deviceUser.bytesUploaded!, 10);
   }
 
   const lastAccessedDataTime = new Date(lastAccessedTime || 0);
@@ -489,8 +489,8 @@ const deviceUserListItem = (deviceUser: DeviceUser): DeviceUserListItem => {
     fullName: fullName(user!),
     status,
     lastSpaceConnectedTo: lastConnectSpace?.spaceName || '',
-    dataUsageIn: bytesToSize(bytesDownloaded!),
-    dataUsageOut: bytesToSize(bytesUploaded!),
+    dataUsageIn: bytesToSize(parseInt(bytesDownloaded!, 10)),
+    dataUsageOut: bytesToSize(parseInt(bytesUploaded!, 10)),
     lastAccessTime: lastAccessTime && lastAccessTime > 0
       ? dateTimeToLocale(dateTime)
       : 'never',
@@ -559,16 +559,18 @@ const updateDeviceUserListItem = (
         updatedItem.status = deviceUser.status!;
       }
       if (deviceUser.bytesDownloaded) {
-        updatedDetail.bytesDownloaded -= item.deviceUser!.bytesDownloaded!;
-        updatedDetail.bytesDownloaded += deviceUser.bytesDownloaded;
+        let bytesDownloaded = parseInt(deviceUser.bytesDownloaded, 10);
+        updatedDetail.bytesDownloaded -= parseInt(item.deviceUser!.bytesDownloaded!, 10);
+        updatedDetail.bytesDownloaded += bytesDownloaded;
         updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
-        updatedItem.dataUsageIn = bytesToSize(deviceUser.bytesDownloaded!);
+        updatedItem.dataUsageIn = bytesToSize(bytesDownloaded);
       }
       if (deviceUser.bytesUploaded) {
-        updatedDetail.bytesUploaded -= item.deviceUser!!.bytesUploaded!;
-        updatedDetail.bytesUploaded += deviceUser.bytesUploaded;
+        let bytesUploaded = parseInt(deviceUser.bytesUploaded, 10);
+        updatedDetail.bytesUploaded -= parseInt(item.deviceUser!!.bytesUploaded!, 10);
+        updatedDetail.bytesUploaded += bytesUploaded;
         updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
-        updatedItem.dataUsageOut = bytesToSize(deviceUser.bytesUploaded!);
+        updatedItem.dataUsageOut = bytesToSize(bytesUploaded);
       }
       if (deviceUser.lastAccessTime) {
         const dateTime = new Date(deviceUser.lastAccessTime);
@@ -590,11 +592,11 @@ const updateDeviceUserListItem = (
       updatedDetail.accessStatus = deviceUser.status;
     }
     if (deviceUser.bytesDownloaded) {
-      updatedDetail.bytesDownloaded = deviceUser.bytesDownloaded;
+      updatedDetail.bytesDownloaded = parseInt(deviceUser.bytesDownloaded, 10);
       updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
     }
     if (deviceUser.bytesUploaded) {
-      updatedDetail.bytesUploaded = deviceUser.bytesUploaded;
+      updatedDetail.bytesUploaded = parseInt(deviceUser.bytesUploaded, 10);
       updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
     }
     if (deviceUser.lastAccessTime) {
@@ -634,14 +636,14 @@ const spaceDetail = (spaceUser: SpaceUser): SpaceDetail => {
         }
         if (spaceUser!.lastConnectTime! >= startOfMonth) {
           // only add usage values for current month
-          bytesDownloaded += spaceUser!.bytesDownloaded!;
-          bytesUploaded += spaceUser!.bytesUploaded!;
+          bytesDownloaded += parseInt(spaceUser!.bytesDownloaded!, 10);
+          bytesUploaded += parseInt(spaceUser!.bytesUploaded!, 10);
         }
       }
     });  
   } else {
-    bytesDownloaded = spaceUser.bytesDownloaded!;
-    bytesUploaded = spaceUser.bytesUploaded!;
+    bytesDownloaded = parseInt(spaceUser.bytesDownloaded!, 10);
+    bytesUploaded = parseInt(spaceUser.bytesUploaded!, 10);
   }
 
   return {
@@ -692,8 +694,8 @@ const spaceUserListItem = (spaceUser: SpaceUser): SpaceUserListItem => {
     fullName: fullName(user!),
     status,
     egressAllowed: spaceUser.isEgressNode ? 'yes' : 'no',
-    dataUsageIn: bytesToSize(bytesDownloaded!),
-    dataUsageOut: bytesToSize(bytesUploaded!),
+    dataUsageIn: bytesToSize(parseInt(bytesDownloaded!, 10)),
+    dataUsageOut: bytesToSize(parseInt(bytesUploaded!, 10)),
     lastConnectTime: lastConnectTime && lastConnectTime > 0
       ? dateTimeToLocale(dateTime)
       : 'never',
@@ -769,16 +771,18 @@ const updateSpaceUserListItem = (
         updatedItem.egressAllowed = spaceUser.isEgressNode ? 'yes' : 'no';
       }
       if (spaceUser.bytesDownloaded) {
-        updatedDetail.bytesDownloaded -= item.spaceUser!.bytesDownloaded!;
-        updatedDetail.bytesDownloaded += spaceUser.bytesDownloaded;
+        let bytesDownloaded = parseInt(spaceUser.bytesDownloaded, 10);
+        updatedDetail.bytesDownloaded -= parseInt(item.spaceUser!.bytesDownloaded!, 10);
+        updatedDetail.bytesDownloaded += bytesDownloaded;
         updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
-        updatedItem.dataUsageIn = bytesToSize(spaceUser.bytesDownloaded!);
+        updatedItem.dataUsageIn = bytesToSize(bytesDownloaded);
       }
       if (spaceUser.bytesUploaded) {
-        updatedDetail.bytesUploaded -= item.spaceUser!.bytesUploaded!;
-        updatedDetail.bytesUploaded += spaceUser.bytesUploaded;
+        let bytesUploaded = parseInt(spaceUser.bytesUploaded, 10);
+        updatedDetail.bytesUploaded -= parseInt(item.spaceUser!.bytesUploaded!, 10);
+        updatedDetail.bytesUploaded += bytesUploaded;
         updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
-        updatedItem.dataUsageOut = bytesToSize(spaceUser.bytesUploaded!);
+        updatedItem.dataUsageOut = bytesToSize(bytesUploaded);
       }
       if (spaceUser.lastConnectTime) {
         const dateTime = new Date(spaceUser.lastConnectTime);
@@ -797,11 +801,11 @@ const updateSpaceUserListItem = (
       updatedDetail.egressAllowed = spaceUser.isEgressNode ? 'yes' : 'no';
     }
     if (spaceUser.bytesDownloaded) {
-      updatedDetail.bytesDownloaded = spaceUser.bytesDownloaded;
+      updatedDetail.bytesDownloaded = parseInt(spaceUser.bytesDownloaded, 10);
       updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
     }
     if (spaceUser.bytesUploaded) {
-      updatedDetail.bytesUploaded = spaceUser.bytesUploaded;
+      updatedDetail.bytesUploaded = parseInt(spaceUser.bytesUploaded, 10);
       updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
     }
   }
