@@ -59,6 +59,39 @@ export default class Provider implements ProviderInterface {
   constructor(api?: typeof API) {
     this.logger = new Logger('AwsUserSpaceProvider');
     this.api = api || API;
+
+    // update active subscription timestamps every 30s
+    setInterval(this.touchSubscriptions.bind(this), 30000)
+  }
+
+  async touchSubscriptions() {
+
+    if (this.subscriptions) {
+      let subs = Object.keys(this.subscriptions);
+      this.logger.debug('Updating timestamps of subscriptions:', subs)
+
+      if (subs.length) {
+        const touchSubscriptions = /* GraphQL */ `
+        mutation TouchSubscriptions($subs: [String!]) {
+          touchSubscriptions(subs: $subs)
+        }`;
+  
+        try {
+          const result = <GraphQLResult<{ touchSubscriptions: string }>>
+            await this.api.graphql(
+              graphqlOperation(touchSubscriptions, { subs })
+            );
+          if (result.data) {
+            this.logger.debug('Updated timestamps of subscriptions to ', result.data);
+          } else {
+            this.logger.error('Failed updating timestamps of subscriptions:', result)
+          }
+  
+        } catch (error) {
+          this.logger.error('touchSubscriptions API call returned error: ', error);
+        }
+      }
+    }
   }
 
   async userSearch(namePrefix: string, limit?: number) {
@@ -103,7 +136,7 @@ export default class Provider implements ProviderInterface {
     update: (data: UserUpdate) => void,
     error: (error: any) => void
   ) {
-    const subscriptionKey = `userUpdates(userID: ${userID})`;
+    const subscriptionKey = `{"name":"userUpdates","keys":{"userID":"${userID}"}}`;
     await this.unsubscribe(subscriptionKey);
 
     const subscriptionQuery = /* GraphQL */ `
@@ -230,7 +263,7 @@ export default class Provider implements ProviderInterface {
     update: (data: DeviceUpdate) => void,
     error: (error: any) => void
   ) {
-    const subscriptionKey = `deviceUpdates(deviceID: ${deviceID})`;
+    const subscriptionKey = `{"name":"deviceUpdates","keys":{"deviceID":"${deviceID}"}}`;
     await this.unsubscribe(subscriptionKey);
 
     const subscriptionQuery = /* GraphQL */ `
@@ -270,7 +303,7 @@ export default class Provider implements ProviderInterface {
     update: (data: DeviceUserUpdate) => void,
     error: (error: any) => void
   ) {
-    const subscriptionKey = `deviceUserUpdates(deviceID: ${deviceID}, userID: ${userID})`;
+    const subscriptionKey = `{"name":"deviceUserUpdates","keys":{"deviceID":"${deviceID}","userID":"${userID}"}}`;
     await this.unsubscribe(subscriptionKey);
 
     const subscriptionQuery = /* GraphQL */ `
@@ -583,7 +616,7 @@ export default class Provider implements ProviderInterface {
     update: (data: SpaceUpdate) => void,
     error: (error: any) => void
   ) {
-    const subscriptionKey = `spaceUpdates(spaceID: ${spaceID})`;
+    const subscriptionKey = `{"name":"spaceUpdates","keys":{"spaceID":"${spaceID}"}}`;
     await this.unsubscribe(subscriptionKey);
 
     const subscriptionQuery = /* GraphQL */ `
@@ -631,7 +664,7 @@ export default class Provider implements ProviderInterface {
     update: (data: SpaceUserUpdate) => void,
     error: (error: any) => void
   ) {
-    const subscriptionKey = `spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`;
+    const subscriptionKey = `{"name":"spaceUserUpdates","keys":{"spaceID":"${spaceID}","userID":"${userID}"}}`;
     await this.unsubscribe(subscriptionKey);
 
     const subscriptionQuery = /* GraphQL */ `
