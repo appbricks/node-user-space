@@ -51,51 +51,8 @@ export const updateUserKey = /* GraphQL */ `
   }
 `;
 export const updateUserConfig = /* GraphQL */ `
-  mutation UpdateUserConfig($universalConfig: String!) {
-    updateUserConfig(universalConfig: $universalConfig) {
-      userID
-      userName
-      firstName
-      middleName
-      familyName
-      preferredName
-      emailAddress
-      mobilePhone
-      confirmed
-      publicKey
-      certificate
-      devices {
-        pageInfo {
-          hasNextPage
-          hasPreviousePage
-        }
-        totalCount
-        deviceUsers {
-          isOwner
-          status
-          bytesUploaded
-          bytesDownloaded
-          lastAccessTime
-        }
-      }
-      spaces {
-        pageInfo {
-          hasNextPage
-          hasPreviousePage
-        }
-        totalCount
-        spaceUsers {
-          isOwner
-          isAdmin
-          isEgressNode
-          status
-          bytesUploaded
-          bytesDownloaded
-          lastConnectTime
-        }
-      }
-      universalConfig
-    }
+  mutation UpdateUserConfig($universalConfig: String!, $asOf: String!) {
+    updateUserConfig(universalConfig: $universalConfig, asOf: $asOf)
   }
 `;
 export const addDevice = /* GraphQL */ `
@@ -119,6 +76,7 @@ export const addDevice = /* GraphQL */ `
           publicKey
           certificate
           settings
+          managedBy
         }
         user {
           userID
@@ -163,8 +121,8 @@ export const addDevice = /* GraphQL */ `
   }
 `;
 export const addDeviceUser = /* GraphQL */ `
-  mutation AddDeviceUser($deviceID: ID!) {
-    addDeviceUser(deviceID: $deviceID) {
+  mutation AddDeviceUser($deviceID: ID!, $userID: ID) {
+    addDeviceUser(deviceID: $deviceID, userID: $userID) {
       device {
         deviceID
         deviceName
@@ -180,6 +138,17 @@ export const addDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -269,6 +238,17 @@ export const activateDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -358,6 +338,17 @@ export const deleteDeviceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -461,6 +452,37 @@ export const updateDevice = /* GraphQL */ `
       publicKey
       certificate
       settings
+      managedBy
+      managedDevices {
+        deviceID
+        deviceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        deviceType
+        clientVersion
+        publicKey
+        certificate
+        settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
+        users {
+          totalCount
+        }
+      }
       users {
         pageInfo {
           hasNextPage
@@ -548,6 +570,7 @@ export const addSpace = /* GraphQL */ `
           publicKey
           certificate
           settings
+          managedBy
         }
       }
     }
@@ -557,11 +580,13 @@ export const inviteSpaceUser = /* GraphQL */ `
   mutation InviteSpaceUser(
     $spaceID: ID!
     $userID: ID!
-    $isEgressNode: Boolean!
+    $isAdmin: Boolean
+    $isEgressNode: Boolean
   ) {
     inviteSpaceUser(
       spaceID: $spaceID
       userID: $userID
+      isAdmin: $isAdmin
       isEgressNode: $isEgressNode
     ) {
       space {
@@ -655,6 +680,17 @@ export const inviteSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -756,6 +792,17 @@ export const activateSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -857,6 +904,17 @@ export const deactivateSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -958,6 +1016,17 @@ export const deleteSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -1064,6 +1133,17 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -1165,6 +1245,17 @@ export const leaveSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -1226,6 +1317,7 @@ export const updateSpace = /* GraphQL */ `
           recipe
           iaas
           region
+          status
         }
       }
       users {
@@ -1250,8 +1342,12 @@ export const updateSpace = /* GraphQL */ `
   }
 `;
 export const updateSpaceUser = /* GraphQL */ `
-  mutation UpdateSpaceUser($spaceID: ID!, $isEgressNode: Boolean) {
-    updateSpaceUser(spaceID: $spaceID, isEgressNode: $isEgressNode) {
+  mutation UpdateSpaceUser($spaceID: ID!, $userID: ID, $isEgressNode: Boolean) {
+    updateSpaceUser(
+      spaceID: $spaceID
+      userID: $userID
+      isEgressNode: $isEgressNode
+    ) {
       space {
         spaceID
         spaceName
@@ -1343,11 +1439,214 @@ export const updateSpaceUser = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
       }
     }
+  }
+`;
+export const addApp = /* GraphQL */ `
+  mutation AddApp(
+    $appName: String!
+    $recipe: String!
+    $iaas: String!
+    $region: String!
+    $spaceID: ID!
+  ) {
+    addApp(
+      appName: $appName
+      recipe: $recipe
+      iaas: $iaas
+      region: $region
+      spaceID: $spaceID
+    ) {
+      appID
+      appName
+      recipe
+      iaas
+      region
+      status
+      space {
+        spaceID
+        spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        settings
+        ipAddress
+        fqdn
+        port
+        vpnType
+        localCARoot
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
+      users {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        appUsers {
+          lastAccessTime
+        }
+      }
+    }
+  }
+`;
+export const addAppUser = /* GraphQL */ `
+  mutation AddAppUser($appID: ID!, $userID: ID!) {
+    addAppUser(appID: $appID, userID: $userID) {
+      app {
+        appID
+        appName
+        recipe
+        iaas
+        region
+        status
+        space {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          status
+          lastSeen
+        }
+        users {
+          totalCount
+        }
+      }
+      user {
+        userID
+        userName
+        firstName
+        middleName
+        familyName
+        preferredName
+        emailAddress
+        mobilePhone
+        confirmed
+        publicKey
+        certificate
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
+        universalConfig
+      }
+      lastAccessTime
+    }
+  }
+`;
+export const deleteAppUser = /* GraphQL */ `
+  mutation DeleteAppUser($appID: ID!, $userID: ID!) {
+    deleteAppUser(appID: $appID, userID: $userID) {
+      app {
+        appID
+        appName
+        recipe
+        iaas
+        region
+        status
+        space {
+          spaceID
+          spaceName
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          status
+          lastSeen
+        }
+        users {
+          totalCount
+        }
+      }
+      user {
+        userID
+        userName
+        firstName
+        middleName
+        familyName
+        preferredName
+        emailAddress
+        mobilePhone
+        confirmed
+        publicKey
+        certificate
+        devices {
+          totalCount
+        }
+        spaces {
+          totalCount
+        }
+        universalConfig
+      }
+      lastAccessTime
+    }
+  }
+`;
+export const deleteApp = /* GraphQL */ `
+  mutation DeleteApp($appID: ID!) {
+    deleteApp(appID: $appID)
   }
 `;
 export const publishData = /* GraphQL */ `
@@ -1407,6 +1706,17 @@ export const pushDevicesUpdate = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -1428,6 +1738,7 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
           publicKey
           certificate
           settings
+          managedBy
         }
         user {
           userID
@@ -1576,6 +1887,7 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
           publicKey
           certificate
           settings
+          managedBy
         }
       }
     }
@@ -1592,6 +1904,7 @@ export const pushAppsUpdate = /* GraphQL */ `
         recipe
         iaas
         region
+        status
         space {
           spaceID
           spaceName
@@ -1630,6 +1943,7 @@ export const pushAppUsersUpdate = /* GraphQL */ `
           recipe
           iaas
           region
+          status
         }
         user {
           userID
@@ -1648,5 +1962,10 @@ export const pushAppUsersUpdate = /* GraphQL */ `
         lastAccessTime
       }
     }
+  }
+`;
+export const touchSubscriptions = /* GraphQL */ `
+  mutation TouchSubscriptions($subs: [String!]) {
+    touchSubscriptions(subs: $subs)
   }
 `;

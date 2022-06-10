@@ -51,6 +51,17 @@ export const deviceUpdates = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -72,6 +83,7 @@ export const deviceUserUpdates = /* GraphQL */ `
           publicKey
           certificate
           settings
+          managedBy
         }
         user {
           userID
@@ -220,6 +232,7 @@ export const spaceUserUpdates = /* GraphQL */ `
           publicKey
           certificate
           settings
+          managedBy
         }
       }
     }
@@ -236,6 +249,7 @@ export const appUpdates = /* GraphQL */ `
         recipe
         iaas
         region
+        status
         space {
           spaceID
           spaceName
@@ -274,6 +288,7 @@ export const appUserUpdates = /* GraphQL */ `
           recipe
           iaas
           region
+          status
         }
         user {
           userID

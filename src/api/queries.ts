@@ -32,6 +32,17 @@ export const authDevice = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -105,6 +116,17 @@ export const getDevice = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -270,6 +292,17 @@ export const getSpace = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -295,6 +328,17 @@ export const getDeviceAccessRequests = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
@@ -460,6 +504,17 @@ export const getSpaceInvitations = /* GraphQL */ `
         publicKey
         certificate
         settings
+        managedBy
+        managedDevices {
+          deviceID
+          deviceName
+          deviceType
+          clientVersion
+          publicKey
+          certificate
+          settings
+          managedBy
+        }
         users {
           totalCount
         }
