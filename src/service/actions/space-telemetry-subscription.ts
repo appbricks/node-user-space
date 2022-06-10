@@ -16,6 +16,9 @@ import {
   SUBSCRIBE_TO_SPACE_TELEMETRY,
   SPACE_TELEMETRY
 } from '../actions';
+import {
+  SUBSCRIPTION_FATAL_ERROR
+} from '../constants';
 
 export const subscribeEpic = (csProvider: Provider): Epic => {
 
@@ -41,6 +44,7 @@ export const subscribeEpic = (csProvider: Provider): Epic => {
         );  
       })
       return createFollowUpAction(action, SUCCESS);
-    }
+    },
+    SUBSCRIPTION_FATAL_ERROR
   );
 }
