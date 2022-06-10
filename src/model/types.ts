@@ -3,7 +3,12 @@
 //  This file was automatically generated and should not be edited.
 
 export type Key = {
-  publicKey?: string | null,
+  publicKey: string,
+  // key timestamp
+  keyTimestamp?: string | null,
+  // certificate request used to
+  // request a signed certificate
+  // for the key owner
   certificateRequest?: string | null,
 };
 
@@ -68,8 +73,8 @@ export type DeviceUser = {
   user?: User,
   isOwner?: boolean | null,
   status?: UserAccessStatus | null,
-  bytesUploaded?: number | null,
-  bytesDownloaded?: number | null,
+  bytesUploaded?: string | null,
+  bytesDownloaded?: string | null,
   lastAccessTime?: number | null,
   lastConnectSpace?: Space,
 };
@@ -88,6 +93,11 @@ export type Device = {
   // with the device such as default
   // settings for new device users
   settings?: string | null,
+  // ID of managing device if this
+  // is a managed device. '-' if not.
+  managedBy?: string | null,
+  // managed devices
+  managedDevices?:  Array<Device | null > | null,
   users?: DeviceUsersConnection,
 };
 
@@ -152,13 +162,23 @@ export type SpaceAppsEdge = {
 export type App = {
   __typename: "App",
   appID?: string,
-  appName?: string,
-  recipe?: string,
-  iaas?: string,
-  region?: string,
+  appName?: string | null,
+  recipe?: string | null,
+  iaas?: string | null,
+  region?: string | null,
+  status?: AppStatus | null,
   space?: Space,
   users?: AppUsersConnection,
 };
+
+export enum AppStatus {
+  undeployed = "undeployed",
+  running = "running",
+  shutdown = "shutdown",
+  pending = "pending",
+  unknown = "unknown",
+}
+
 
 export type AppUsersConnection = {
   __typename: "AppUsersConnection",
@@ -206,8 +226,8 @@ export type SpaceUser = {
   // as the egress node for internet access.
   isEgressNode?: boolean | null,
   status?: UserAccessStatus | null,
-  bytesUploaded?: number | null,
-  bytesDownloaded?: number | null,
+  bytesUploaded?: string | null,
+  bytesDownloaded?: string | null,
   accessList?: AppUsersConnection,
   lastConnectTime?: number | null,
   lastConnectDevice?: Device,
@@ -225,6 +245,9 @@ export enum SpaceStatus {
 export type DeviceInfo = {
   deviceType: string,
   clientVersion: string,
+  // ID of device that manages this
+  // device
+  managedBy?: string | null,
 };
 
 export type DeviceII = {
@@ -360,8 +383,8 @@ export type UpdateUserKeyMutation = {
         __typename: "DeviceUser",
         isOwner?: boolean | null,
         status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
+        bytesUploaded?: string | null,
+        bytesDownloaded?: string | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -386,8 +409,8 @@ export type UpdateUserKeyMutation = {
         // as the egress node for internet access.
         isEgressNode?: boolean | null,
         status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
+        bytesUploaded?: string | null,
+        bytesDownloaded?: string | null,
         lastConnectTime?: number | null,
       } | null > | null,
     } | null,
@@ -400,73 +423,12 @@ export type UpdateUserKeyMutation = {
 
 export type UpdateUserConfigMutationVariables = {
   universalConfig?: string,
+  asOf?: string,
 };
 
 export type UpdateUserConfigMutation = {
   // Update the logged in user's universal config
-  updateUserConfig?:  {
-    __typename: "User",
-    userID: string,
-    userName: string,
-    firstName?: string | null,
-    middleName?: string | null,
-    familyName?: string | null,
-    preferredName?: string | null,
-    emailAddress?: string | null,
-    mobilePhone?: string | null,
-    confirmed?: boolean | null,
-    publicKey?: string | null,
-    certificate?: string | null,
-    devices?:  {
-      __typename: "DeviceUsersConnection",
-      pageInfo:  {
-        __typename: "PageInfo",
-        // When paginating forwards, are there more items?
-        hasNextPage: boolean,
-        // When paginating backwards, are there more items?
-        hasPreviousePage: boolean,
-      },
-      totalCount?: number | null,
-      deviceUsers?:  Array< {
-        __typename: "DeviceUser",
-        isOwner?: boolean | null,
-        status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
-        lastAccessTime?: number | null,
-      } | null > | null,
-    } | null,
-    spaces?:  {
-      __typename: "SpaceUsersConnection",
-      pageInfo:  {
-        __typename: "PageInfo",
-        // When paginating forwards, are there more items?
-        hasNextPage: boolean,
-        // When paginating backwards, are there more items?
-        hasPreviousePage: boolean,
-      },
-      totalCount?: number | null,
-      spaceUsers?:  Array< {
-        __typename: "SpaceUser",
-        isOwner?: boolean | null,
-        isAdmin?: boolean | null,
-        // User's that are neither owners or admin can
-        // connect to the space and access only apps
-        // they are allowed to access. If this flag
-        // is set then they can also use the space
-        // as the egress node for internet access.
-        isEgressNode?: boolean | null,
-        status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
-        lastConnectTime?: number | null,
-      } | null > | null,
-    } | null,
-    // A user's universal config is an encrypted
-    // document containing metadata of all spaces the
-    // user owns.
-    universalConfig?: string | null,
-  } | null,
+  updateUserConfig: string,
 };
 
 export type AddDeviceMutationVariables = {
@@ -495,6 +457,9 @@ export type AddDeviceMutation = {
         // with the device such as default
         // settings for new device users
         settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -516,8 +481,8 @@ export type AddDeviceMutation = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
-      bytesUploaded?: number | null,
-      bytesDownloaded?: number | null,
+      bytesUploaded?: string | null,
+      bytesDownloaded?: string | null,
       lastAccessTime?: number | null,
       lastConnectSpace?:  {
         __typename: "Space",
@@ -549,6 +514,7 @@ export type AddDeviceMutation = {
 
 export type AddDeviceUserMutationVariables = {
   deviceID?: string,
+  userID?: string | null,
 };
 
 export type AddDeviceUserMutation = {
@@ -576,6 +542,27 @@ export type AddDeviceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -609,8 +596,8 @@ export type AddDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
     lastConnectSpace?:  {
       __typename: "Space",
@@ -693,6 +680,27 @@ export type ActivateDeviceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -726,8 +734,8 @@ export type ActivateDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
     lastConnectSpace?:  {
       __typename: "Space",
@@ -813,6 +821,27 @@ export type DeleteDeviceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -846,8 +875,8 @@ export type DeleteDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
     lastConnectSpace?:  {
       __typename: "Space",
@@ -940,6 +969,57 @@ export type UpdateDeviceMutation = {
     // with the device such as default
     // settings for new device users
     settings?: string | null,
+    // ID of managing device if this
+    // is a managed device. '-' if not.
+    managedBy?: string | null,
+    // managed devices
+    managedDevices?:  Array< {
+      __typename: "Device",
+      deviceID: string,
+      deviceName?: string | null,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      // device info
+      deviceType?: string | null,
+      clientVersion?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      // common configuration associated
+      // with the device such as default
+      // settings for new device users
+      settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
+      users?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null > | null,
     users?:  {
       __typename: "DeviceUsersConnection",
       pageInfo:  {
@@ -954,8 +1034,8 @@ export type UpdateDeviceMutation = {
         __typename: "DeviceUser",
         isOwner?: boolean | null,
         status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
+        bytesUploaded?: string | null,
+        bytesDownloaded?: string | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -1029,8 +1109,8 @@ export type AddSpaceMutation = {
       // as the egress node for internet access.
       isEgressNode?: boolean | null,
       status?: UserAccessStatus | null,
-      bytesUploaded?: number | null,
-      bytesDownloaded?: number | null,
+      bytesUploaded?: string | null,
+      bytesDownloaded?: string | null,
       accessList?:  {
         __typename: "AppUsersConnection",
         totalCount?: number | null,
@@ -1049,6 +1129,9 @@ export type AddSpaceMutation = {
         // with the device such as default
         // settings for new device users
         settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
       } | null,
     },
   } | null,
@@ -1057,7 +1140,8 @@ export type AddSpaceMutation = {
 export type InviteSpaceUserMutationVariables = {
   spaceID?: string,
   userID?: string,
-  isEgressNode?: boolean,
+  isAdmin?: boolean | null,
+  isEgressNode?: boolean | null,
 };
 
 export type InviteSpaceUserMutation = {
@@ -1147,8 +1231,8 @@ export type InviteSpaceUserMutation = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -1186,6 +1270,27 @@ export type InviteSpaceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1287,8 +1392,8 @@ export type ActivateSpaceUserMutation = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -1326,6 +1431,27 @@ export type ActivateSpaceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1427,8 +1553,8 @@ export type DeactivateSpaceUserMutation = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -1466,6 +1592,27 @@ export type DeactivateSpaceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1567,8 +1714,8 @@ export type DeleteSpaceUserMutation = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -1606,6 +1753,27 @@ export type DeleteSpaceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1716,8 +1884,8 @@ export type AcceptSpaceUserInvitationMutation = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -1755,6 +1923,27 @@ export type AcceptSpaceUserInvitationMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1855,8 +2044,8 @@ export type LeaveSpaceUserMutation = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -1894,6 +2083,27 @@ export type LeaveSpaceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -1961,10 +2171,11 @@ export type UpdateSpaceMutation = {
       spaceApps?:  Array< {
         __typename: "App",
         appID: string,
-        appName: string,
-        recipe: string,
-        iaas: string,
-        region: string,
+        appName?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        status?: AppStatus | null,
       } | null > | null,
     } | null,
     users?:  {
@@ -1988,8 +2199,8 @@ export type UpdateSpaceMutation = {
         // as the egress node for internet access.
         isEgressNode?: boolean | null,
         status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
+        bytesUploaded?: string | null,
+        bytesDownloaded?: string | null,
         lastConnectTime?: number | null,
       } | null > | null,
     } | null,
@@ -2000,6 +2211,7 @@ export type UpdateSpaceMutation = {
 
 export type UpdateSpaceUserMutationVariables = {
   spaceID?: string,
+  userID?: string | null,
   isEgressNode?: boolean | null,
 };
 
@@ -2090,8 +2302,8 @@ export type UpdateSpaceUserMutation = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -2129,12 +2341,278 @@ export type UpdateSpaceUserMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
       } | null,
     } | null,
   } | null,
+};
+
+export type AddAppMutationVariables = {
+  appName?: string,
+  recipe?: string,
+  iaas?: string,
+  region?: string,
+  spaceID?: string,
+};
+
+export type AddAppMutation = {
+  // Add new app for the logged in user
+  addApp?:  {
+    __typename: "App",
+    appID: string,
+    appName?: string | null,
+    recipe?: string | null,
+    iaas?: string | null,
+    region?: string | null,
+    status?: AppStatus | null,
+    space?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName?: string | null,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
+    users?:  {
+      __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        lastAccessTime?: number | null,
+      } | null > | null,
+    } | null,
+  } | null,
+};
+
+export type AddAppUserMutationVariables = {
+  appID?: string,
+  userID?: string,
+};
+
+export type AddAppUserMutation = {
+  // Add app user
+  addAppUser?:  {
+    __typename: "AppUser",
+    app?:  {
+      __typename: "App",
+      appID: string,
+      appName?: string | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      status?: AppStatus | null,
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      users?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      userID: string,
+      userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
+      emailAddress?: string | null,
+      mobilePhone?: string | null,
+      confirmed?: boolean | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      // A user's universal config is an encrypted
+      // document containing metadata of all spaces the
+      // user owns.
+      universalConfig?: string | null,
+    } | null,
+    lastAccessTime?: number | null,
+  } | null,
+};
+
+export type DeleteAppUserMutationVariables = {
+  appID?: string,
+  userID?: string,
+};
+
+export type DeleteAppUserMutation = {
+  // Delete app user
+  deleteAppUser?:  {
+    __typename: "AppUser",
+    app?:  {
+      __typename: "App",
+      appID: string,
+      appName?: string | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      status?: AppStatus | null,
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      users?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      userID: string,
+      userName: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      familyName?: string | null,
+      preferredName?: string | null,
+      emailAddress?: string | null,
+      mobilePhone?: string | null,
+      confirmed?: boolean | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      devices?:  {
+        __typename: "DeviceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      spaces?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      // A user's universal config is an encrypted
+      // document containing metadata of all spaces the
+      // user owns.
+      universalConfig?: string | null,
+    } | null,
+    lastAccessTime?: number | null,
+  } | null,
+};
+
+export type DeleteAppMutationVariables = {
+  appID?: string,
+};
+
+export type DeleteAppMutation = {
+  // Delete app
+  deleteApp?: Array< string | null > | null,
 };
 
 export type PublishDataMutationVariables = {
@@ -2225,6 +2703,27 @@ export type PushDevicesUpdateMutation = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2257,6 +2756,9 @@ export type PushDeviceUsersUpdateMutation = {
         // with the device such as default
         // settings for new device users
         settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -2278,8 +2780,8 @@ export type PushDeviceUsersUpdateMutation = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
-      bytesUploaded?: number | null,
-      bytesDownloaded?: number | null,
+      bytesUploaded?: string | null,
+      bytesDownloaded?: string | null,
       lastAccessTime?: number | null,
       lastConnectSpace?:  {
         __typename: "Space",
@@ -2432,8 +2934,8 @@ export type PushSpaceUsersUpdateMutation = {
       // as the egress node for internet access.
       isEgressNode?: boolean | null,
       status?: UserAccessStatus | null,
-      bytesUploaded?: number | null,
-      bytesDownloaded?: number | null,
+      bytesUploaded?: string | null,
+      bytesDownloaded?: string | null,
       accessList?:  {
         __typename: "AppUsersConnection",
         totalCount?: number | null,
@@ -2452,6 +2954,9 @@ export type PushSpaceUsersUpdateMutation = {
         // with the device such as default
         // settings for new device users
         settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
       } | null,
     },
   } | null,
@@ -2469,10 +2974,11 @@ export type PushAppsUpdateMutation = {
     app:  {
       __typename: "App",
       appID: string,
-      appName: string,
-      recipe: string,
-      iaas: string,
-      region: string,
+      appName?: string | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      status?: AppStatus | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
@@ -2519,10 +3025,11 @@ export type PushAppUsersUpdateMutation = {
       app?:  {
         __typename: "App",
         appID: string,
-        appName: string,
-        recipe: string,
-        iaas: string,
-        region: string,
+        appName?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        status?: AppStatus | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -2545,6 +3052,15 @@ export type PushAppUsersUpdateMutation = {
       lastAccessTime?: number | null,
     },
   } | null,
+};
+
+export type TouchSubscriptionsMutationVariables = {
+  subs?: Array< string > | null,
+};
+
+export type TouchSubscriptionsMutation = {
+  // Subscription keep alive call
+  touchSubscriptions?: number | null,
 };
 
 export type UserSearchQueryVariables = {
@@ -2601,6 +3117,27 @@ export type AuthDeviceQuery = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2638,8 +3175,8 @@ export type GetUserQuery = {
         __typename: "DeviceUser",
         isOwner?: boolean | null,
         status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
+        bytesUploaded?: string | null,
+        bytesDownloaded?: string | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -2664,8 +3201,8 @@ export type GetUserQuery = {
         // as the egress node for internet access.
         isEgressNode?: boolean | null,
         status?: UserAccessStatus | null,
-        bytesUploaded?: number | null,
-        bytesDownloaded?: number | null,
+        bytesUploaded?: string | null,
+        bytesDownloaded?: string | null,
         lastConnectTime?: number | null,
       } | null > | null,
     } | null,
@@ -2706,6 +3243,27 @@ export type GetDeviceQuery = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2739,8 +3297,8 @@ export type GetDeviceQuery = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
     lastConnectSpace?:  {
       __typename: "Space",
@@ -2885,8 +3443,8 @@ export type GetSpaceQuery = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -2924,6 +3482,27 @@ export type GetSpaceQuery = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2962,6 +3541,27 @@ export type GetDeviceAccessRequestsQuery = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -2995,8 +3595,8 @@ export type GetDeviceAccessRequestsQuery = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
     lastConnectSpace?:  {
       __typename: "Space",
@@ -3137,8 +3737,8 @@ export type GetSpaceInvitationsQuery = {
     // as the egress node for internet access.
     isEgressNode?: boolean | null,
     status?: UserAccessStatus | null,
-    bytesUploaded?: number | null,
-    bytesDownloaded?: number | null,
+    bytesUploaded?: string | null,
+    bytesDownloaded?: string | null,
     accessList?:  {
       __typename: "AppUsersConnection",
       pageInfo:  {
@@ -3176,6 +3776,27 @@ export type GetSpaceInvitationsQuery = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -3253,6 +3874,27 @@ export type DeviceUpdatesSubscription = {
       // with the device such as default
       // settings for new device users
       settings?: string | null,
+      // ID of managing device if this
+      // is a managed device. '-' if not.
+      managedBy?: string | null,
+      // managed devices
+      managedDevices?:  Array< {
+        __typename: "Device",
+        deviceID: string,
+        deviceName?: string | null,
+        // device info
+        deviceType?: string | null,
+        clientVersion?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        // common configuration associated
+        // with the device such as default
+        // settings for new device users
+        settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
+      } | null > | null,
       users?:  {
         __typename: "DeviceUsersConnection",
         totalCount?: number | null,
@@ -3286,6 +3928,9 @@ export type DeviceUserUpdatesSubscription = {
         // with the device such as default
         // settings for new device users
         settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -3307,8 +3952,8 @@ export type DeviceUserUpdatesSubscription = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
-      bytesUploaded?: number | null,
-      bytesDownloaded?: number | null,
+      bytesUploaded?: string | null,
+      bytesDownloaded?: string | null,
       lastAccessTime?: number | null,
       lastConnectSpace?:  {
         __typename: "Space",
@@ -3462,8 +4107,8 @@ export type SpaceUserUpdatesSubscription = {
       // as the egress node for internet access.
       isEgressNode?: boolean | null,
       status?: UserAccessStatus | null,
-      bytesUploaded?: number | null,
-      bytesDownloaded?: number | null,
+      bytesUploaded?: string | null,
+      bytesDownloaded?: string | null,
       accessList?:  {
         __typename: "AppUsersConnection",
         totalCount?: number | null,
@@ -3482,6 +4127,9 @@ export type SpaceUserUpdatesSubscription = {
         // with the device such as default
         // settings for new device users
         settings?: string | null,
+        // ID of managing device if this
+        // is a managed device. '-' if not.
+        managedBy?: string | null,
       } | null,
     },
   } | null,
@@ -3499,10 +4147,11 @@ export type AppUpdatesSubscription = {
     app:  {
       __typename: "App",
       appID: string,
-      appName: string,
-      recipe: string,
-      iaas: string,
-      region: string,
+      appName?: string | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      status?: AppStatus | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
@@ -3550,10 +4199,11 @@ export type AppUserUpdatesSubscription = {
       app?:  {
         __typename: "App",
         appID: string,
-        appName: string,
-        recipe: string,
-        iaas: string,
-        region: string,
+        appName?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        status?: AppStatus | null,
       } | null,
       user?:  {
         __typename: "User",
