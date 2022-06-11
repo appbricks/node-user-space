@@ -249,8 +249,8 @@ it('retrieves a users list of devices', async () => {
     deviceID: "ed3e2219-ff72-4405-88fb-8dab24030770",
     userID: "95e579be-a365-4268-bed0-17df80ef3dce",
     deviceUser: {
-      bytesDownloaded: 1348,
-      bytesUploaded: 832,
+      bytesDownloaded: '1348',
+      bytesUploaded: '832',
       lastAccessTime: updateTime,
       lastConnectSpace: {
         spaceID: "af296bd0-1186-42f0-b7ca-90980d22b961",
@@ -429,8 +429,8 @@ it('retrieves a users list of spaces', async () => {
     userID: "95e579be-a365-4268-bed0-17df80ef3dce",
     spaceUser: {
       status: "active",
-      bytesDownloaded: 5432546,
-      bytesUploaded: 7654352,
+      bytesDownloaded: '5432546',
+      bytesUploaded: '7654352',
       lastConnectTime: updateTime,
     }
   }, "d83b7d95-5681-427d-a65a-5d8a868d72e9", "95e579be-a365-4268-bed0-17df80ef3dce");
@@ -641,6 +641,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
     bytesDownloaded: 21,
     bytesUploaded: 12,
     lastAccessedTime: date3.getTime(),
+    settings: {},
     users: [
       {
         userID: "a645c56e-f454-460f-8324-eff15357e973",
@@ -679,6 +680,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
     bytesDownloaded: 65,
     bytesUploaded: 56,
     lastAccessedTime: date3.getTime(),
+    settings: {},
     users: [
       {
         userID: "a645c56e-f454-460f-8324-eff15357e973",
@@ -728,6 +730,7 @@ const devicesDetail: { [deviceID: string]: DeviceDetail } = {
     bytesDownloaded: 836,
     bytesUploaded: 583,
     lastAccessedTime: date3.getTime(),
+    settings: {},
     users: []
   }
 };
@@ -750,6 +753,9 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
     isOwned: true,
     bytesDownloaded: 5245122,
     bytesUploaded: 13221771,
+    spaceDefaults: {
+      isEgressNode: false
+    },
     users: [
       {
         userID: "a645c56e-f454-460f-8324-eff15357e973",
@@ -803,6 +809,9 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
     isOwned: false,
     bytesDownloaded: 2389343,
     bytesUploaded: 8239884,
+    spaceDefaults: {
+      isEgressNode: false
+    },
     users: []
   }
 };

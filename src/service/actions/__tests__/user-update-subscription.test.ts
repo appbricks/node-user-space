@@ -2,6 +2,8 @@ import {
   Logger, 
   LOG_LEVEL_TRACE, 
   setLogLevel, 
+  BROADCAST,
+  BroadCastPayload
 } from '@appbricks/utils';
 import { ActionTester } from '@appbricks/test-utils';
 
@@ -9,13 +11,8 @@ import {
   UserUpdate,
 } from '../../../model/types';
 import { 
-  UserIDPayload,
-  UserPayload,
-  SUBSCRIBE_TO_USER_UPDATES,
-  USER_UPDATE,
   GET_USER_DEVICES,
   GET_USER_SPACES,
-  UNSUBSCRIBE_FROM_USER_UPDATES
 } from '../../actions';
 import {
   UserSpaceState,
@@ -34,9 +31,13 @@ if (process.env.DEBUG) {
 const logger = new Logger('user-update-subscription.test');
 
 // test reducer validates action flows
-const actionTester = new ActionTester<UserSpaceState>(logger, initialUserSpaceState());
+const actionTester = new ActionTester<UserSpaceState>(logger, {
+  ...initialUserSpaceState(),
+  deviceUpdatesActive: true,
+  spaceUpdatesActive: true
+});
 // test service dispatcher
-const { dispatch, mockProvider } = initServiceDispatch(actionTester);
+const { sendLoginEvent, mockProvider } = initServiceDispatch(actionTester);
 
 it('subscribes to updates to user tom', async () => {
 
@@ -48,33 +49,27 @@ it('subscribes to updates to user tom', async () => {
   const spaceUsers = user.spaces?.spaceUsers?.filter(
     spaceUser => spaceUser!.status == UserAccessStatus.active);
 
-  actionTester.expectAction<UserIDPayload>(SUBSCRIBE_TO_USER_UPDATES, { userID: user.userID! } )
-    .success();
-  actionTester.expectAction<UserPayload>(USER_UPDATE, { 
-    user: { 
-      ...user,
-      publicKey: 'New public key #1'
-    }
+  actionTester.expectAction<BroadCastPayload>(BROADCAST, { 
+    __typename: 'UserLogin', 
+    userID: user.userID! 
   });
-  actionTester.expectAction<UserPayload>(USER_UPDATE, { 
-    user: { 
-      ...user,
-      publicKey: 'New public key #2',
-    }
+  actionTester.expectAction<BroadCastPayload>(BROADCAST, { 
+    ...user,
+    publicKey: 'New public key #1'
   });
-  actionTester.expectAction<UserPayload>(USER_UPDATE, { 
-    user: { 
-      ...user,
-    }
+  actionTester.expectAction<BroadCastPayload>(BROADCAST, { 
+    ...user,
+    publicKey: 'New public key #2',
+  });
+  actionTester.expectAction<BroadCastPayload>(BROADCAST, { 
+    ...user,
   });
   actionTester.expectAction(GET_USER_DEVICES)
     .success({ deviceUsers });
   actionTester.expectAction(GET_USER_SPACES)
     .success({ spaceUsers });
-  actionTester.expectAction<UserIDPayload>(UNSUBSCRIBE_FROM_USER_UPDATES, { userID: user.userID! } )
-    .success();
 
-  dispatch.userspaceService!.subscribeToUserUpdates(user.userID!);
+  sendLoginEvent!(user.userID!);
 
   mockProvider.pushSubscriptionUpdate(<UserUpdate>{
     userID: user.userID,
@@ -98,22 +93,6 @@ it('subscribes to updates to user tom', async () => {
       ...user
     }
   }, user.userID!)
-
-  dispatch.userspaceService!.unsubscribeFromUserUpdates(user.userID!);
-
-  try {
-    mockProvider.pushSubscriptionUpdate(<UserUpdate>{
-      userID: user.userID,
-      user: { 
-        ...user,
-        publicKey: 'New public key #3'
-      }
-    }, user.userID!)  
-    throw new Error('subscription not found error expected');
-
-  } catch (error) {
-    expect(error.message).toEqual(`subscription ${user.userID} not found`);
-  }
   
   await actionTester.done();
 });

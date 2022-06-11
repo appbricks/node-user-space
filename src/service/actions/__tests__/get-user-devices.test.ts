@@ -126,15 +126,15 @@ it('dispatches an action to retrieve the logged in user tom\'s devices', async (
   actionTester.expectAction<DeviceUserPayload>(DEVICE_TELEMETRY, {
     deviceUser: {
       __typename: 'DeviceUser',
-      bytesDownloaded: 10,
-      bytesUploaded: 20
+      bytesDownloaded: '10',
+      bytesUploaded: '20'
     }
   });
   actionTester.expectAction<DeviceUserPayload>(DEVICE_TELEMETRY, {
     deviceUser: {
       __typename: 'DeviceUser',
-      bytesDownloaded: 22,
-      bytesUploaded: 11,
+      bytesDownloaded: '22',
+      bytesUploaded: '11',
     }
   });
 
@@ -197,8 +197,8 @@ it('dispatches an action to retrieve the logged in user tom\'s devices', async (
         userID: testSubDeviceUser1.user!.userID,
         deviceUser: {
           __typename: 'DeviceUser',
-          bytesDownloaded: 10,
-          bytesUploaded: 20
+          bytesDownloaded: '10',
+          bytesUploaded: '20'
         }
       }, testSubDeviceUser1.device!.deviceID!, testSubDeviceUser1.user!.userID!);
       mockProvider.pushSubscriptionUpdate(<DeviceUserUpdate>{
@@ -206,8 +206,8 @@ it('dispatches an action to retrieve the logged in user tom\'s devices', async (
         userID: testSubDeviceUser1.user!.userID,
         deviceUser: {
           __typename: 'DeviceUser',
-          bytesDownloaded: 22,
-          bytesUploaded: 11
+          bytesDownloaded: '22',
+          bytesUploaded: '11'
         }
       }, testSubDeviceUser1.device!.deviceID!, testSubDeviceUser1.user!.userID!);
 

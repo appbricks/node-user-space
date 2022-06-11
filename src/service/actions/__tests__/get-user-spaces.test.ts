@@ -126,15 +126,15 @@ it('dispatches an action to retrieve the logged in user tom\'s spaces', async ()
   actionTester.expectAction<SpaceUserPayload>(SPACE_TELEMETRY, { 
     spaceUser: { 
       __typename: 'SpaceUser',
-      bytesDownloaded: 10,
-      bytesUploaded: 20
+      bytesDownloaded: '10',
+      bytesUploaded: '20'
     }
   });
   actionTester.expectAction<SpaceUserPayload>(SPACE_TELEMETRY, { 
     spaceUser: { 
       __typename: 'SpaceUser',
-      bytesDownloaded: 22,
-      bytesUploaded: 11,
+      bytesDownloaded: '22',
+      bytesUploaded: '11',
     }
   });
 
@@ -197,8 +197,8 @@ it('dispatches an action to retrieve the logged in user tom\'s spaces', async ()
         userID: testSubSpaceUser1.user!.userID,
         spaceUser: { 
           __typename: 'SpaceUser',
-          bytesDownloaded: 10,
-          bytesUploaded: 20
+          bytesDownloaded: '10',
+          bytesUploaded: '20'
         }
       }, testSubSpaceUser1.space!.spaceID!, testSubSpaceUser1.user!.userID!);
       mockProvider.pushSubscriptionUpdate(<SpaceUserUpdate>{
@@ -206,8 +206,8 @@ it('dispatches an action to retrieve the logged in user tom\'s spaces', async ()
         userID: testSubSpaceUser1.user!.userID,
         spaceUser: { 
           __typename: 'SpaceUser',
-          bytesDownloaded: 22,
-          bytesUploaded: 11
+          bytesDownloaded: '22',
+          bytesUploaded: '11'
         }
       }, testSubSpaceUser1.space!.spaceID!, testSubSpaceUser1.user!.userID!);
       

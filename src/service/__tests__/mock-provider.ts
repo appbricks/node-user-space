@@ -20,6 +20,11 @@ import {
 import { UserSpaceActionProps } from '../actions';
 import UserSpaceService from '../user-space-service';
 
+import { 
+  BROADCAST, 
+  BroadCastPayload,
+  createAction 
+} from '@appbricks/utils';
 import {
   ActionTester,
   testActionDispatcher
@@ -38,6 +43,7 @@ date3.setMinutes(date3.getMinutes() - 2);
 export const initServiceDispatch = (
   actionTester: ActionTester
 ): {
+  sendLoginEvent?: (userID: string) => void
   dispatch: UserSpaceActionProps
   mockProvider: MockProvider
 } => {
@@ -45,16 +51,22 @@ export const initServiceDispatch = (
   const mockProvider = new MockProvider();
   const authService = new UserSpaceService(mockProvider)
 
+  let sendLoginEvent: (userID: string) => void = (userID: string) => {};
+
   const dispatch = testActionDispatcher<UserSpaceActionProps>(
     'userspace',
     actionTester,
     authService.epics(),
     dispatch => {
+      sendLoginEvent = (userID: string) => {
+        dispatch(createAction<BroadCastPayload>(BROADCAST, { __typename: 'UserLogin', userID }))
+      }
       return UserSpaceService.dispatchProps(dispatch)
     }
   );
 
   return {
+    sendLoginEvent,
     dispatch,
     mockProvider
   };
@@ -304,8 +316,8 @@ export default class MockProvider implements ProviderInterface {
       isOwner: false,
       isEgressNode: isEgressNode,
       status: UserAccessStatus.pending,
-      bytesUploaded: 0,
-      bytesDownloaded: 0,
+      bytesUploaded: '0',
+      bytesDownloaded: '0',
       lastConnectTime: 0,
     }
 
@@ -606,8 +618,8 @@ function loadMockData() {
     user: users[0],
     isOwner: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 12,
-    bytesDownloaded: 21,
+    bytesUploaded: '12',
+    bytesDownloaded: '21',
     lastAccessTime: date3.getTime(),
   }, {
     __typename: "DeviceUser",
@@ -615,8 +627,8 @@ function loadMockData() {
     user: users[0],
     isOwner: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 34,
-    bytesDownloaded: 43,
+    bytesUploaded: '34',
+    bytesDownloaded: '43',
     lastAccessTime: date1.getTime(),
   }, {
     __typename: "DeviceUser",
@@ -624,8 +636,8 @@ function loadMockData() {
     user: users[1],
     isOwner: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 823,
-    bytesDownloaded: 465,
+    bytesUploaded: '823',
+    bytesDownloaded: '465',
     lastAccessTime: date2.getTime(),
   }, {
     __typename: "DeviceUser",
@@ -633,8 +645,8 @@ function loadMockData() {
     user: users[0],
     isOwner: false,
     status: UserAccessStatus.active,
-    bytesUploaded: 583,
-    bytesDownloaded: 836,
+    bytesUploaded: '583',
+    bytesDownloaded: '836',
     lastAccessTime: date3.getTime(),
   }, {
     __typename: "DeviceUser",
@@ -642,8 +654,8 @@ function loadMockData() {
     user: users[1],
     isOwner: false,
     status: UserAccessStatus.pending,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
@@ -651,8 +663,8 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     status: UserAccessStatus.pending,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
@@ -660,8 +672,8 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     status: UserAccessStatus.active,
-    bytesUploaded: 56,
-    bytesDownloaded: 65,
+    bytesUploaded: '56',
+    bytesDownloaded: '65',
     lastAccessTime: date3.getTime(),
   }, {
     __typename: "DeviceUser",
@@ -669,8 +681,8 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     status: UserAccessStatus.pending,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
@@ -678,8 +690,8 @@ function loadMockData() {
     user: users[1],
     isOwner: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
@@ -687,8 +699,8 @@ function loadMockData() {
     user: users[0],
     isOwner: false,
     status: UserAccessStatus.pending,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastAccessTime: 0,
   }, {
     __typename: "DeviceUser",
@@ -696,8 +708,8 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     status: UserAccessStatus.pending,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastAccessTime: 0,
   } ];
 
@@ -836,8 +848,8 @@ function loadMockData() {
     isAdmin: true,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 9833378,
-    bytesDownloaded: 387393,
+    bytesUploaded: '9833378',
+    bytesDownloaded: '387393',
     lastConnectTime: date3.getTime(),
   }, {
     __typename: "SpaceUser",
@@ -847,8 +859,8 @@ function loadMockData() {
     isAdmin: true,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 33939,
-    bytesDownloaded: 33834,
+    bytesUploaded: '33939',
+    bytesDownloaded: '33834',
     lastConnectTime: 1621457410097,
   }, {
     __typename: "SpaceUser",
@@ -858,8 +870,8 @@ function loadMockData() {
     isAdmin: true,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 98333388,
-    bytesDownloaded: 89333484,
+    bytesUploaded: '98333388',
+    bytesDownloaded: '89333484',
     lastConnectTime: date1.getTime(),
   }, {
     __typename: "SpaceUser",
@@ -869,8 +881,8 @@ function loadMockData() {
     isAdmin: false,
     isEgressNode: true,
     status: UserAccessStatus.pending,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastConnectTime: 0,
   }, {
     __typename: "SpaceUser",
@@ -880,8 +892,8 @@ function loadMockData() {
     isAdmin: false,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 8239884,
-    bytesDownloaded: 2389343,
+    bytesUploaded: '8239884',
+    bytesDownloaded: '2389343',
     lastConnectTime: date3.getTime(),
   }, {
     __typename: "SpaceUser",
@@ -891,8 +903,8 @@ function loadMockData() {
     isAdmin: false,
     isEgressNode: true,
     status: UserAccessStatus.pending,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastConnectTime: 0,
   }, {
     __typename: "SpaceUser",
@@ -902,8 +914,8 @@ function loadMockData() {
     isAdmin: false,
     isEgressNode: true,
     status: UserAccessStatus.active,
-    bytesUploaded: 3388393,
-    bytesDownloaded: 4857729,
+    bytesUploaded: '3388393',
+    bytesDownloaded: '4857729',
     lastConnectTime: date2.getTime(),
   }, {
     __typename: "SpaceUser",
@@ -913,8 +925,8 @@ function loadMockData() {
     isAdmin: false,
     isEgressNode: true,
     status: UserAccessStatus.pending,
-    bytesUploaded: 0,
-    bytesDownloaded: 0,
+    bytesUploaded: '0',
+    bytesDownloaded: '0',
     lastConnectTime: 0,
   } ]
 
