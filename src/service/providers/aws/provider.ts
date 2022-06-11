@@ -174,7 +174,7 @@ export default class Provider implements ProviderInterface {
   async unsubscribeFromUserUpdates(
     userID: string,
   ) {
-    await this.unsubscribe(`userUpdates(userID: ${userID})`);
+    await this.unsubscribe(`{"name":"userUpdates","keys":{"userID":"${userID}"}}`);
   }
 
   async getUserDevices() {
@@ -294,7 +294,7 @@ export default class Provider implements ProviderInterface {
   async unsubscribeFromDeviceUpdates(
     deviceID: string,
   ) {
-    await this.unsubscribe(`deviceUpdates(deviceID: ${deviceID})`);
+    await this.unsubscribe(`{"name":"deviceUpdates","keys":{"deviceID":"${deviceID}"}}`);
   }
 
   async subscribeToDeviceUserUpdates(
@@ -345,7 +345,7 @@ export default class Provider implements ProviderInterface {
     deviceID: string,
     userID: string,
   ) {
-    await this.unsubscribe(`deviceUserUpdates(deviceID: ${deviceID}, userID: ${userID})`);
+    await this.unsubscribe(`{"name":"deviceUserUpdates","keys":{"deviceID":"${deviceID}","userID":"${userID}"}}`);
   }
 
   async getDeviceAccessRequests(deviceID: string) {
@@ -655,7 +655,7 @@ export default class Provider implements ProviderInterface {
   async unsubscribeFromSpaceUpdates(
     spaceID: string,
   ) {
-    await this.unsubscribe(`spaceUpdates(spaceID: ${spaceID})`);
+    await this.unsubscribe(`{"name":"spaceUpdates","keys":{"spaceID":"${spaceID}"}}`);
   }
 
   async subscribeToSpaceUserUpdates(
@@ -701,7 +701,7 @@ export default class Provider implements ProviderInterface {
     spaceID: string,
     userID: string,
   ) {
-    await this.unsubscribe(`spaceUserUpdates(spaceID: ${spaceID}, userID: ${userID})`);
+    await this.unsubscribe(`{"name":"spaceUserUpdates","keys":{"spaceID":"${spaceID}","userID":"${userID}"}}`);
   }
 
   async inviteSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {

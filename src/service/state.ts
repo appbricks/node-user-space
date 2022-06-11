@@ -20,12 +20,18 @@ export interface UserSpaceState extends State {
 
   userSearchResult?: UserRef[]
 
+  // indicates if device updates 
+  // subscriptions are active
+  deviceUpdatesActive: boolean
   // logged in users device list
   userDevices: DeviceUser[] 
   deviceAccessRequests: { [ deviceID: string ]: DeviceUser[] }
   // formated device info
   devices: { [deviceID: string]: DeviceDetail }
 
+  // indicates if space updates 
+  // subscriptions are active
+  spaceUpdatesActive: boolean
   // logged in users space list
   userSpaces: SpaceUser[]
   spaceInvitations?: SpaceUser[]
@@ -42,10 +48,12 @@ export const initialUserSpaceState = (): UserSpaceState =>
   <UserSpaceState>{
     status: [],
 
+    deviceUpdatesActive: false,
     userDevices: [],
     deviceAccessRequests: {},
     devices: {},
 
+    spaceUpdatesActive: false,
     userSpaces: [],
     spaceInvitations: [],
     spaces: {},

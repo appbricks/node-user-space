@@ -108,8 +108,6 @@ export default class UserSpaceService {
     this.serviceRequests
       .add(actions.USER_SEARCH)
       .add(actions.GET_USER_DEVICES)
-      .add(actions.SUBSCRIBE_TO_USER_UPDATES)
-      .add(actions.UNSUBSCRIBE_FROM_USER_UPDATES)
       .add(actions.GET_DEVICE_ACCESS_REQUESTS)
       .add(actions.ACTIVATE_USER_ON_DEVICE)
       .add(actions.DELETE_USER_FROM_DEVICE)
@@ -118,6 +116,7 @@ export default class UserSpaceService {
       .add(actions.UPDATE_DEVICE)
       .add(actions.SUBSCRIBE_TO_DEVICE_UPDATES)
       .add(actions.SUBSCRIBE_TO_DEVICE_TELEMETRY)
+      .add(actions.UNSUBSCRIBE_FROM_DEVICE_UPDATES)
       .add(actions.GET_USER_SPACES)
       .add(actions.INVITE_USER_TO_SPACE)
       .add(actions.GRANT_USER_ACCESS_TO_SPACE)
@@ -125,6 +124,7 @@ export default class UserSpaceService {
       .add(actions.DELETE_SPACE)
       .add(actions.SUBSCRIBE_TO_SPACE_UPDATES)
       .add(actions.SUBSCRIBE_TO_SPACE_TELEMETRY)
+      .add(actions.UNSUBSCRIBE_FROM_SPACE_UPDATES)
       .add(actions.GET_SPACE_INVITATIONS)
       .add(actions.ACCEPT_SPACE_INVITATION)
       .add(actions.LEAVE_SPACE)
@@ -152,10 +152,6 @@ export default class UserSpaceService {
           userSearch.action(dispatch, namePrefix, limit),
         clearUserSearchResults: () =>
           clearUserSearchResults.action(dispatch),
-        subscribeToUserUpdates: (userID: string) =>
-          userUpdates.subscribeAction(dispatch, userID),
-        unsubscribeFromUserUpdates: (userID: string) =>
-          userUpdates.unsubscribeAction(dispatch, userID),
 
         // device owner actions
         getUserDevices: () =>
@@ -170,6 +166,8 @@ export default class UserSpaceService {
           deleteDevice.action(dispatch, deviceID),
         updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) =>
           updateDevice.action(dispatch, deviceID, deviceKey, clientVersion, settings),
+        unsubscribeFromDeviceUpdates: () => 
+          deviceUpdates.unsubscribeAction(dispatch),
 
         // space owner actions
         getUserSpaces: () =>
@@ -188,6 +186,8 @@ export default class UserSpaceService {
           updateSpace.action(dispatch, spaceID, deviceKey, version, settings),
         updateSpaceUser: (spaceID: string, userID?: string, isEgressNode?: boolean) =>
           updateSpaceUser.action(dispatch, spaceID, userID, isEgressNode),
+        unsubscribeFromSpaceUpdates: () => 
+          spaceUpdates.unsubscribeAction(dispatch),
 
         // space guest actions
         getSpaceInvitations: () =>
@@ -208,10 +208,9 @@ export default class UserSpaceService {
 
   epics(): Epic[] {
     return [
+      userUpdates.subscribeEpic(this.csProvider),
       userSearch.epic(this.csProvider),
       getUserDevices.epic(this.csProvider),
-      userUpdates.subscribeEpic(this.csProvider),
-      userUpdates.unsubscribeEpic(this.csProvider),
       getDeviceAccessRequests.epic(this.csProvider),
       activateUserOnDevice.epic(this.csProvider),
       deleteUserFromDevice.epic(this.csProvider),
@@ -219,6 +218,7 @@ export default class UserSpaceService {
       updateDevice.epic(this.csProvider),
       deviceUpdates.subscribeEpic(this.csProvider),
       deviceTelemetry.subscribeEpic(this.csProvider),
+      deviceUpdates.unsubscribeEpic(this.csProvider),
       getUserSpaces.epic(this.csProvider),
       inviteUserToSpace.epic(this.csProvider),
       grantUserAccessToSpace.epic(this.csProvider),
@@ -229,6 +229,7 @@ export default class UserSpaceService {
       updateSpaceUser.epic(this.csProvider),
       spaceUpdates.subscribeEpic(this.csProvider),
       spaceTelemetry.subscribeEpic(this.csProvider),
+      spaceUpdates.unsubscribeEpic(this.csProvider),
       getSpaceInvitations.epic(this.csProvider),
       acceptSpaceInvitation.epic(this.csProvider),
       leaveSpace.epic(this.csProvider),
@@ -355,6 +356,7 @@ export default class UserSpaceService {
 
         return {
           ...state,
+          deviceUpdatesActive: true,
           userDevices,
           devices
         }
@@ -370,6 +372,16 @@ export default class UserSpaceService {
           deviceAccessRequests
         }
       }
+      case actions.UNSUBSCRIBE_FROM_DEVICE_UPDATES: {
+        state = {
+          ...state,
+          deviceUpdatesActive: false,
+          userDevices: [],
+          deviceAccessRequests: {},
+          devices: {}
+        }
+        break;
+      }
       case actions.GET_USER_SPACES: {
         const userSpaces = (<actions.SpaceUsersPayload>action.payload!).spaceUsers;
         this.logger.trace('Loaded current user\'s spaces', userSpaces);
@@ -383,6 +395,7 @@ export default class UserSpaceService {
 
         return {
           ...state,
+          spaceUpdatesActive: true,
           userSpaces,
           spaces
         }
@@ -394,6 +407,16 @@ export default class UserSpaceService {
           ...state,
           spaceInvitations
         }
+      }
+      case actions.UNSUBSCRIBE_FROM_SPACE_UPDATES: {
+        state = {
+          ...state,
+          spaceUpdatesActive: false,
+          userSpaces: [],
+          spaceInvitations: [],
+          spaces: {}
+        }
+        break;
       }
     }
 

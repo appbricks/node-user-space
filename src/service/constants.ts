@@ -2,6 +2,7 @@
  * Provider common constants
  */
 
+export const ERROR_UPDATE_USER = 'updateUserAPIError';
 export const ERROR_USER_SEARCH = 'userSearchAPIError';
 export const ERROR_GET_USER_DEVICES = 'getUserDevicesAPIError';
 export const ERROR_GET_DEVICE_ACCESS_REQUESTS = 'getDeviceAccessRequestsAPIError';

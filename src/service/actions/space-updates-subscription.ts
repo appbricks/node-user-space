@@ -6,6 +6,7 @@ import {
   createAction,
   createFollowUpAction, 
   serviceEpicSubscription, 
+  serviceEpic,
   createErrorAction
 } from '@appbricks/utils';
 
@@ -14,6 +15,7 @@ import {
   SpaceUpdateSubscriptionPayload,
   SpacePayload,
   SUBSCRIBE_TO_SPACE_UPDATES,
+  UNSUBSCRIBE_FROM_SPACE_UPDATES,
   GET_USER_SPACES,
   SPACE_UPDATE
 } from '../actions';
@@ -23,6 +25,10 @@ import {
 import {
   SUBSCRIPTION_FATAL_ERROR
 } from '../constants';
+
+export const unsubscribeAction = 
+  (dispatch: redux.Dispatch<redux.Action>) => 
+    dispatch(createAction(UNSUBSCRIBE_FROM_SPACE_UPDATES));
 
 export const subscribeEpic = (csProvider: Provider): Epic => {
 
@@ -55,5 +61,30 @@ export const subscribeEpic = (csProvider: Provider): Epic => {
       return createFollowUpAction(action, SUCCESS);
     },
     SUBSCRIPTION_FATAL_ERROR
+  );
+}
+
+export const unsubscribeEpic = (csProvider: Provider): Epic => {
+
+  return serviceEpic<void, UserSpaceStateProps>(
+    UNSUBSCRIBE_FROM_SPACE_UPDATES, 
+    async (action, state$) => {
+      let waitList: Promise<any>[] = [];
+
+      state$.value.userspace?.userSpaces.forEach(
+        userSpace => {
+          let space = userSpace.space!;
+          let spaceID = space.spaceID!;
+
+          waitList.push(csProvider.unsubscribeFromSpaceUpdates(spaceID))
+          space.users?.spaceUsers?.forEach(su => 
+            waitList.push(csProvider.unsubscribeFromSpaceUserUpdates(spaceID, su?.user?.userID!))
+          );
+        }
+      );
+      await Promise.all(waitList);
+
+      return createFollowUpAction(action, SUCCESS);
+    }
   );
 }

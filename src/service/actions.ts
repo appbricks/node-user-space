@@ -135,8 +135,6 @@ export interface UserSpaceActionProps {
   userspaceService?: {
     userSearch: (namePrefix: string, limit?: number) => actions.Action
     clearUserSearchResults: () => actions.Action
-    subscribeToUserUpdates: (userID: string) => actions.Action
-    unsubscribeFromUserUpdates: (userID: string) => actions.Action
 
     // device owner actions
     getUserDevices: () => actions.Action
@@ -145,6 +143,7 @@ export interface UserSpaceActionProps {
     deleteUserFromDevice: (deviceID: string, userID?: string) => actions.Action
     deleteDevice: (deviceID: string) => actions.Action
     updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) => actions.Action
+    unsubscribeFromDeviceUpdates: () => actions.Action
 
     // space owner actions
     getUserSpaces: () => actions.Action
@@ -155,6 +154,7 @@ export interface UserSpaceActionProps {
     deleteSpace: (spaceID: string) => actions.Action
     updateSpace: (spaceID: string, spaceKey?: Key, version?: string, settings?: DisplayType) => actions.Action
     updateSpaceUser: (spaceID: string, userID?: string, isEgressNode?: boolean) => actions.Action
+    unsubscribeFromSpaceUpdates: () => actions.Action
 
     // space guest actions 
     getSpaceInvitations: () => actions.Action
@@ -171,9 +171,6 @@ export interface UserSpaceActionProps {
 
 export const USER_SEARCH = 'userspace/USER_SEARCH';
 export const CLEAR_USER_SEARCH_RESULTS = 'userspace/CLEAR_USER_SEARCH_RESULTS';
-export const SUBSCRIBE_TO_USER_UPDATES = 'userspace/SUBSCRIBE_TO_USER_UPDATES';
-export const USER_UPDATE = 'userspace/USER_UPDATE';
-export const UNSUBSCRIBE_FROM_USER_UPDATES = 'userspace/UNSUBSCRIBE_FROM_USER_UPDATES';
 
 export const GET_USER_DEVICES = 'userspace/GET_USER_DEVICES';
 export const GET_DEVICE_ACCESS_REQUESTS = 'userspace/GET_DEVICE_ACCESS_REQUESTS';
@@ -182,6 +179,7 @@ export const DELETE_USER_FROM_DEVICE = 'userspace/DELETE_USER_FROM_DEVICE';
 export const DELETE_DEVICE = 'userspace/DELETE_DEVICE';
 export const UPDATE_DEVICE = 'userspace/UPDATE_DEVICE';
 export const SUBSCRIBE_TO_DEVICE_UPDATES = 'userspace/SUBSCRIBE_TO_DEVICE_UPDATES';
+export const UNSUBSCRIBE_FROM_DEVICE_UPDATES = 'userspace/UNSUBSCRIBE_FROM_DEVICE_UPDATES';
 export const DEVICE_UPDATE = 'userspace/DEVICE_UPDATE';
 export const SUBSCRIBE_TO_DEVICE_TELEMETRY = 'userspace/SUBSCRIBE_TO_DEVICE_TELEMETRY';
 export const DEVICE_TELEMETRY = 'userspace/DEVICE_TELEMETRY';
@@ -195,6 +193,7 @@ export const DELETE_SPACE = 'userspace/DELETE_SPACE';
 export const UPDATE_SPACE = 'userspace/UPDATE_SPACE';
 export const UPDATE_SPACE_USER = 'userspace/UPDATE_SPACE_USER';
 export const SUBSCRIBE_TO_SPACE_UPDATES = 'userspace/SUBSCRIBE_TO_SPACE_UPDATES';
+export const UNSUBSCRIBE_FROM_SPACE_UPDATES = 'userspace/UNSUBSCRIBE_FROM_SPACE_UPDATES';
 export const SPACE_UPDATE = 'userspace/SPACE_UPDATE';
 export const SUBSCRIBE_TO_SPACE_TELEMETRY = 'userspace/SUBSCRIBE_TO_SPACE_TELEMETRY';
 export const SPACE_TELEMETRY = 'userspace/SPACE_TELEMETRY';

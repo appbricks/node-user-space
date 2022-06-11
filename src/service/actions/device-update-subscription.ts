@@ -6,6 +6,7 @@ import {
   createAction,
   createFollowUpAction,
   serviceEpicSubscription,
+  serviceEpic,
   createErrorAction
 } from '@appbricks/utils';
 
@@ -14,6 +15,7 @@ import {
   DeviceUpdateSubscriptionPayload,
   DevicePayload,
   SUBSCRIBE_TO_DEVICE_UPDATES,
+  UNSUBSCRIBE_FROM_DEVICE_UPDATES,
   GET_USER_DEVICES,
   DEVICE_UPDATE
 } from '../actions';
@@ -23,6 +25,10 @@ import {
 import {
   SUBSCRIPTION_FATAL_ERROR
 } from '../constants';
+
+export const unsubscribeAction = 
+  (dispatch: redux.Dispatch<redux.Action>) => 
+    dispatch(createAction(UNSUBSCRIBE_FROM_DEVICE_UPDATES));
 
 export const subscribeEpic = (csProvider: Provider): Epic => {
 
@@ -55,5 +61,30 @@ export const subscribeEpic = (csProvider: Provider): Epic => {
       return createFollowUpAction(action, SUCCESS);
     },
     SUBSCRIPTION_FATAL_ERROR
+  );
+}
+
+export const unsubscribeEpic = (csProvider: Provider): Epic => {
+
+  return serviceEpic<void, UserSpaceStateProps>(
+    UNSUBSCRIBE_FROM_DEVICE_UPDATES, 
+    async (action, state$) => {
+      let waitList: Promise<any>[] = [];
+
+      state$.value.userspace?.userDevices.forEach(
+        userDevice => {
+          let device = userDevice.device!;
+          let deviceID = device.deviceID!;
+
+          waitList.push(csProvider.unsubscribeFromDeviceUpdates(deviceID))
+          device.users?.deviceUsers?.forEach(du => 
+            waitList.push(csProvider.unsubscribeFromDeviceUserUpdates(deviceID, du?.user?.userID!))
+          );
+        }
+      );
+      await Promise.all(waitList);
+
+      return createFollowUpAction(action, SUCCESS);
+    }
   );
 }
