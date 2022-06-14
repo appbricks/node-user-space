@@ -8,6 +8,7 @@ export const userUpdates = /* GraphQL */ `
       userID
       numDevices
       numSpaces
+      numApps
       user {
         userID
         userName
@@ -24,6 +25,9 @@ export const userUpdates = /* GraphQL */ `
           totalCount
         }
         spaces {
+          totalCount
+        }
+        apps {
           totalCount
         }
         universalConfig
@@ -249,6 +253,7 @@ export const appUpdates = /* GraphQL */ `
         recipe
         iaas
         region
+        version
         status
         space {
           spaceID
@@ -288,6 +293,7 @@ export const appUserUpdates = /* GraphQL */ `
           recipe
           iaas
           region
+          version
           status
         }
         user {
@@ -304,6 +310,7 @@ export const appUserUpdates = /* GraphQL */ `
           certificate
           universalConfig
         }
+        isOwner
         lastAccessTime
       }
     }

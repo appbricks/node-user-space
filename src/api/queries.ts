@@ -94,6 +94,17 @@ export const getUser = /* GraphQL */ `
           lastConnectTime
         }
       }
+      apps {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        appUsers {
+          isOwner
+          lastAccessTime
+        }
+      }
       universalConfig
     }
   }
@@ -147,6 +158,9 @@ export const getDevice = /* GraphQL */ `
           totalCount
         }
         spaces {
+          totalCount
+        }
+        apps {
           totalCount
         }
         universalConfig
@@ -258,6 +272,9 @@ export const getSpace = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -273,6 +290,7 @@ export const getSpace = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -359,6 +377,9 @@ export const getDeviceAccessRequests = /* GraphQL */ `
           totalCount
         }
         spaces {
+          totalCount
+        }
+        apps {
           totalCount
         }
         universalConfig
@@ -470,6 +491,9 @@ export const getSpaceInvitations = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -485,6 +509,7 @@ export const getSpaceInvitations = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }

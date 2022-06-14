@@ -6,6 +6,9 @@ import {
   Device,
   Space,
   SpaceUser,
+  App,
+  AppUser,
+  AppStatus,
   UserSearchFilterInput,
   UserSearchQuery,
   AddDeviceMutation,
@@ -13,6 +16,8 @@ import {
   AddDeviceUserMutationVariables,
   AddSpaceMutation,
   AddSpaceMutationVariables,
+  AddAppMutation,
+  AddAppMutationVariables,
   UserUpdate
 } from '../../../../model/types';
 
@@ -22,7 +27,9 @@ import {
   addDeviceUser,
   deleteDevice,
   addSpace,
-  deleteSpace
+  deleteSpace,
+  addApp,
+  deleteApp
 } from '../../../../api/mutations';
 
 import Provider from '../provider';
@@ -140,6 +147,8 @@ let device1: Device;
 let device2: Device;
 let space1: Space;
 let space2: Space;
+let app1: App;
+let app2: App;
 
 it('searches for users with a name that has a given prefix', async () => {
   await Auth.signOut();
@@ -371,7 +380,7 @@ it('retrieves a user\'s spaces', async () => {
   await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
-  expect(trimSpaceUsers(await provider.getUserSpaces()))
+  expect(trimSpaceUsersAndApps(await provider.getUserSpaces()))
     .toMatchObject([
       {
         isOwner: true,
@@ -434,7 +443,7 @@ it('invites users and takes them through the space association lifecycle', async
 
   await Auth.signOut();
   await Auth.signIn('tester3', '@ppBr!cks2020');
-  expect(trimSpaceUsers(await provider.getUserSpaces()))
+  expect(trimSpaceUsersAndApps(await provider.getUserSpaces()))
     .toMatchObject([
       {
         isOwner: false,
@@ -454,7 +463,7 @@ it('invites users and takes them through the space association lifecycle', async
       space,
       user: tester3
     });
-  expect(trimSpaceUsers(await provider.getUserSpaces()))
+  expect(trimSpaceUsersAndApps(await provider.getUserSpaces()))
     .toMatchObject([
       {
         isOwner: false,
@@ -469,7 +478,7 @@ it('invites users and takes them through the space association lifecycle', async
       space,
       user: tester3
     });
-  expect(trimSpaceUsers(await provider.getUserSpaces()))
+  expect(trimSpaceUsersAndApps(await provider.getUserSpaces()))
     .toMatchObject([
       {
         isOwner: false,
@@ -496,7 +505,7 @@ it('deactivates a user associated with a space', async () => {
   
   await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
-  expect(trimSpaceUsers(await provider.getUserSpaces()))
+  expect(trimSpaceUsersAndApps(await provider.getUserSpaces()))
     .toMatchObject([
       {
         isOwner: false,
@@ -523,7 +532,7 @@ it('activates a user associated with a space', async () => {
   
   await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
-  expect(trimSpaceUsers(await provider.getUserSpaces()))
+  expect(trimSpaceUsersAndApps(await provider.getUserSpaces()))
     .toMatchObject([
       {
         isOwner: false,
@@ -550,7 +559,7 @@ it('deletes a user associated with a space', async () => {
 
   await Auth.signOut();
   await Auth.signIn('tester2', '@ppBr!cks2020');
-  expect(trimSpaceUsers(await provider.getUserSpaces()))
+  expect(trimSpaceUsersAndApps(await provider.getUserSpaces()))
     .toEqual([]);
 });
 
@@ -561,7 +570,7 @@ it('deletes a user\'s space', async () => {
   await provider.deleteSpace(space1.spaceID!);
   
   // expect only remaining space
-  expect(trimSpaceUsers(await provider.getUserSpaces()))
+  expect(trimSpaceUsersAndApps(await provider.getUserSpaces()))
     .toMatchObject([
       {
         isOwner: true,
@@ -617,6 +626,100 @@ it('updates a users\'s space association', async () => {
     });
 });
 
+it('retrieves a user\'s space apps', async () => {
+  await Auth.signOut();
+  await Auth.signIn('tester1', '@ppBr!cks2020');
+
+  expect(await provider.getUserApps())
+    .toMatchObject([
+      {
+        app: {
+          ...app1,
+          space: { spaceID: space2.spaceID, spaceName: space2.spaceName },
+          users: {
+            appUsers: [ { 
+              user: { userID: tester1.userID, userName: tester1.userName  }
+            } ]
+          }
+        }
+      },
+      {
+        app: {
+          ...app2,
+          space: { spaceID: space2.spaceID, spaceName: space2.spaceName },
+          users: {
+            appUsers: [ {
+              user: { userID: tester1.userID, userName: tester1.userName  }
+            } ]
+          }
+        }
+      }
+    ]);
+});
+
+it('adds an app user to a user\'s space app, deletes the user and then the space', async () => {
+  await Auth.signOut();
+  await Auth.signIn('tester1', '@ppBr!cks2020');
+
+  // add user to space
+  await provider.inviteSpaceUser(space2.spaceID!, tester3.userID!, true)
+  await provider.activateSpaceUser(space2.spaceID!, tester3.userID)
+
+  // add user to app
+  expect(await provider.addAppUser(app1.appID!, tester3.userID))
+    .toMatchObject({
+      app: { appID: app1.appID, appName: app1.appName },
+      user: { userID: tester3.userID, userName: tester3.userName }
+    })
+  expect(await provider.getUserApps())
+    .toMatchObject([
+      {
+        app: {
+          ...app1,
+          space: { spaceID: space2.spaceID, spaceName: space2.spaceName },
+          users: {
+            appUsers: [ { 
+              user: { userID: tester1.userID, userName: tester1.userName  },
+              isOwner: true
+            }, { 
+              user: { userID: tester3.userID, userName: tester3.userName  },
+              isOwner: false
+            } ]
+          }
+        }
+      },
+      { app: app2 }
+    ]);
+  // delete user from app
+  expect(await provider.deleteAppUser(app1.appID!, tester3.userID))
+    .toMatchObject({
+      app: { appID: app1.appID, appName: app1.appName },
+      user: { userID: tester3.userID, userName: tester3.userName }
+    })
+  expect(await provider.getUserApps())
+    .toMatchObject([
+      {
+        app: {
+          ...app1,
+          space: { spaceID: space2.spaceID, spaceName: space2.spaceName },
+          users: {
+            appUsers: [ { 
+              user: { userID: tester1.userID, userName: tester1.userName  },
+              isOwner: true
+            } ]
+          }
+        }
+      },
+      { app: app2 }
+    ]);
+  // delete app
+  await provider.deleteApp(app1.appID!)
+  expect(await provider.getUserApps())
+    .toMatchObject([
+      { app: app2 }
+    ]);
+});
+
 it('subscribes to user updates', async () => {
   await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
@@ -655,6 +758,7 @@ it('subscribes to user updates', async () => {
     },
     // validate update
     (data: UserUpdate, updateCount) => {
+      if (data.numDevices == -1 || data.numSpaces == -1 || data.numApps == -1) return;
       expect(data.userID).toEqual(tester1.userID);
       expect(data.numDevices).toEqual(10);
       expect(data.numSpaces).toEqual(5);
@@ -696,7 +800,7 @@ it('subscribes to device updates', async () => {
       }
     }`, 
     JSON.stringify({
-      "deviceID": device2!.deviceID!,
+      "deviceID": device2.deviceID!,
       "deviceName": "deviceName_$i",
       "publicKey": "publicKey_$i",
       "certificate": "certificate_$i",
@@ -705,16 +809,17 @@ it('subscribes to device updates', async () => {
     // create valid subscription
     (update: (data: any) => void, error: (error: any) => void) => {
       provider.subscribeToDeviceUpdates(
-        device2!.deviceID!,
+        device2.deviceID!,
         update,
         error
       );
     },
     // validate update
     (data, updateCount) => {
-      expect(data.deviceID).toEqual(device2!.deviceID!);
+      if (data.numUsers == -1) return;
+      expect(data.deviceID).toEqual(device2.deviceID!);
       expect(data.numUsers).toEqual(100);
-      expect(data.device!.deviceID).toEqual(device2!.deviceID!);
+      expect(data.device!.deviceID).toEqual(device2.deviceID!);
       expect(data.device!.deviceName).toMatch(/^deviceName_[0-9]+$/);
       expect(data.device!.publicKey).toMatch(/^publicKey_[0-9]+$/);
       expect(data.device!.certificate).toMatch(/^certificate_[0-9]+$/);
@@ -754,7 +859,7 @@ it('subscribes to device user updates', async () => {
       }
     }`, 
     JSON.stringify({
-      "deviceID": device2!.deviceID!, 
+      "deviceID": device2.deviceID!, 
       "userID": tester1.userID, 
       "status": "active",
       "bytesUploaded": 100,
@@ -765,7 +870,7 @@ it('subscribes to device user updates', async () => {
     // create valid subscription
     (update: (data: any) => void, error: (error: any) => void) => {
       provider.subscribeToDeviceUserUpdates(
-        device2!.deviceID!,
+        device2.deviceID!,
         tester1.userID,
         update,
         error
@@ -773,7 +878,7 @@ it('subscribes to device user updates', async () => {
     },
     // validate update
     (data, updateCount) => {
-      expect(data.deviceID).toEqual(device2!.deviceID!);
+      expect(data.deviceID).toEqual(device2.deviceID!);
       expect(data.userID).toEqual(tester1.userID);
       expect(data.deviceUser.status).toEqual("active");
       expect(data.deviceUser.bytesUploaded).toEqual(100);
@@ -820,7 +925,7 @@ it('subscribes to space updates', async () => {
       }
     }`, 
     JSON.stringify({
-      "spaceID": space2!.spaceID!,
+      "spaceID": space2.spaceID!,
       "spaceName": "spaceName_$i",
       "publicKey": "publicKey_$i",
       "certificate": "certificate_$i",
@@ -834,14 +939,15 @@ it('subscribes to space updates', async () => {
     // create valid subscription
     (update: (data: any) => void, error: (error: any) => void) => {
       provider.subscribeToSpaceUpdates(
-        space2!.spaceID!,
+        space2.spaceID!,
         update,
         error
       );
     },
     // validate update
     (data, updateCount) => {
-      expect(data.spaceID).toEqual(space2!.spaceID!);
+      if (data.numUsers == -1) return;
+      expect(data.spaceID).toEqual(space2.spaceID!);
       expect(data.numUsers).toEqual(999);
       expect(data.space!.spaceID).toEqual(space2!.spaceID!);
       expect(data.space!.spaceName).toMatch(/^spaceName_[0-9]+$/);
@@ -889,7 +995,7 @@ it('subscribes to space user updates', async () => {
       }
     }`, 
     JSON.stringify({
-      "spaceID": space2!.spaceID!,
+      "spaceID": space2.spaceID!,
       "userID": tester1.userID, 
       "isEgressNode": true,
       "status": "active",
@@ -901,7 +1007,7 @@ it('subscribes to space user updates', async () => {
     // create valid subscription
     (update: (data: any) => void, error: (error: any) => void) => {
       provider.subscribeToSpaceUserUpdates(
-        space2!.spaceID!,
+        space2.spaceID!,
         tester1.userID,
         update,
         error
@@ -909,7 +1015,7 @@ it('subscribes to space user updates', async () => {
     },
     // validate update
     (data, updateCount) => {
-      expect(data.spaceID).toEqual(space2!.spaceID!);
+      expect(data.spaceID).toEqual(space2.spaceID!);
       expect(data.userID).toEqual(tester1.userID);
       expect(data.spaceUser.isEgressNode).toBeTruthy();
       expect(data.spaceUser.status).toEqual("active");
@@ -933,6 +1039,124 @@ it('subscribes to space user updates', async () => {
     },
     // error from invalid subscription request
     {"errors": [{"message": "Connection failed: {\"errors\":[{\"message\":\"Space is not associated with the current user\"}]}"}]}
+  );
+});
+
+it('subscribes to app updates', async () => {
+  await Auth.signOut();
+  await Auth.signIn('tester1', '@ppBr!cks2020');
+
+  await validateSubscription(
+    `pushAppsUpdate(data: $data) {
+      appID
+      numUsers
+      app {
+        appID
+        appName
+        recipe
+        iaas
+        region
+        version
+        status
+      }
+    }`, 
+    JSON.stringify({
+      "appID": app2.appID!,
+      "appName": "appName_$i",
+      "recipe": "recipe_$i",
+      "iaas": "iaas_$i",
+      "region": "region_$i",
+      "version": "version_$i",
+      "status": [
+        AppStatus.undeployed, 
+        AppStatus.running,
+        AppStatus.shutdown,
+        AppStatus.pending,
+        AppStatus.unknown
+      ][Math.floor(Math.random() * 5)],
+      "numUsers": 111
+    }),
+    // create valid subscription
+    (update: (data: any) => void, error: (error: any) => void) => {
+      provider.subscribeToAppUpdates(
+        app2.appID!,
+        update,
+        error
+      );
+    },
+    // validate update
+    (data, updateCount) => {
+      if (data.numUsers == -1) return;
+      expect(data.appID).toEqual(app2.appID!);
+      expect(data.numUsers).toEqual(111);
+      expect(data.app!.appID).toEqual(app2.appID!);
+      expect(data.app!.appName).toMatch(/^appName_[0-9]+$/);
+      expect(data.app!.recipe).toMatch(/^recipe_[0-9]+$/);
+      expect(data.app!.iaas).toMatch(/^iaas_[0-9]+$/);
+      expect(data.app!.region).toMatch(/^region_[0-9]+$/);
+      expect(data.app!.version).toMatch(/^version_[0-9]+$/);
+      expect(data.app!.status).toMatch(/^(undeployed|running|shutdown|pending|unknown)$/);
+    },
+    // unsubscribe
+    () => provider.unsubscribeFromAppUpdates(app2.appID!),
+    // create an invalid subscription
+    (update: (data: any) => void, error: (error: any) => void) => {
+      provider.subscribeToAppUpdates(
+        '808ebb50-7c9d-4b69-9c1b-622d26b918aa',
+        update,
+        error
+      );
+    },
+    // error from invalid subscription request
+    {"errors": [{"message": "Connection failed: {\"errors\":[{\"message\":\"Given app was not found\"}]}"}]}
+  );
+});
+
+it('subscribes to app user updates', async () => {
+  await Auth.signOut();
+  await Auth.signIn('tester1', '@ppBr!cks2020');
+
+  await validateSubscription(
+    `pushAppUsersUpdate(data: $data) {
+      appID
+      userID
+      appUser {
+        lastAccessTime
+      }
+    }`, 
+    JSON.stringify({
+      "appID": app2!.appID!,
+      "userID": tester1.userID, 
+      "lastAccessTime": 82378237,
+    }), 
+    // create valid subscription
+    (update: (data: any) => void, error: (error: any) => void) => {
+      provider.subscribeToAppUserUpdates(
+        app2.appID!,
+        tester1.userID,
+        update,
+        error
+      );
+    },
+    // validate update
+    (data, updateCount) => {
+      expect(data.appID).toEqual(app2.appID!);
+      expect(data.userID).toEqual(tester1.userID);
+      expect(data.appUser.lastAccessTime).toEqual(82378237);
+    },
+    // unsubscribe
+    () => provider.unsubscribeFromAppUserUpdates(app2!.appID!, tester1.userID),
+    // create an invalid subscription
+    (update: (data: any) => void, error: (error: any) => void) => {
+      provider.subscribeToAppUserUpdates(
+        '5ed8679e-d684-4d54-9b4f-2e73f7f8d342',
+        tester1.userID,
+        update,
+        error
+      );
+    },
+    // error from invalid subscription request
+    {"errors": [{"message": "Connection failed: {\"errors\":[{\"message\":\"App is not associated with the current user\"}]}"}]}
   );
 });
 
@@ -1068,6 +1292,29 @@ beforeAll(async() => {
       )
     );
 
+    app1 = (({ space, users, ...a }) => a)(
+      (<{data: AddAppMutation}> await API.graphql(
+        graphqlOperation(addApp, <AddAppMutationVariables>{
+          appName: 'tester1\'s app #1',
+          recipe: 'recipe #1',
+          iaas: 'aws',
+          region: 'us-east-1',
+          spaceID: space2.spaceID
+        }
+      ))).data.addApp!
+    );
+    app2 = (({ space, users, ...a }) => a)(
+      (<{data: AddAppMutation}> await API.graphql(
+        graphqlOperation(addApp, <AddAppMutationVariables>{
+          appName: 'tester1\'s app #2',
+          recipe: 'recipe #2',
+          iaas: 'aws',
+          region: 'us-east-1',
+          spaceID: space2.spaceID
+        }
+      ))).data.addApp!
+    );
+
     await Auth.signOut();
     await Auth.signIn('tester2', '@ppBr!cks2020');
     await API.graphql(
@@ -1089,6 +1336,7 @@ beforeAll(async() => {
       }))
 
   } catch (error) {
+    console.log('Test data initialization ERROR!', JSON.stringify(error, null, 2))
     fail(error);
   }
 });
@@ -1096,17 +1344,19 @@ beforeAll(async() => {
 afterAll(async () => {
   await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
-  try { await API.graphql(graphqlOperation(deleteDevice, { deviceID: device1.deviceID })); } catch (error) {}
-  try { await API.graphql(graphqlOperation(deleteDevice, { deviceID: device2.deviceID })); } catch (error) {}
+  try { await API.graphql(graphqlOperation(deleteApp, { appID: app1.appID })); } catch (error) { }
+  try { await API.graphql(graphqlOperation(deleteApp, { appID: app2.appID })); } catch (error) { }
   try { await API.graphql(graphqlOperation(deleteSpace, { spaceID: space1.spaceID })); } catch (error) {}
   try { await API.graphql(graphqlOperation(deleteSpace, { spaceID: space2.spaceID })); } catch (error) {}
+  try { await API.graphql(graphqlOperation(deleteDevice, { deviceID: device1.deviceID })); } catch (error) {}
+  try { await API.graphql(graphqlOperation(deleteDevice, { deviceID: device2.deviceID })); } catch (error) {}
 });
 
 const trimUserProps = (user: User) => <User>{ userID: user.userID, userName: user.userName };
 const trimSpaceProps = (space: Space) => <Space>{ spaceID: space.spaceID, spaceName: space.spaceName };
 
-const trimSpaceUsers = (spaceUsers: SpaceUser[]) => 
+const trimSpaceUsersAndApps = (spaceUsers: SpaceUser[]) => 
   spaceUsers.map(spaceUser => ({ 
     ...spaceUser,
-    space: (({ users, ...s }) => s)(<Space>spaceUser.space), 
+    space: (({ users, apps, ...s }) => s)(<Space>spaceUser.space), 
   }));

@@ -15,7 +15,7 @@ export type Key = {
 export type User = {
   __typename: "User",
   userID?: string,
-  userName?: string,
+  userName?: string | null,
   firstName?: string | null,
   middleName?: string | null,
   familyName?: string | null,
@@ -27,6 +27,7 @@ export type User = {
   certificate?: string | null,
   devices?: DeviceUsersConnection,
   spaces?: SpaceUsersConnection,
+  apps?: AppUsersConnection,
   // A user's universal config is an encrypted
   // document containing metadata of all spaces the
   // user owns.
@@ -166,6 +167,7 @@ export type App = {
   recipe?: string | null,
   iaas?: string | null,
   region?: string | null,
+  version?: string | null,
   status?: AppStatus | null,
   space?: Space,
   users?: AppUsersConnection,
@@ -197,6 +199,7 @@ export type AppUser = {
   __typename: "AppUser",
   app?: App,
   user?: User,
+  isOwner?: boolean | null,
   lastAccessTime?: number | null,
 };
 
@@ -285,6 +288,7 @@ export type UserUpdate = {
   userID?: string,
   numDevices?: number | null,
   numSpaces?: number | null,
+  numApps?: number | null,
   user?: User,
 };
 
@@ -359,7 +363,7 @@ export type UpdateUserKeyMutation = {
   updateUserKey?:  {
     __typename: "User",
     userID: string,
-    userName: string,
+    userName?: string | null,
     firstName?: string | null,
     middleName?: string | null,
     familyName?: string | null,
@@ -414,6 +418,22 @@ export type UpdateUserKeyMutation = {
         lastConnectTime?: number | null,
       } | null > | null,
     } | null,
+    apps?:  {
+      __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        isOwner?: boolean | null,
+        lastAccessTime?: number | null,
+      } | null > | null,
+    } | null,
     // A user's universal config is an encrypted
     // document containing metadata of all spaces the
     // user owns.
@@ -464,7 +484,7 @@ export type AddDeviceMutation = {
       user?:  {
         __typename: "User",
         userID: string,
-        userName: string,
+        userName?: string | null,
         firstName?: string | null,
         middleName?: string | null,
         familyName?: string | null,
@@ -571,7 +591,7 @@ export type AddDeviceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -587,6 +607,10 @@ export type AddDeviceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -709,7 +733,7 @@ export type ActivateDeviceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -725,6 +749,10 @@ export type ActivateDeviceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -850,7 +878,7 @@ export type DeleteDeviceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -866,6 +894,10 @@ export type DeleteDeviceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -1085,7 +1117,7 @@ export type AddSpaceMutation = {
       user?:  {
         __typename: "User",
         userID: string,
-        userName: string,
+        userName?: string | null,
         firstName?: string | null,
         middleName?: string | null,
         familyName?: string | null,
@@ -1199,7 +1231,7 @@ export type InviteSpaceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -1215,6 +1247,10 @@ export type InviteSpaceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -1245,6 +1281,7 @@ export type InviteSpaceUserMutation = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -1360,7 +1397,7 @@ export type ActivateSpaceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -1376,6 +1413,10 @@ export type ActivateSpaceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -1406,6 +1447,7 @@ export type ActivateSpaceUserMutation = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -1521,7 +1563,7 @@ export type DeactivateSpaceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -1537,6 +1579,10 @@ export type DeactivateSpaceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -1567,6 +1613,7 @@ export type DeactivateSpaceUserMutation = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -1682,7 +1729,7 @@ export type DeleteSpaceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -1698,6 +1745,10 @@ export type DeleteSpaceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -1728,6 +1779,7 @@ export type DeleteSpaceUserMutation = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -1852,7 +1904,7 @@ export type AcceptSpaceUserInvitationMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -1868,6 +1920,10 @@ export type AcceptSpaceUserInvitationMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -1898,6 +1954,7 @@ export type AcceptSpaceUserInvitationMutation = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -2012,7 +2069,7 @@ export type LeaveSpaceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -2028,6 +2085,10 @@ export type LeaveSpaceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -2058,6 +2119,7 @@ export type LeaveSpaceUserMutation = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -2175,6 +2237,7 @@ export type UpdateSpaceMutation = {
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
+        version?: string | null,
         status?: AppStatus | null,
       } | null > | null,
     } | null,
@@ -2270,7 +2333,7 @@ export type UpdateSpaceUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -2286,6 +2349,10 @@ export type UpdateSpaceUserMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -2316,6 +2383,7 @@ export type UpdateSpaceUserMutation = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -2387,6 +2455,7 @@ export type AddAppMutation = {
     recipe?: string | null,
     iaas?: string | null,
     region?: string | null,
+    version?: string | null,
     status?: AppStatus | null,
     space?:  {
       __typename: "Space",
@@ -2448,6 +2517,7 @@ export type AddAppMutation = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -2470,6 +2540,7 @@ export type AddAppUserMutation = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
       status?: AppStatus | null,
       space?:  {
         __typename: "Space",
@@ -2503,7 +2574,7 @@ export type AddAppUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -2521,11 +2592,16 @@ export type AddAppUserMutation = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
       universalConfig?: string | null,
     } | null,
+    isOwner?: boolean | null,
     lastAccessTime?: number | null,
   } | null,
 };
@@ -2546,6 +2622,7 @@ export type DeleteAppUserMutation = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
       status?: AppStatus | null,
       space?:  {
         __typename: "Space",
@@ -2579,7 +2656,7 @@ export type DeleteAppUserMutation = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -2597,11 +2674,16 @@ export type DeleteAppUserMutation = {
         __typename: "SpaceUsersConnection",
         totalCount?: number | null,
       } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
       // A user's universal config is an encrypted
       // document containing metadata of all spaces the
       // user owns.
       universalConfig?: string | null,
     } | null,
+    isOwner?: boolean | null,
     lastAccessTime?: number | null,
   } | null,
 };
@@ -2644,10 +2726,11 @@ export type PushUsersUpdateMutation = {
     userID: string,
     numDevices?: number | null,
     numSpaces?: number | null,
+    numApps?: number | null,
     user:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -2663,6 +2746,10 @@ export type PushUsersUpdateMutation = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -2763,7 +2850,7 @@ export type PushDeviceUsersUpdateMutation = {
       user?:  {
         __typename: "User",
         userID: string,
-        userName: string,
+        userName?: string | null,
         firstName?: string | null,
         middleName?: string | null,
         familyName?: string | null,
@@ -2910,7 +2997,7 @@ export type PushSpaceUsersUpdateMutation = {
       user?:  {
         __typename: "User",
         userID: string,
-        userName: string,
+        userName?: string | null,
         firstName?: string | null,
         middleName?: string | null,
         familyName?: string | null,
@@ -2978,6 +3065,7 @@ export type PushAppsUpdateMutation = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
       status?: AppStatus | null,
       space?:  {
         __typename: "Space",
@@ -3029,12 +3117,13 @@ export type PushAppUsersUpdateMutation = {
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
+        version?: string | null,
         status?: AppStatus | null,
       } | null,
       user?:  {
         __typename: "User",
         userID: string,
-        userName: string,
+        userName?: string | null,
         firstName?: string | null,
         middleName?: string | null,
         familyName?: string | null,
@@ -3049,6 +3138,7 @@ export type PushAppUsersUpdateMutation = {
         // user owns.
         universalConfig?: string | null,
       } | null,
+      isOwner?: boolean | null,
       lastAccessTime?: number | null,
     },
   } | null,
@@ -3151,7 +3241,7 @@ export type GetUserQuery = {
   getUser?:  {
     __typename: "User",
     userID: string,
-    userName: string,
+    userName?: string | null,
     firstName?: string | null,
     middleName?: string | null,
     familyName?: string | null,
@@ -3204,6 +3294,22 @@ export type GetUserQuery = {
         bytesUploaded?: string | null,
         bytesDownloaded?: string | null,
         lastConnectTime?: number | null,
+      } | null > | null,
+    } | null,
+    apps?:  {
+      __typename: "AppUsersConnection",
+      pageInfo:  {
+        __typename: "PageInfo",
+        // When paginating forwards, are there more items?
+        hasNextPage: boolean,
+        // When paginating backwards, are there more items?
+        hasPreviousePage: boolean,
+      },
+      totalCount?: number | null,
+      appUsers?:  Array< {
+        __typename: "AppUser",
+        isOwner?: boolean | null,
+        lastAccessTime?: number | null,
       } | null > | null,
     } | null,
     // A user's universal config is an encrypted
@@ -3272,7 +3378,7 @@ export type GetDeviceQuery = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -3288,6 +3394,10 @@ export type GetDeviceQuery = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -3411,7 +3521,7 @@ export type GetSpaceQuery = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -3427,6 +3537,10 @@ export type GetSpaceQuery = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -3457,6 +3571,7 @@ export type GetSpaceQuery = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -3570,7 +3685,7 @@ export type GetDeviceAccessRequestsQuery = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -3586,6 +3701,10 @@ export type GetDeviceAccessRequestsQuery = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -3705,7 +3824,7 @@ export type GetSpaceInvitationsQuery = {
     user?:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -3721,6 +3840,10 @@ export type GetSpaceInvitationsQuery = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -3751,6 +3874,7 @@ export type GetSpaceInvitationsQuery = {
       totalCount?: number | null,
       appUsers?:  Array< {
         __typename: "AppUser",
+        isOwner?: boolean | null,
         lastAccessTime?: number | null,
       } | null > | null,
     } | null,
@@ -3815,10 +3939,11 @@ export type UserUpdatesSubscription = {
     userID: string,
     numDevices?: number | null,
     numSpaces?: number | null,
+    numApps?: number | null,
     user:  {
       __typename: "User",
       userID: string,
-      userName: string,
+      userName?: string | null,
       firstName?: string | null,
       middleName?: string | null,
       familyName?: string | null,
@@ -3834,6 +3959,10 @@ export type UserUpdatesSubscription = {
       } | null,
       spaces?:  {
         __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      apps?:  {
+        __typename: "AppUsersConnection",
         totalCount?: number | null,
       } | null,
       // A user's universal config is an encrypted
@@ -3935,7 +4064,7 @@ export type DeviceUserUpdatesSubscription = {
       user?:  {
         __typename: "User",
         userID: string,
-        userName: string,
+        userName?: string | null,
         firstName?: string | null,
         middleName?: string | null,
         familyName?: string | null,
@@ -4083,7 +4212,7 @@ export type SpaceUserUpdatesSubscription = {
       user?:  {
         __typename: "User",
         userID: string,
-        userName: string,
+        userName?: string | null,
         firstName?: string | null,
         middleName?: string | null,
         familyName?: string | null,
@@ -4151,6 +4280,7 @@ export type AppUpdatesSubscription = {
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
+      version?: string | null,
       status?: AppStatus | null,
       space?:  {
         __typename: "Space",
@@ -4203,12 +4333,13 @@ export type AppUserUpdatesSubscription = {
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
+        version?: string | null,
         status?: AppStatus | null,
       } | null,
       user?:  {
         __typename: "User",
         userID: string,
-        userName: string,
+        userName?: string | null,
         firstName?: string | null,
         middleName?: string | null,
         familyName?: string | null,
@@ -4223,6 +4354,7 @@ export type AppUserUpdatesSubscription = {
         // user owns.
         universalConfig?: string | null,
       } | null,
+      isOwner?: boolean | null,
       lastAccessTime?: number | null,
     },
   } | null,

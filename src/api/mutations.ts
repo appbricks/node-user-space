@@ -46,6 +46,17 @@ export const updateUserKey = /* GraphQL */ `
           lastConnectTime
         }
       }
+      apps {
+        pageInfo {
+          hasNextPage
+          hasPreviousePage
+        }
+        totalCount
+        appUsers {
+          isOwner
+          lastAccessTime
+        }
+      }
       universalConfig
     }
   }
@@ -171,6 +182,9 @@ export const addDeviceUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -271,6 +285,9 @@ export const activateDeviceUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -369,6 +386,9 @@ export const deleteDeviceUser = /* GraphQL */ `
           totalCount
         }
         spaces {
+          totalCount
+        }
+        apps {
           totalCount
         }
         universalConfig
@@ -646,6 +666,9 @@ export const inviteSpaceUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -661,6 +684,7 @@ export const inviteSpaceUser = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -758,6 +782,9 @@ export const activateSpaceUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -773,6 +800,7 @@ export const activateSpaceUser = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -870,6 +898,9 @@ export const deactivateSpaceUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -885,6 +916,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -982,6 +1014,9 @@ export const deleteSpaceUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -997,6 +1032,7 @@ export const deleteSpaceUser = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -1099,6 +1135,9 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -1114,6 +1153,7 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -1211,6 +1251,9 @@ export const leaveSpaceUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -1226,6 +1269,7 @@ export const leaveSpaceUser = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -1317,6 +1361,7 @@ export const updateSpace = /* GraphQL */ `
           recipe
           iaas
           region
+          version
           status
         }
       }
@@ -1405,6 +1450,9 @@ export const updateSpaceUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
       isOwner
@@ -1420,6 +1468,7 @@ export const updateSpaceUser = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -1477,6 +1526,7 @@ export const addApp = /* GraphQL */ `
       recipe
       iaas
       region
+      version
       status
       space {
         spaceID
@@ -1524,6 +1574,7 @@ export const addApp = /* GraphQL */ `
         }
         totalCount
         appUsers {
+          isOwner
           lastAccessTime
         }
       }
@@ -1539,6 +1590,7 @@ export const addAppUser = /* GraphQL */ `
         recipe
         iaas
         region
+        version
         status
         space {
           spaceID
@@ -1581,8 +1633,12 @@ export const addAppUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
+      isOwner
       lastAccessTime
     }
   }
@@ -1596,6 +1652,7 @@ export const deleteAppUser = /* GraphQL */ `
         recipe
         iaas
         region
+        version
         status
         space {
           spaceID
@@ -1638,8 +1695,12 @@ export const deleteAppUser = /* GraphQL */ `
         spaces {
           totalCount
         }
+        apps {
+          totalCount
+        }
         universalConfig
       }
+      isOwner
       lastAccessTime
     }
   }
@@ -1663,6 +1724,7 @@ export const pushUsersUpdate = /* GraphQL */ `
       userID
       numDevices
       numSpaces
+      numApps
       user {
         userID
         userName
@@ -1679,6 +1741,9 @@ export const pushUsersUpdate = /* GraphQL */ `
           totalCount
         }
         spaces {
+          totalCount
+        }
+        apps {
           totalCount
         }
         universalConfig
@@ -1904,6 +1969,7 @@ export const pushAppsUpdate = /* GraphQL */ `
         recipe
         iaas
         region
+        version
         status
         space {
           spaceID
@@ -1943,6 +2009,7 @@ export const pushAppUsersUpdate = /* GraphQL */ `
           recipe
           iaas
           region
+          version
           status
         }
         user {
@@ -1959,6 +2026,7 @@ export const pushAppUsersUpdate = /* GraphQL */ `
           certificate
           universalConfig
         }
+        isOwner
         lastAccessTime
       }
     }

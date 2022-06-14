@@ -36,10 +36,10 @@ const gql = require('graphql-tag');
 
 const mutation = gql`mutation PushUpdate($data: String!) {
   ${process.argv[2]}
-}`
+}`;
 const dataTmpl = process.argv[3];
 
-const numUpdates = parseInt(process.argv[4] | '1', 10);
+const numUpdates = parseInt(process.argv[4], 10);
 let i = 0;
 
 function pushUpdate() {

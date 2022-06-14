@@ -11,6 +11,8 @@ import {
   DeviceUserUpdate,
   SpaceUpdate,
   SpaceUserUpdate,
+  AppUpdate,
+  AppUserUpdate,
   Key
 } from '../model/types';
 
@@ -35,7 +37,7 @@ export default interface Provider {
   /**
    * Subscribes the user update stream.
    */
-  subscribeToUserUpdates(userID: string, update: (data: UserUpdate) => void, error: (error: any) => void): void;
+  subscribeToUserUpdates(userID: string, update: (data: UserUpdate) => void, error: (error: any) => void): Promise<void>;
 
   /**
    * Unsubscribes from the user update stream.
@@ -51,7 +53,7 @@ export default interface Provider {
   /**
    * Subscribes to the device update stream.
    */
-  subscribeToDeviceUpdates(deviceID: string, update: (data: DeviceUpdate) => void, error: (error: any) => void): void;
+  subscribeToDeviceUpdates(deviceID: string, update: (data: DeviceUpdate) => void, error: (error: any) => void): Promise<void>;
 
   /**
    * Unsubscribes from the device update stream.
@@ -61,7 +63,7 @@ export default interface Provider {
   /**
    * Subscribes to the device user update stream.
    */
-  subscribeToDeviceUserUpdates(deviceID: string, userID: string, update: (data: DeviceUserUpdate) => void, error: (error: any) => void): void;
+  subscribeToDeviceUserUpdates(deviceID: string, userID: string, update: (data: DeviceUserUpdate) => void, error: (error: any) => void): Promise<void>;
 
   /**
    * Unsubscribe from the device user update stream.
@@ -106,7 +108,7 @@ export default interface Provider {
   /**
    * Subscribe to the space update stream.
    */
-  subscribeToSpaceUpdates(spaceID: string, update: (data: SpaceUpdate) => void, error: (error: any) => void): void;
+  subscribeToSpaceUpdates(spaceID: string, update: (data: SpaceUpdate) => void, error: (error: any) => void): Promise<void>;
 
   /**
    * Unsubscribe from the space update stream.
@@ -116,7 +118,7 @@ export default interface Provider {
   /**
    * Subscribe to the space user update stream.
    */
-  subscribeToSpaceUserUpdates(spaceID: string, userID: string, update: (data: SpaceUserUpdate) => void, error: (error: any) => void): void;
+  subscribeToSpaceUserUpdates(spaceID: string, userID: string, update: (data: SpaceUserUpdate) => void, error: (error: any) => void): Promise<void>;
 
   /**
    * Unubscribe from the space user update stream.
@@ -181,13 +183,44 @@ export default interface Provider {
    * Returns list of apps the current
    * logged in user can connect and use.
    */
-  getUserApps(): Promise<App[]>;
+  getUserApps(): Promise<AppUser[]>;
 
   /**
-   * Returns list of apps invitations the 
-   * logged in user has received.
+   * Subscribe to the app update stream.
    */
-  getAppInvitations(): Promise<AppUser[]>;
+  subscribeToAppUpdates(appID: string, update: (data: AppUpdate) => void, error: (error: any) => void): Promise<void>;
+
+  /**
+   * Unsubscribe from the app update stream.
+   */
+  unsubscribeFromSpaceUpdates(appID: string): Promise<void>;
+
+  /**
+   * Subscribe to the space user update stream.
+   */
+   subscribeToAppUserUpdates(appID: string, userID: string, update: (data: AppUserUpdate) => void, error: (error: any) => void): Promise<void>;
+
+   /**
+    * Unubscribe from the space user update stream.
+    */
+   unsubscribeFromAppUserUpdates(appID: string, userID: string): Promise<void>
+ 
+  /**
+   * Adds a user to an app owned by
+   * the logged in user
+   */
+  addAppUser(appID: string, userID: string): Promise<AppUser>;
+
+  /**
+   * Deletes the given user from the app.
+   */
+  deleteAppUser(deviceID: string, userID?: string): Promise<AppUser>;
+
+  /**
+   * Deletes the given app and all user
+   * associations.
+   */
+  deleteApp(appID: string): Promise<void>;
 
   /**
    * Unsubscribe from all active subscriptions

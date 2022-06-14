@@ -16,11 +16,15 @@ import {
   DeviceUser,
   Space,
   SpaceUser,
+  App,
+  AppUser,
   UserUpdate,
   DeviceUpdate,
   DeviceUserUpdate,
   SpaceUpdate,
   SpaceUserUpdate,
+  AppUpdate,
+  AppUserUpdate,
   Key
 } from '../../../model/types';
 
@@ -42,7 +46,11 @@ import {
   ERROR_ACCEPT_SPACE_USER_INVITATION,
   ERROR_LEAVE_SPACE_USER,
   ERROR_UPDATE_SPACE,
-  ERROR_UPDATE_SPACE_USER
+  ERROR_UPDATE_SPACE_USER,
+  ERROR_GET_USER_APPS,
+  ERROR_ADD_APP_USER,
+  ERROR_DELETE_APP_USER,
+  ERROR_DELETE_APP
 } from '../../constants';
 
 /**
@@ -586,6 +594,12 @@ export default class Provider implements ProviderInterface {
                     }
                   }
                 }
+                apps {
+                  spaceApps {
+                    appID
+                    appName
+                  }
+                }
               }
             }
           }
@@ -673,6 +687,12 @@ export default class Provider implements ProviderInterface {
           spaceID
           userID
           spaceUser {
+            space {
+              spaceID
+            }
+            user {
+              userID
+            }
             isEgressNode
             status
             bytesUploaded
@@ -1065,11 +1085,265 @@ export default class Provider implements ProviderInterface {
   }
 
   async getUserApps() {
-    return [];
+
+    const getUser = /* GraphQL */ `
+      query GetUser {
+        getUser {
+          apps {
+            totalCount
+            appUsers {
+              isOwner
+              lastAccessTime
+              app {
+                appID
+                appName
+                recipe
+                iaas
+                region
+                version
+                status
+                space {
+                  spaceID
+                  spaceName
+                }
+                users {
+                  appUsers {
+                    user {
+                      userID
+                      userName
+                      firstName
+                      middleName
+                      familyName
+                    }
+                    isOwner
+                    lastAccessTime
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`;
+
+    try {
+      const result = <GraphQLResult<{ getUser: User }>>
+        await this.api.graphql(
+          graphqlOperation(getUser)
+        );
+      if (result.data) {
+        const appUsers = <AppUser[]>result.data.getUser.apps!.appUsers!;
+        this.logger.debug('Retrieved user\'s apps:', appUsers);
+        return appUsers;
+      } else {
+        throw this.handleErrorResponse(result, ERROR_GET_USER_APPS, 'getUserApps')
+      }
+
+    } catch (error) {
+      this.logger.error('getUserApps API call returned error: ', error);
+      throw new Error(ERROR_GET_USER_APPS, error);
+    }
   }
 
-  async getAppInvitations() {
-    return [];
+  async subscribeToAppUpdates(
+    appID: string, 
+    update: (data: AppUpdate) => void, 
+    error: (error: any) => void
+  ) {
+    const subscriptionKey = `{"name":"appUpdates","keys":{"appID":"${appID}"}}`;
+    await this.unsubscribe(subscriptionKey);
+
+    const subscriptionQuery = /* GraphQL */ `
+      subscription SubscribeToAppUpdates($appID: ID!) {
+        appUpdates(appID: $appID) {
+          appID
+          numUsers
+          app {
+            appID
+            appName
+            recipe
+            iaas
+            region
+            version
+            status
+          }
+        }
+      }`;
+
+    const observable: Observable<object> = <Observable<object>>API.graphql(
+      graphqlOperation(subscriptionQuery, { appID })
+    );
+    const subscription = observable.subscribe({
+      next: data => update(<AppUpdate>(<any>data).value.data.appUpdates),
+      error: data => error(data.error)
+    });
+    this.logger.debug('Creating subscription:', subscriptionKey);
+    this.subscriptions[subscriptionKey] = subscription;
+  }
+
+  async unsubscribeFromAppUpdates(
+    appID: string
+  ) {
+    await this.unsubscribe(`{"name":"appUpdates","keys":{"appID":"${appID}"}}`);
+  }
+
+  async subscribeToAppUserUpdates(
+    appID: string, 
+    userID: string,
+    update: (data: AppUserUpdate) => void, 
+    error: (error: any) => void
+  ) {
+    const subscriptionKey = `{"name":"appUserUpdates","keys":{"deviceID":"${appID}","userID":"${userID}"}}`;
+    await this.unsubscribe(subscriptionKey);
+
+    const subscriptionQuery = /* GraphQL */ `
+      subscription SubscribeToAppUserUpdates($appID: ID!, $userID: ID!) {
+        appUserUpdates(appID: $appID, userID: $userID) {
+          appID
+          userID
+          appUser {
+            app {
+              appID
+            }
+            user {
+              userID
+            }
+            lastAccessTime
+          }
+        }
+      }`;
+
+    const observable: Observable<object> = <Observable<object>>API.graphql(
+      graphqlOperation(subscriptionQuery, { appID, userID })
+    );
+    const subscription = observable.subscribe({
+      next: data => update(<AppUserUpdate>(<any>data).value.data.appUserUpdates),
+      error: data => error(data.error)
+    });
+    this.logger.debug('Creating subscription:', subscriptionKey);
+    this.subscriptions[subscriptionKey] = subscription;
+  }
+
+  async unsubscribeFromAppUserUpdates(
+    appID: string,
+    userID: string,
+  ) {
+    await this.unsubscribe(`{"name":"appUserUpdates","keys":{"deviceID":"${appID}","userID":"${userID}"}}`);
+  }
+
+  async addAppUser(appID: string, userID: string) {
+
+    const addAppUser = /* GraphQL */ `
+      mutation AddAppUser(
+        $appID: ID!
+        $userID: ID!
+      ) {
+        addAppUser(
+          appID: $appID
+          userID: $userID
+        ) {
+          app {
+            appID
+            appName
+          }
+          user {
+            userID
+            userName
+          }
+          isOwner
+          lastAccessTime
+        }
+      }`;
+
+    try {
+      const result = <GraphQLResult<{ addAppUser: AppUser }>>
+        await this.api.graphql(
+          graphqlOperation(addAppUser, {
+            appID,
+            userID,
+          })
+        );
+      if (result.data) {
+        const appUser = <AppUser>result.data.addAppUser!;
+        this.logger.debug('Add user to app:', appUser);
+        return appUser;
+      } else {
+        throw this.handleErrorResponse(result, ERROR_ADD_APP_USER, 'addAppUser')
+      }
+
+    } catch (error) {
+      this.logger.error('addAppUser API call returned error: ', error);
+      throw new Error(ERROR_ADD_APP_USER, error);
+    }
+  }
+
+  async deleteAppUser(appID: string, userID: string) {
+
+    const deleteAppUser = /* GraphQL */ `
+      mutation DeleteAppUser(
+        $appID: ID!
+        $userID: ID!
+      ) {
+        deleteAppUser(
+          appID: $appID
+          userID: $userID
+        ) {
+          app {
+            appID
+            appName
+          }
+          user {
+            userID
+            userName
+          }
+          isOwner
+          lastAccessTime
+        }
+      }`;
+
+    try {
+      const result = <GraphQLResult<{ deleteAppUser: AppUser }>>
+        await this.api.graphql(
+          graphqlOperation(deleteAppUser, {
+            appID,
+            userID,
+          })
+        );
+      if (result.data) {
+        const appUser = <AppUser>result.data.deleteAppUser!;
+        this.logger.debug('Delete user from app:', appUser);
+        return appUser;
+      } else {
+        throw this.handleErrorResponse(result, ERROR_DELETE_APP_USER, 'deleteAppUser')
+      }
+
+    } catch (error) {
+      this.logger.error('deleteAppUser API call returned error: ', error);
+      throw new Error(ERROR_DELETE_APP_USER, error);
+    }
+  }
+
+  async deleteApp(appID: string) {
+
+    const deleteApp = /* GraphQL */ `
+      mutation DeleteApp($appID: ID!) {
+        deleteApp(appID: $appID)
+      }`;
+
+    try {
+      const result = <GraphQLResult<{ deleteApp: AppUser }>>
+        await this.api.graphql(
+          graphqlOperation(deleteApp, { appID })
+        );
+      if (result.data) {
+        this.logger.debug('App deleted:', result.data);
+      } else {
+        throw this.handleErrorResponse(result, ERROR_DELETE_APP, 'deleteApp')
+      }
+
+    } catch (error) {
+      this.logger.error('deleteApp API call returned error: ', error);
+      throw new Error(ERROR_DELETE_APP, error);
+    }
   }
 
   async unsubscribeAll() {

@@ -21,6 +21,10 @@ export const ERROR_ACCEPT_SPACE_USER_INVITATION = 'acceptSpaceUserInvitationAPIE
 export const ERROR_LEAVE_SPACE_USER = 'leaveSpaceUserAPIError';
 export const ERROR_UPDATE_SPACE = 'updateSpaceAPIError';
 export const ERROR_UPDATE_SPACE_USER = 'updateSpaceUserAPIError';
+export const ERROR_GET_USER_APPS = 'getUserAppsAPIError';
+export const ERROR_ADD_APP_USER = 'addAppUserAPIError';
+export const ERROR_DELETE_APP_USER = 'deleteAppUserAPIError';
+export const ERROR_DELETE_APP = 'deleteAppAPIError';
 
 // subscription termination error pattern
 export const SUBSCRIPTION_FATAL_ERROR = new RegExp('.*AppSync Realtime subscription init error.*');
