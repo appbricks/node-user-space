@@ -255,6 +255,7 @@ export const appUpdates = /* GraphQL */ `
         region
         version
         status
+        lastSeen
         space {
           spaceID
           spaceName
@@ -295,6 +296,7 @@ export const appUserUpdates = /* GraphQL */ `
           region
           version
           status
+          lastSeen
         }
         user {
           userID
@@ -311,7 +313,7 @@ export const appUserUpdates = /* GraphQL */ `
           universalConfig
         }
         isOwner
-        lastAccessTime
+        lastAccessedTime
       }
     }
   }

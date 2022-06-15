@@ -18,6 +18,9 @@ import {
   Space,
   SpaceUser,
   SpaceStatus,
+  App,
+  AppUser,
+  AppStatus,
   Key
 } from '../model/types';
 
@@ -26,7 +29,9 @@ import {
   DeviceDetail,
   DeviceUserListItem,
   SpaceDetail,
-  SpaceUserListItem
+  SpaceUserListItem,
+  AppDetail,
+  AppUserListItem
 } from '../model/display';
 
 import Provider from './provider';
@@ -63,6 +68,12 @@ import * as acceptSpaceInvitation from './actions/accept-space-invitation';
 import * as leaveSpace from './actions/leave-space';
 import * as updateSpace from './actions/update-space';
 import * as updateSpaceUser from './actions/update-space-user';
+import * as getUserApps from './actions/get-user-apps';
+import * as appUpdates from './actions/app-updates-subscription';
+import * as appTelemetry from './actions/app-telemetry-subscription';
+import * as grantUserAccessToApp from './actions/grant-user-access-to-app';
+import * as removeUserAccessToApp from './actions/remove-user-access-to-app';
+import * as deleteApp from './actions/delete-app';
 import * as resetState from './actions/reset-state';
 
 type UserSpacePayload =
@@ -78,15 +89,21 @@ type UserSpacePayload =
   actions.DeviceUsersPayload |
   actions.DeviceUpdateSubscriptionPayload |
   actions.DeviceTelemetrySubscriptionPayload |
-  actions.SpaceUserIDPayload |
   actions.SpaceIDPayload |
+  actions.SpaceUserIDPayload |
   actions.SpaceInvitationPayload |
   actions.SpacePayload |
   actions.SpacesPayload |
   actions.SpaceUserPayload |
   actions.SpaceUsersPayload |
   actions.SpaceUpdateSubscriptionPayload |
-  actions.SpaceTelemetrySubscriptionPayload;
+  actions.SpaceTelemetrySubscriptionPayload |
+  actions.AppIDPayload |
+  actions.AppUserIDPayload |
+  actions.AppPayload |
+  actions.AppUserIDPayload |
+  actions.AppUserPayload |
+  actions.AppUsersPayload;
 
 export default class UserSpaceService {
 
@@ -131,7 +148,12 @@ export default class UserSpaceService {
       .add(actions.UPDATE_SPACE)
       .add(actions.UPDATE_SPACE_USER)
       .add(actions.GET_USER_APPS)
-      .add(actions.GET_APP_INVITATIONS)
+      .add(actions.GRANT_USER_ACCESS_TO_APP)
+      .add(actions.REMOVE_USER_ACCESS_TO_APP)
+      .add(actions.DELETE_APP)
+      .add(actions.SUBSCRIBE_TO_APP_UPDATES)
+      .add(actions.SUBSCRIBE_TO_APP_TELEMETRY)
+      .add(actions.UNSUBSCRIBE_FROM_APP_UPDATES)
   }
 
   static stateProps<S extends UserSpaceStateProps, C extends UserSpaceStateProps>(
@@ -164,7 +186,7 @@ export default class UserSpaceService {
           deleteUserFromDevice.action(dispatch, deviceID, userID),
         deleteDevice: (deviceID: string) =>
           deleteDevice.action(dispatch, deviceID),
-        updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) =>
+        updateDevice: (deviceID: string, deviceKey: Key, clientVersion: string, settings: DisplayType) =>
           updateDevice.action(dispatch, deviceID, deviceKey, clientVersion, settings),
         unsubscribeFromDeviceUpdates: () => 
           deviceUpdates.unsubscribeAction(dispatch),
@@ -182,9 +204,9 @@ export default class UserSpaceService {
           deleteUserFromSpace.action(dispatch, spaceID, userID),
         deleteSpace: (spaceID: string) =>
           deleteSpace.action(dispatch, spaceID),
-        updateSpace: (spaceID: string, deviceKey?: Key, version?: string, settings?: DisplayType) =>
+        updateSpace: (spaceID: string, deviceKey: Key, version: string, settings: DisplayType) =>
           updateSpace.action(dispatch, spaceID, deviceKey, version, settings),
-        updateSpaceUser: (spaceID: string, userID?: string, isEgressNode?: boolean) =>
+        updateSpaceUser: (spaceID: string, userID: string, isEgressNode: boolean) =>
           updateSpaceUser.action(dispatch, spaceID, userID, isEgressNode),
         unsubscribeFromSpaceUpdates: () => 
           spaceUpdates.unsubscribeAction(dispatch),
@@ -199,9 +221,15 @@ export default class UserSpaceService {
 
         // app owner actions
         getUserApps: () =>
-          dispatch({type: undefined}),
-        getAppInvitations: () =>
-          dispatch({type: undefined}),
+          getUserApps.action(dispatch),
+        grantUserAccessToApp: (appID: string, userID: string) => 
+          grantUserAccessToApp.action(dispatch, appID, userID),
+        removeUserAccessToApp: (appID: string, userID: string) =>
+          removeUserAccessToApp.action(dispatch, appID, userID),
+        deleteApp: (appID: string) => 
+          deleteApp.action(dispatch, appID),
+        unsubscribeFromAppUpdates: () => 
+          appUpdates.unsubscribeAction(dispatch)
       }
     }
   }
@@ -233,6 +261,13 @@ export default class UserSpaceService {
       getSpaceInvitations.epic(this.csProvider),
       acceptSpaceInvitation.epic(this.csProvider),
       leaveSpace.epic(this.csProvider),
+      getUserApps.epic(this.csProvider),
+      grantUserAccessToApp.epic(this.csProvider),
+      removeUserAccessToApp.epic(this.csProvider),
+      deleteApp.epic(this.csProvider),
+      appUpdates.subscribeEpic(this.csProvider),
+      appTelemetry.subscribeEpic(this.csProvider),
+      appUpdates.unsubscribeEpic(this.csProvider),
       resetState.epic(this.csProvider),
     ];
   }
@@ -316,6 +351,37 @@ export default class UserSpaceService {
         }
         break;
       }
+      case actions.APP_UPDATE: {
+        const app = (<actions.AppPayload>action.payload!).app;
+        const detail = state.apps[app.appID!];
+        if (detail) {
+          state = {
+            ...state,
+            apps: {
+              ...state.apps,
+              [app.appID!]: updateAppDetail(detail, app)
+            }
+          }
+        }
+        break;
+      }
+      case actions.APP_TELEMETRY: {
+        const appUser = (<actions.AppUserPayload>action.payload!).appUser;
+        const detail = state.apps[appUser.app!.appID!];
+        if (detail) {
+          const updatedDetail = updateAppUserListItem(detail, appUser);
+          if (updatedDetail) {
+            state = {
+              ...state,
+              apps: {
+                ...state.apps,
+                [appUser.app!.appID!]: updatedDetail
+              }
+            }
+          }  
+        }
+        break;
+      }
     }
 
     return reducerDelegate<UserSpaceState, UserSpacePayload>(
@@ -375,10 +441,7 @@ export default class UserSpaceService {
       case actions.UNSUBSCRIBE_FROM_DEVICE_UPDATES: {
         state = {
           ...state,
-          deviceUpdatesActive: false,
-          userDevices: [],
-          deviceAccessRequests: {},
-          devices: {}
+          deviceUpdatesActive: false
         }
         break;
       }
@@ -411,10 +474,32 @@ export default class UserSpaceService {
       case actions.UNSUBSCRIBE_FROM_SPACE_UPDATES: {
         state = {
           ...state,
-          spaceUpdatesActive: false,
-          userSpaces: [],
-          spaceInvitations: [],
-          spaces: {}
+          spaceUpdatesActive: false
+        }
+        break;
+      }
+      case actions.GET_USER_APPS: {
+        const userApps = (<actions.AppUsersPayload>action.payload!).appUsers;
+        this.logger.trace('Loaded current user\'s apps', userApps);
+
+        // build user lists for spaces owned by the current user
+        const apps: { [appID: string]: AppDetail } = {}
+        userApps.forEach(appUser => {
+          apps[appUser.app!.appID!] = appDetail(appUser);
+        })
+        this.logger.trace('Created current user\'s space collection: ', apps);
+
+        return {
+          ...state,
+          appUpdatesActive: true,
+          userApps,
+          apps
+        }
+      }
+      case actions.UNSUBSCRIBE_FROM_APP_UPDATES: {
+        state = {
+          ...state,
+          appUpdatesActive: false
         }
         break;
       }
@@ -736,14 +821,14 @@ const updateSpaceDetail = (
   if (space.spaceName) {
     updatedDetail.name = space.spaceName!;
   }
+  if (space.version) {
+    updatedDetail.version = space.version!;
+  }
   if (space.status) {
     updatedDetail.status = space.status!;
   }
   if (space.lastSeen && space.lastSeen > 0) {
     updatedDetail.lastSeen = dateTimeToLocale(new Date(space.lastSeen), false);
-  }
-  if (space.version) {
-    updatedDetail.version = space.version!;
   }
   if (space.settings) {
     updatedDetail.spaceDefaults = JSON.parse(space.settings);
@@ -830,6 +915,121 @@ const updateSpaceUserListItem = (
     if (spaceUser.bytesUploaded) {
       updatedDetail.bytesUploaded = parseInt(spaceUser.bytesUploaded, 10);
       updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
+    }
+  }
+
+  return updatedDetail;
+}
+
+const appDetail = (appUser: AppUser): AppDetail => {
+
+  const app = appUser.app!;
+  const users = app.users!;
+
+  const appUsers: AppUserListItem[] = [];
+  if (appUser.isOwner) {
+    // enumerate app users for owned apps
+    users!.appUsers!.forEach(appUser => {
+      appUsers.push(appUserListItem(appUser!));
+    });  
+  }
+
+  return {
+    appID: app.appID!,
+    name: app.appName!,
+    status: app.status!,
+    lastSeen: app.lastSeen && app.lastSeen > 0
+      ? dateTimeToLocale(new Date(app.lastSeen), false)
+      : 'never',
+    installedSpace: app.space!.spaceName!,
+    spaceOwner: fullName(app.space!.owner!),
+    version: app.version!,
+    isOwned: appUser.isOwner!,
+    users: appUsers
+  };
+}
+
+const appUserListItem = (appUser: AppUser): AppUserListItem => {
+
+  const {
+    user,
+    lastAccessedTime
+  } = appUser!;
+
+  const {
+    userID,
+    userName
+  } = user!;
+
+  return <AppUserListItem>{
+    userID,
+    userName,
+    fullName: fullName(user!),
+    lastAccessedTime: lastAccessedTime && lastAccessedTime > 0
+      ? dateTimeToLocale(new Date(lastAccessedTime))
+      : 'never',
+    appUser
+  }
+}
+
+const updateAppDetail = (
+  detail: AppDetail,
+  app: App
+): AppDetail => {
+
+  const updatedDetail = { ...detail };
+  if (app.appName) {
+    updatedDetail.name = app.appName!;
+  }
+  if (app.version) {
+    updatedDetail.version = app.version!;
+  }
+  if (app.status) {
+    updatedDetail.status = app.status!;
+  }
+  if (app.lastSeen && app.lastSeen > 0) {
+    updatedDetail.lastSeen = dateTimeToLocale(new Date(app.lastSeen), false);
+  }
+
+  return updatedDetail;
+}
+
+const updateAppUserListItem = (
+  detail: AppDetail,
+  appUser: AppUser
+): AppDetail | undefined => {
+
+  // make copies of the space detail that
+  // will change as part of this update
+  const updatedDetail = (({
+    users,
+    ...d
+  }) => <AppDetail>{
+    ...d,
+    users: [...users],
+  })(detail);
+
+  if (updatedDetail.isOwned) {
+    const itemIndex = detail.users.findIndex(item => item.userID == appUser.user!.userID);
+    if (itemIndex != -1) {
+
+      // make copy of the user list item that
+      // will change as part of this update
+      const updatedItem = (
+        ({
+          appUser,
+          ...i
+        }) => <AppUserListItem>{
+          ...i,
+          appUser: { ...appUser }
+        }
+      )(detail.users[itemIndex]);
+      const [ item ] = updatedDetail.users.splice(itemIndex, 1, updatedItem);
+
+      if (appUser.lastAccessedTime) {
+        const dateTime = new Date(appUser.lastAccessedTime);
+        updatedItem.lastAccessedTime = dateTimeToLocale(dateTime);
+      }
     }
   }
 

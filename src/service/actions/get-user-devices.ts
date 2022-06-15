@@ -50,8 +50,10 @@ export const epic = (csProvider: Provider): Epic => {
         
         if (dependsAction.type == SUCCESS) {
 
+          const userDevices = state$.value.userspace!.deviceUpdatesActive
+            ? state$.value.userspace!.userDevices : [];
           const [ unsubscribeDevices, subscribeDevices ] = calculateDiffs(
-            state$.value.userspace!.userDevices.map(du => du.device!.deviceID!),
+            userDevices.map(du => du.device!.deviceID!),
             (<DeviceUsersPayload>dependsAction.payload).deviceUsers.map(du => du.device!.deviceID!)
           );
           if (unsubscribeDevices.length > 0 || subscribeDevices.length > 0) {
@@ -87,8 +89,10 @@ export const epic = (csProvider: Provider): Epic => {
                   .map(du =>du!.device!.deviceID! + '|' + du!.user!.userID!)
               );
 
-          const [ unsubscribeDeviceUsers, subscribeDeviceUsers ] = calculateDiffs(
-            subscriptionList(state$.value.userspace!.userDevices),
+            const userDevices = state$.value.userspace!.deviceUpdatesActive
+              ? state$.value.userspace!.userDevices : [];
+            const [ unsubscribeDeviceUsers, subscribeDeviceUsers ] = calculateDiffs(
+            subscriptionList(userDevices),
             subscriptionList((<DeviceUsersPayload>dependsAction.payload).deviceUsers)
           );
           if (unsubscribeDeviceUsers.length > 0 || subscribeDeviceUsers.length > 0) {

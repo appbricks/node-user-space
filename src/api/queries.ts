@@ -102,7 +102,7 @@ export const getUser = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       universalConfig
@@ -291,7 +291,7 @@ export const getSpace = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime
@@ -510,7 +510,7 @@ export const getSpaceInvitations = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime

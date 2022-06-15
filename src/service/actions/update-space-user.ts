@@ -17,7 +17,7 @@ import {
 } from '../actions';
 
 export const action = 
-  (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID?: string, isEgressNode?: boolean) => 
+  (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID: string, isEgressNode: boolean) => 
     dispatch(createAction<SpaceUserUpdatePayload>(UPDATE_SPACE_USER, { spaceID, userID, isEgressNode }));
 
 export const epic = (csProvider: Provider): Epic => {

@@ -23,7 +23,7 @@ import {
 } from '../../model/display';
 
 export const action = 
-  (dispatch: redux.Dispatch<redux.Action>, deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) => 
+  (dispatch: redux.Dispatch<redux.Action>, deviceID: string, deviceKey: Key, clientVersion: string, settings: DisplayType) => 
     dispatch(createAction<DeviceUpdatePayload>(UPDATE_DEVICE, { deviceID, deviceKey, clientVersion, settings }));
 
 export const epic = (csProvider: Provider): Epic => {

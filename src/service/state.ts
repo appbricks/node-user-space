@@ -6,11 +6,13 @@ import {
   UserRef,
   DeviceUser,
   SpaceUser,
+  AppUser
 } from '../model/types';
 
 import {
   DeviceDetail,
-  SpaceDetail
+  SpaceDetail,
+  AppDetail
 } from '../model/display';
 
 // User Space state type
@@ -37,6 +39,14 @@ export interface UserSpaceState extends State {
   spaceInvitations?: SpaceUser[]
   // formated space info
   spaces: { [spaceID: string]: SpaceDetail }
+
+  // indicates if app updates 
+  // subscriptions are active
+  appUpdatesActive: boolean
+  // logged in users space list
+  userApps: AppUser[]
+  // formated space info
+  apps: { [appID: string]: AppDetail }
 };
 
 // User Space state properties
@@ -57,4 +67,8 @@ export const initialUserSpaceState = (): UserSpaceState =>
     userSpaces: [],
     spaceInvitations: [],
     spaces: {},
+
+    appUpdatesActive: false,
+    userApps: [],
+    apps: {},
   };

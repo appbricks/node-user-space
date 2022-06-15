@@ -50,8 +50,10 @@ export const epic = (csProvider: Provider): Epic => {
 
         if (dependsAction.type == SUCCESS) {
 
+          const userSpaces = state$.value.userspace!.spaceUpdatesActive
+            ? state$.value.userspace!.userSpaces : [];
           const [ unsubscribeSpaces, subscribeSpaces ] = calculateDiffs(
-            state$.value.userspace!.userSpaces.map(su => su.space!.spaceID!),
+            userSpaces.map(su => su.space!.spaceID!),
             (<SpaceUsersPayload>dependsAction.payload).spaceUsers.map(su => su.space!.spaceID!)
           );
           if (unsubscribeSpaces.length > 0 || subscribeSpaces.length > 0) {
@@ -87,8 +89,10 @@ export const epic = (csProvider: Provider): Epic => {
                   .map(su =>su!.space!.spaceID! + '|' + su!.user!.userID!)
               );
               
-          const [ unsubscribeSpaceUsers, subscribeSpaceUsers ] = calculateDiffs(
-            subscriptionList(state$.value.userspace!.userSpaces),
+            const userSpaces = state$.value.userspace!.spaceUpdatesActive
+              ? state$.value.userspace!.userSpaces : [];
+            const [ unsubscribeSpaceUsers, subscribeSpaceUsers ] = calculateDiffs(
+            subscriptionList(userSpaces),
             subscriptionList((<SpaceUsersPayload>dependsAction.payload).spaceUsers)
           );
           if (unsubscribeSpaceUsers.length > 0 || subscribeSpaceUsers.length > 0) {

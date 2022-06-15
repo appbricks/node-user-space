@@ -483,7 +483,7 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string) {
+  async updateDevice(deviceID: string, deviceKey: Key, clientVersion: string, settings: string) {
 
     const updateDevice = /* GraphQL */ `
       mutation updateDevice($deviceID: ID!, $deviceKey: Key, $clientVersion: String, $settings: String) {
@@ -845,7 +845,7 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async deleteSpaceUser(spaceID: string, userID?: string) {
+  async deleteSpaceUser(spaceID: string, userID: string) {
 
     const deleteSpaceUser = /* GraphQL */ `
       mutation DeleteSpaceUser($spaceID: ID!, $userID: ID) {
@@ -904,7 +904,7 @@ export default class Provider implements ProviderInterface {
       }
   }
 
-  async updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string) {
+  async updateSpace(spaceID: string, spaceKey: Key, version: string, settings: string) {
 
     const updateSpace = /* GraphQL */ `
       mutation updateSpace($spaceID: ID!, $spaceKey: Key, $version: String, $settings: String) {
@@ -944,7 +944,7 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async updateSpaceUser(spaceID: string, userID?: string, isEgressNode?: boolean) {
+  async updateSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {
 
     const updateSpaceUser = /* GraphQL */ `
       mutation updateSpaceUser($spaceID: ID!, $userID: ID, $isEgressNode: Boolean) {
@@ -1093,7 +1093,10 @@ export default class Provider implements ProviderInterface {
             totalCount
             appUsers {
               isOwner
-              lastAccessTime
+              lastAccessedTime
+              user {
+                userID
+              }
               app {
                 appID
                 appName
@@ -1105,6 +1108,13 @@ export default class Provider implements ProviderInterface {
                 space {
                   spaceID
                   spaceName
+                  owner {
+                    userID
+                    userName
+                    firstName
+                    middleName
+                    familyName
+                  }
                 }
                 users {
                   appUsers {
@@ -1116,7 +1126,7 @@ export default class Provider implements ProviderInterface {
                       familyName
                     }
                     isOwner
-                    lastAccessTime
+                    lastAccessedTime
                   }
                 }
               }
@@ -1192,7 +1202,7 @@ export default class Provider implements ProviderInterface {
     update: (data: AppUserUpdate) => void, 
     error: (error: any) => void
   ) {
-    const subscriptionKey = `{"name":"appUserUpdates","keys":{"deviceID":"${appID}","userID":"${userID}"}}`;
+    const subscriptionKey = `{"name":"appUserUpdates","keys":{"appID":"${appID}","userID":"${userID}"}}`;
     await this.unsubscribe(subscriptionKey);
 
     const subscriptionQuery = /* GraphQL */ `
@@ -1207,7 +1217,7 @@ export default class Provider implements ProviderInterface {
             user {
               userID
             }
-            lastAccessTime
+            lastAccessedTime
           }
         }
       }`;
@@ -1227,7 +1237,7 @@ export default class Provider implements ProviderInterface {
     appID: string,
     userID: string,
   ) {
-    await this.unsubscribe(`{"name":"appUserUpdates","keys":{"deviceID":"${appID}","userID":"${userID}"}}`);
+    await this.unsubscribe(`{"name":"appUserUpdates","keys":{"appID":"${appID}","userID":"${userID}"}}`);
   }
 
   async addAppUser(appID: string, userID: string) {
@@ -1250,7 +1260,7 @@ export default class Provider implements ProviderInterface {
             userName
           }
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }`;
 
@@ -1296,7 +1306,7 @@ export default class Provider implements ProviderInterface {
             userName
           }
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }`;
 

@@ -23,7 +23,9 @@ export {
   ACCEPT_SPACE_INVITATION,
   LEAVE_SPACE,
   GET_USER_APPS,
-  GET_APP_INVITATIONS,
+  GRANT_USER_ACCESS_TO_APP,
+  REMOVE_USER_ACCESS_TO_APP,
+  DELETE_APP
 } from './service/actions';
 
 export { UserSpaceActionProps } from './service/actions';

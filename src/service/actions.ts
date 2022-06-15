@@ -7,6 +7,8 @@ import {
   DeviceUser,
   Space,
   SpaceUser,
+  App,
+  AppUser,
   Key
 } from '../model/types';
 import {
@@ -32,7 +34,7 @@ export interface UserPayload {
 
 export interface DeviceUserIDPayload {
   deviceID: string
-  userID?: string
+  userID: string
 };
 
 export interface DeviceIDPayload {
@@ -67,9 +69,9 @@ export interface DeviceTelemetrySubscriptionPayload {
 
 export interface DeviceUpdatePayload {
   deviceID: string
-  deviceKey?: Key
-  clientVersion?: string
-  settings?: DisplayType
+  deviceKey: Key
+  clientVersion: string
+  settings: DisplayType
 }
 
 export interface SpaceUserIDPayload {
@@ -115,19 +117,46 @@ export interface SpaceTelemetrySubscriptionPayload {
 
 export interface SpaceUpdatePayload {
   spaceID: string
-  spaceKey?: Key
-  version?: string
-  settings?: DisplayType
+  spaceKey: Key
+  version: string
+  settings: DisplayType
 }
 
 export interface SpaceUserUpdatePayload {
   spaceID: string
-  userID?: string
-  isEgressNode?: boolean
+  userID: string
+  isEgressNode: boolean
+}
+
+export interface AppUserIDPayload {
+  appID: string
+  userID: string
 }
 
 export interface AppIDPayload {
-  spaceID: string
+  appID: string
+};
+
+export interface AppPayload {
+  app: App
+};
+
+export interface AppUserPayload {
+  appUser: AppUser
+};
+
+export interface AppUsersPayload {
+  appUsers: AppUser[]
+};
+
+export interface AppUpdateSubscriptionPayload {
+  subscribeApps: string[]
+  unsubscribeApps: string[]
+};
+
+export interface AppTelemetrySubscriptionPayload {
+  subscribeAppUsers: { appID: string, userID: string }[]
+  unsubscribeAppUsers: { appID: string, userID: string }[]
 };
 
 // User-Space dispatch function props
@@ -140,9 +169,9 @@ export interface UserSpaceActionProps {
     getUserDevices: () => actions.Action
     getDeviceAccessRequests: (deviceID: string) => actions.Action
     activateUserOnDevice: (deviceID: string, userID: string) => actions.Action
-    deleteUserFromDevice: (deviceID: string, userID?: string) => actions.Action
+    deleteUserFromDevice: (deviceID: string, userID: string) => actions.Action
     deleteDevice: (deviceID: string) => actions.Action
-    updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) => actions.Action
+    updateDevice: (deviceID: string, deviceKey: Key, clientVersion: string, settings: DisplayType) => actions.Action
     unsubscribeFromDeviceUpdates: () => actions.Action
 
     // space owner actions
@@ -150,10 +179,10 @@ export interface UserSpaceActionProps {
     inviteUserToSpace: (spaceID: string, userID: string, isEgressNode: boolean) => actions.Action
     grantUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
     removeUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
-    deleteUserFromSpace: (spaceID: string, userID?: string) => actions.Action
+    deleteUserFromSpace: (spaceID: string, userID: string) => actions.Action
     deleteSpace: (spaceID: string) => actions.Action
-    updateSpace: (spaceID: string, spaceKey?: Key, version?: string, settings?: DisplayType) => actions.Action
-    updateSpaceUser: (spaceID: string, userID?: string, isEgressNode?: boolean) => actions.Action
+    updateSpace: (spaceID: string, spaceKey: Key, version: string, settings: DisplayType) => actions.Action
+    updateSpaceUser: (spaceID: string, userID: string, isEgressNode: boolean) => actions.Action
     unsubscribeFromSpaceUpdates: () => actions.Action
 
     // space guest actions 
@@ -163,7 +192,10 @@ export interface UserSpaceActionProps {
 
     // app owner actions
     getUserApps: () => actions.Action
-    getAppInvitations: () => actions.Action
+    grantUserAccessToApp: (appID: string, userID: string) => actions.Action
+    removeUserAccessToApp: (appID: string, userID: string) => actions.Action
+    deleteApp: (appID: string) => actions.Action
+    unsubscribeFromAppUpdates: () => actions.Action
   }
 }
 
@@ -203,4 +235,12 @@ export const ACCEPT_SPACE_INVITATION = 'userspace/ACCEPT_SPACE_INVITATION';
 export const LEAVE_SPACE = 'userspace/LEAVE_SPACE';
 
 export const GET_USER_APPS = 'userspace/GET_USER_APPS';
-export const GET_APP_INVITATIONS = 'userspace/GET_APP_INVITATIONS';
+export const GRANT_USER_ACCESS_TO_APP = 'userspace/GRANT_USER_ACCESS_TO_APP';
+export const REMOVE_USER_ACCESS_TO_APP = 'userspace/REMOVE_USER_ACCESS_TO_APP';
+export const DELETE_APP = 'userspace/DELETE_APP';
+export const SUBSCRIBE_TO_APP_UPDATES = 'userspace/SUBSCRIBE_TO_APP_UPDATES';
+export const UNSUBSCRIBE_FROM_APP_UPDATES = 'userspace/UNSUBSCRIBE_FROM_APP_UPDATES';
+export const APP_UPDATE = 'userspace/APP_UPDATE';
+export const SUBSCRIBE_TO_APP_TELEMETRY = 'userspace/SUBSCRIBE_TO_APP_TELEMETRY';
+export const APP_TELEMETRY = 'userspace/APP_TELEMETRY';
+

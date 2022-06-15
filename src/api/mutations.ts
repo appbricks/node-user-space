@@ -54,7 +54,7 @@ export const updateUserKey = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       universalConfig
@@ -685,7 +685,7 @@ export const inviteSpaceUser = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime
@@ -801,7 +801,7 @@ export const activateSpaceUser = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime
@@ -917,7 +917,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime
@@ -1033,7 +1033,7 @@ export const deleteSpaceUser = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime
@@ -1154,7 +1154,7 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime
@@ -1270,7 +1270,7 @@ export const leaveSpaceUser = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime
@@ -1363,6 +1363,7 @@ export const updateSpace = /* GraphQL */ `
           region
           version
           status
+          lastSeen
         }
       }
       users {
@@ -1469,7 +1470,7 @@ export const updateSpaceUser = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
       lastConnectTime
@@ -1528,6 +1529,7 @@ export const addApp = /* GraphQL */ `
       region
       version
       status
+      lastSeen
       space {
         spaceID
         spaceName
@@ -1575,7 +1577,7 @@ export const addApp = /* GraphQL */ `
         totalCount
         appUsers {
           isOwner
-          lastAccessTime
+          lastAccessedTime
         }
       }
     }
@@ -1592,6 +1594,7 @@ export const addAppUser = /* GraphQL */ `
         region
         version
         status
+        lastSeen
         space {
           spaceID
           spaceName
@@ -1639,7 +1642,7 @@ export const addAppUser = /* GraphQL */ `
         universalConfig
       }
       isOwner
-      lastAccessTime
+      lastAccessedTime
     }
   }
 `;
@@ -1654,6 +1657,7 @@ export const deleteAppUser = /* GraphQL */ `
         region
         version
         status
+        lastSeen
         space {
           spaceID
           spaceName
@@ -1701,7 +1705,7 @@ export const deleteAppUser = /* GraphQL */ `
         universalConfig
       }
       isOwner
-      lastAccessTime
+      lastAccessedTime
     }
   }
 `;
@@ -1971,6 +1975,7 @@ export const pushAppsUpdate = /* GraphQL */ `
         region
         version
         status
+        lastSeen
         space {
           spaceID
           spaceName
@@ -2011,6 +2016,7 @@ export const pushAppUsersUpdate = /* GraphQL */ `
           region
           version
           status
+          lastSeen
         }
         user {
           userID
@@ -2027,7 +2033,7 @@ export const pushAppUsersUpdate = /* GraphQL */ `
           universalConfig
         }
         isOwner
-        lastAccessTime
+        lastAccessedTime
       }
     }
   }

@@ -2,7 +2,9 @@ import {
   DeviceUser,
   SpaceUser,
   SpaceStatus,
-  UserAccessStatus
+  UserAccessStatus,
+  AppStatus,
+  AppUser
 } from './types';
 
 /**
@@ -91,4 +93,27 @@ export interface SpaceUserListItem extends DisplayType {
   lastDeviceConnected: string
 
   spaceUser?: SpaceUser
+}
+
+export interface AppDetail extends DisplayType {
+  appID: string
+  name: string
+  version: string
+  status: AppStatus
+  lastSeen: string
+  installedSpace: string
+  spaceOwner: string
+
+  isOwned: boolean
+
+  users: AppUserListItem[]
+}
+
+export interface AppUserListItem extends DisplayType {
+  userID: string
+  userName: string
+  fullName: string
+  lastAccessedTime: string
+
+  appUser?: AppUser
 }

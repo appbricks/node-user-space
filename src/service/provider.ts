@@ -87,7 +87,7 @@ export default interface Provider {
   /**
    * Deletes the given user from the device.
    */
-  deleteDeviceUser(deviceID: string, userID?: string): Promise<DeviceUser>;
+  deleteDeviceUser(deviceID: string, userID: string): Promise<DeviceUser>;
 
   /**
    * Deletes the given device
@@ -97,7 +97,7 @@ export default interface Provider {
   /**
    * Updates a device
    */
-  updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string): Promise<Device>;
+  updateDevice(deviceID: string, deviceKey: Key, clientVersion: string, settings: string): Promise<Device>;
 
   /**
    * Returns list of spaces the current
@@ -144,7 +144,7 @@ export default interface Provider {
   /**
    * Remove user's access to the given space.
    */
-  deleteSpaceUser(spaceID: string, userID?: string): Promise<SpaceUser>;
+  deleteSpaceUser(spaceID: string, userID: string): Promise<SpaceUser>;
 
   /**
    * Deletes the give space and all user
@@ -155,12 +155,12 @@ export default interface Provider {
   /**
    * Updates a space
    */
-  updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string): Promise<Space>;
+  updateSpace(spaceID: string, spaceKey: Key, version: string, settings: string): Promise<Space>;
 
    /**
     * Updates a space user
     */
-  updateSpaceUser(spaceID: string, userID?: string, isEgressNode?: boolean): Promise<SpaceUser>;
+  updateSpaceUser(spaceID: string, userID: string, isEgressNode: boolean): Promise<SpaceUser>;
  
   /**
    * Invite the a user to a space owned by
@@ -193,17 +193,17 @@ export default interface Provider {
   /**
    * Unsubscribe from the app update stream.
    */
-  unsubscribeFromSpaceUpdates(appID: string): Promise<void>;
+  unsubscribeFromAppUpdates(appID: string): Promise<void>;
 
   /**
    * Subscribe to the space user update stream.
    */
-   subscribeToAppUserUpdates(appID: string, userID: string, update: (data: AppUserUpdate) => void, error: (error: any) => void): Promise<void>;
+  subscribeToAppUserUpdates(appID: string, userID: string, update: (data: AppUserUpdate) => void, error: (error: any) => void): Promise<void>;
 
    /**
     * Unubscribe from the space user update stream.
     */
-   unsubscribeFromAppUserUpdates(appID: string, userID: string): Promise<void>
+  unsubscribeFromAppUserUpdates(appID: string, userID: string): Promise<void>
  
   /**
    * Adds a user to an app owned by
@@ -214,7 +214,7 @@ export default interface Provider {
   /**
    * Deletes the given user from the app.
    */
-  deleteAppUser(deviceID: string, userID?: string): Promise<AppUser>;
+  deleteAppUser(deviceID: string, userID: string): Promise<AppUser>;
 
   /**
    * Deletes the given app and all user

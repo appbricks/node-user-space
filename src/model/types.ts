@@ -169,6 +169,7 @@ export type App = {
   region?: string | null,
   version?: string | null,
   status?: AppStatus | null,
+  lastSeen?: number | null,
   space?: Space,
   users?: AppUsersConnection,
 };
@@ -200,7 +201,7 @@ export type AppUser = {
   app?: App,
   user?: User,
   isOwner?: boolean | null,
-  lastAccessTime?: number | null,
+  lastAccessedTime?: number | null,
 };
 
 export type SpaceUsersConnection = {
@@ -431,7 +432,7 @@ export type UpdateUserKeyMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     // A user's universal config is an encrypted
@@ -1282,7 +1283,7 @@ export type InviteSpaceUserMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -1448,7 +1449,7 @@ export type ActivateSpaceUserMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -1614,7 +1615,7 @@ export type DeactivateSpaceUserMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -1780,7 +1781,7 @@ export type DeleteSpaceUserMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -1955,7 +1956,7 @@ export type AcceptSpaceUserInvitationMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -2120,7 +2121,7 @@ export type LeaveSpaceUserMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -2239,6 +2240,7 @@ export type UpdateSpaceMutation = {
         region?: string | null,
         version?: string | null,
         status?: AppStatus | null,
+        lastSeen?: number | null,
       } | null > | null,
     } | null,
     users?:  {
@@ -2384,7 +2386,7 @@ export type UpdateSpaceUserMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -2457,6 +2459,7 @@ export type AddAppMutation = {
     region?: string | null,
     version?: string | null,
     status?: AppStatus | null,
+    lastSeen?: number | null,
     space?:  {
       __typename: "Space",
       spaceID: string,
@@ -2518,7 +2521,7 @@ export type AddAppMutation = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
   } | null,
@@ -2542,6 +2545,7 @@ export type AddAppUserMutation = {
       region?: string | null,
       version?: string | null,
       status?: AppStatus | null,
+      lastSeen?: number | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
@@ -2602,7 +2606,7 @@ export type AddAppUserMutation = {
       universalConfig?: string | null,
     } | null,
     isOwner?: boolean | null,
-    lastAccessTime?: number | null,
+    lastAccessedTime?: number | null,
   } | null,
 };
 
@@ -2624,6 +2628,7 @@ export type DeleteAppUserMutation = {
       region?: string | null,
       version?: string | null,
       status?: AppStatus | null,
+      lastSeen?: number | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
@@ -2684,7 +2689,7 @@ export type DeleteAppUserMutation = {
       universalConfig?: string | null,
     } | null,
     isOwner?: boolean | null,
-    lastAccessTime?: number | null,
+    lastAccessedTime?: number | null,
   } | null,
 };
 
@@ -3067,6 +3072,7 @@ export type PushAppsUpdateMutation = {
       region?: string | null,
       version?: string | null,
       status?: AppStatus | null,
+      lastSeen?: number | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
@@ -3119,6 +3125,7 @@ export type PushAppUsersUpdateMutation = {
         region?: string | null,
         version?: string | null,
         status?: AppStatus | null,
+        lastSeen?: number | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -3139,7 +3146,7 @@ export type PushAppUsersUpdateMutation = {
         universalConfig?: string | null,
       } | null,
       isOwner?: boolean | null,
-      lastAccessTime?: number | null,
+      lastAccessedTime?: number | null,
     },
   } | null,
 };
@@ -3309,7 +3316,7 @@ export type GetUserQuery = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     // A user's universal config is an encrypted
@@ -3572,7 +3579,7 @@ export type GetSpaceQuery = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -3875,7 +3882,7 @@ export type GetSpaceInvitationsQuery = {
       appUsers?:  Array< {
         __typename: "AppUser",
         isOwner?: boolean | null,
-        lastAccessTime?: number | null,
+        lastAccessedTime?: number | null,
       } | null > | null,
     } | null,
     lastConnectTime?: number | null,
@@ -4282,6 +4289,7 @@ export type AppUpdatesSubscription = {
       region?: string | null,
       version?: string | null,
       status?: AppStatus | null,
+      lastSeen?: number | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
@@ -4335,6 +4343,7 @@ export type AppUserUpdatesSubscription = {
         region?: string | null,
         version?: string | null,
         status?: AppStatus | null,
+        lastSeen?: number | null,
       } | null,
       user?:  {
         __typename: "User",
@@ -4355,7 +4364,7 @@ export type AppUserUpdatesSubscription = {
         universalConfig?: string | null,
       } | null,
       isOwner?: boolean | null,
-      lastAccessTime?: number | null,
+      lastAccessedTime?: number | null,
     },
   } | null,
 };

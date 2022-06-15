@@ -8,13 +8,18 @@ import {
   UserAccessStatus,
   Space,
   SpaceUser,
+  App,
+  AppUser,
   UserUpdate,
   DeviceUpdate,
   DeviceUserUpdate,
   SpaceUpdate,
   SpaceUserUpdate,
   SpaceStatus,
-  Key
+  AppUpdate,
+  AppUserUpdate,
+  Key,
+  AppStatus
 } from '../../model/types';
 
 import { UserSpaceActionProps } from '../actions';
@@ -83,6 +88,8 @@ export default class MockProvider implements ProviderInterface {
   deviceUsers: DeviceUser[];
   spaces: Space[];
   spaceUsers: SpaceUser[];
+  apps: App[];
+  appUsers: AppUser[];
 
   subscriptionMap: { [id: string]: { update: (data: any) => void, error: (err: any) => void} } = {}
 
@@ -93,7 +100,8 @@ export default class MockProvider implements ProviderInterface {
     const {
       users,
       devices, deviceUsers,
-      spaces, spaceUsers
+      spaces, spaceUsers,
+      apps, appUsers
     } = loadMockData();
 
     this.users = users;
@@ -101,6 +109,8 @@ export default class MockProvider implements ProviderInterface {
     this.deviceUsers = deviceUsers;
     this.spaces = spaces;
     this.spaceUsers = spaceUsers;
+    this.apps = apps;
+    this.appUsers = appUsers;
   }
 
   pushSubscriptionUpdate(data: any, ...id: string[]) {
@@ -148,7 +158,7 @@ export default class MockProvider implements ProviderInterface {
     }
   }
 
-  subscribeToUserUpdates(userID: string, update: (data: UserUpdate) => void, error: (error: any) => void) {
+  async subscribeToUserUpdates(userID: string, update: (data: UserUpdate) => void, error: (error: any) => void) {
     this.subscriptionMap[userID] = { update, error };
   }
 
@@ -161,7 +171,7 @@ export default class MockProvider implements ProviderInterface {
       .filter(deviceUser => deviceUser!.status == UserAccessStatus.active);
   }
 
-  subscribeToDeviceUpdates(deviceID: string, update: (data: DeviceUpdate) => void, error: (error: any) => void) {
+  async subscribeToDeviceUpdates(deviceID: string, update: (data: DeviceUpdate) => void, error: (error: any) => void) {
     this.subscriptionMap[deviceID] = { update, error };
   }
 
@@ -169,7 +179,7 @@ export default class MockProvider implements ProviderInterface {
     delete this.subscriptionMap[deviceID];
   }
 
-  subscribeToDeviceUserUpdates(deviceID: string, userID: string, update: (sata: DeviceUserUpdate) => void, error: (error: any) => void) {
+  async subscribeToDeviceUserUpdates(deviceID: string, userID: string, update: (sata: DeviceUserUpdate) => void, error: (error: any) => void) {
     this.subscriptionMap[deviceID + '|' + userID] = { update, error };
   }
 
@@ -258,7 +268,7 @@ export default class MockProvider implements ProviderInterface {
     });
   }
 
-  async updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string) {
+  async updateDevice(deviceID: string, deviceKey: Key, clientVersion: string, settings: string) {
     const device = this.user!.devices!.deviceUsers!
       .find(deviceUser => deviceUser!.device!.deviceID == deviceID)!.device!;
 
@@ -274,7 +284,7 @@ export default class MockProvider implements ProviderInterface {
       .filter(spaceUser => spaceUser!.status == UserAccessStatus.active)
   }
 
-  subscribeToSpaceUpdates(spaceID: string, update: (data: SpaceUpdate) => void, error: (error: any) => void) {
+  async subscribeToSpaceUpdates(spaceID: string, update: (data: SpaceUpdate) => void, error: (error: any) => void) {
     this.subscriptionMap[spaceID] = { update, error };
   }
 
@@ -282,7 +292,7 @@ export default class MockProvider implements ProviderInterface {
     delete this.subscriptionMap[spaceID];
   }
 
-  subscribeToSpaceUserUpdates(spaceID: string, userID: string, update: (data: SpaceUserUpdate) => void, error: (error: any) => void) {
+  async subscribeToSpaceUserUpdates(spaceID: string, userID: string, update: (data: SpaceUserUpdate) => void, error: (error: any) => void) {
     this.subscriptionMap[spaceID + '|' + userID] = { update, error };
   }
 
@@ -414,7 +424,7 @@ export default class MockProvider implements ProviderInterface {
     });
   }
 
-  async updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string) {
+  async updateSpace(spaceID: string, spaceKey: Key, version: string, settings: string) {
     const space = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.space!.spaceID == spaceID)!.space!;
 
@@ -425,7 +435,7 @@ export default class MockProvider implements ProviderInterface {
     return space;
   }
 
-  async updateSpaceUser(spaceID: string, userID?: string, isEgressNode?: boolean) {
+  async updateSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {
     const spaceUser = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.space!.spaceID == spaceID)!.space!.users!.spaceUsers!
       .find(spaceUser => spaceUser!.user!.userID == userID)!;
@@ -457,13 +467,80 @@ export default class MockProvider implements ProviderInterface {
   }
 
   async getUserApps() {
-    return [];
+    return <AppUser[]>this.user!.apps!.appUsers;
   }
 
-  async getAppInvitations() {
-    return [];
+  async subscribeToAppUpdates(appID: string, update: (data: AppUpdate) => void, error: (error: any) => void) {
+    this.subscriptionMap[appID] = { update, error };
   }
 
+  async unsubscribeFromAppUpdates(spaceID: string) {
+    delete this.subscriptionMap[spaceID];
+  }
+
+  async subscribeToAppUserUpdates(appID: string, userID: string, update: (data: AppUserUpdate) => void, error: (error: any) => void) {
+    this.subscriptionMap[appID + '|' + userID] = { update, error };
+  }
+
+  async unsubscribeFromAppUserUpdates(spaceID: string, userID: string) {
+    delete this.subscriptionMap[spaceID + '|' + userID];
+  }
+
+  async addAppUser(appID: string, userID: string) {
+    const app = this.apps.find(app => app.appID == appID);
+    if (!app) {
+      throw new Error(`unknown app ID ${appID}`);
+    }
+
+    const user = this.users.find(user => user.userID == userID);
+    if (!user) {
+      throw new Error(`user with ID ${userID} does not exist`);
+    }
+
+    const appUser = <AppUser>{
+      __typename: "AppUser",
+      app: app,
+      user: user,
+      lastAccessTime: 0,
+    }
+    user.apps!.totalCount!++;
+    user.apps!.appUsers!.push(appUser);
+    app.users!.totalCount!++;
+    app.users!.appUsers!.push(appUser);
+
+    return appUser;
+  }
+
+  async deleteAppUser(appID: string, userID: string) {
+
+    let app = this.user!.apps!.appUsers!.find(appUser => appUser!.app!.appID == appID)!.app;
+    let deleteAt = app!.users!.appUsers!.findIndex(appUser => appUser!.user!.userID == userID);
+    let appUser = app!.users!.appUsers![deleteAt];
+    
+    app!.users!.appUsers!.splice(deleteAt, 1);
+    app!.users!.totalCount!--;
+
+    let user = this!.users!.find(user => user.userID! == userID);
+    deleteAt = user!.apps!.appUsers!.findIndex(appUser => appUser!.app!.appID == appID);
+    user!.apps!.appUsers!.splice(deleteAt, 1);
+    user!.apps!.totalCount!--;
+
+    return appUser!;
+  }
+ 
+  async deleteApp(appID: string) {
+    let deleteAt = this.user!.apps!.appUsers!.findIndex(appUser => appUser!.app!.appID == appID);
+    let appUser = this.user!.apps!.appUsers![deleteAt];
+
+    this.user!.apps!.appUsers!.splice(deleteAt, 1);
+    this.user!.apps!.totalCount!--;
+
+    deleteAt = appUser!.app!.space!.apps!.spaceApps!.findIndex(spaceApp => spaceApp!.appID == appID);
+    appUser!.app!.space!.apps!.spaceApps!.splice(deleteAt, 1);
+    
+    return
+  }
+ 
   async unsubscribeAll() {
     return
   }
@@ -758,7 +835,7 @@ function loadMockData() {
       deviceUsers[3],
       deviceUsers[9],
     ]
-  }
+  };
   users[1].devices = {
     __typename: "DeviceUsersConnection",
     totalCount: 3,
@@ -767,7 +844,7 @@ function loadMockData() {
       deviceUsers[4],
       deviceUsers[8],
     ]
-  }
+  };
   users[2].devices = {
     __typename: "DeviceUsersConnection",
     totalCount: 4,
@@ -777,7 +854,7 @@ function loadMockData() {
       deviceUsers[7],
       deviceUsers[10],
     ]
-  }
+  };
 
   const spaces: Space[] = [ {
     __typename: "Space",
@@ -928,7 +1005,7 @@ function loadMockData() {
     bytesUploaded: '0',
     bytesDownloaded: '0',
     lastConnectTime: 0,
-  } ]
+  } ];
 
   spaces[0].users = {
     __typename: "SpaceUsersConnection",
@@ -984,9 +1061,202 @@ function loadMockData() {
     ]
   };
 
+  const apps: App[] = [ {
+    __typename: "App",
+    appID: '04054f43-31c4-4950-85b1-4191eedd5d5e',
+    appName: 'app #1 in tom\'s space #1',
+    recipe: 'app recipe #1',
+    iaas: 'aws',
+    region: 'us-east-1',
+    version: '0.1.0',
+    status: AppStatus.shutdown,
+    space: spaces[0]
+  }, {
+    __typename: "App",
+    appID: '80bc5a59-03d6-4cd8-9156-2b9e5fbbcbb2',
+    appName: 'app #2 in tom\'s space #1',
+    recipe: 'app recipe #2',
+    iaas: 'aws',
+    region: 'us-east-1',
+    version: '0.2.1',
+    status: AppStatus.shutdown,
+    space: spaces[0]
+  },  {
+    __typename: "App",
+    appID: '6410af20-45e4-4bca-a499-c7680b454491',
+    appName: 'app #1 in bob\'s space #1',
+    recipe: 'app recipe #1',
+    iaas: 'aws',
+    region: 'us-west-1',
+    version: '0.7.5',
+    status: AppStatus.running,
+    space: spaces[1]
+  },  {
+    __typename: "App",
+    appID: '9371d345-a363-4222-ba95-6840e18453ac',
+    appName: 'app #2 in bob\'s space #1',
+    recipe: 'app recipe #2',
+    iaas: 'aws',
+    region: 'us-west-1',
+    version: '0.1.0',
+    status: AppStatus.shutdown,
+    space: spaces[1]
+  },  {
+    __typename: "App",
+    appID: 'c715cede-091c-4a25-b003-f80123236548',
+    appName: 'app #3 in bob\'s space #1',
+    recipe: 'app recipe #3',
+    iaas: 'aws',
+    region: 'us-west-1',
+    version: '0.1.5',
+    status: AppStatus.shutdown,
+    space: spaces[1]
+  } ];
+
+  const appUsers: AppUser[] = [ {
+    __typename: "AppUser",
+    app: apps[0],
+    user: users[0],
+    isOwner: true,
+    lastAccessedTime: 0
+  }, {
+    __typename: "AppUser",
+    app: apps[1],
+    user: users[0],
+    isOwner: true,
+    lastAccessedTime: 0
+  }, {
+    __typename: "AppUser",
+    app: apps[2],
+    user: users[1],
+    isOwner: true,
+    lastAccessedTime: 0
+  }, {
+    __typename: "AppUser",
+    app: apps[3],
+    user: users[1],
+    isOwner: true,
+    lastAccessedTime: 0
+  }, {
+    __typename: "AppUser",
+    app: apps[4],
+    user: users[1],
+    isOwner: true,
+    lastAccessedTime: 0
+  }, {
+    __typename: "AppUser",
+    app: apps[0],
+    user: users[5],
+    isOwner: true,
+    lastAccessedTime: 0
+  }, {
+    __typename: "AppUser",
+    app: apps[1],
+    user: users[6],
+    isOwner: true,
+    lastAccessedTime: 0
+  }, {
+    __typename: "AppUser",
+    app: apps[3],
+    user: users[0],
+    isOwner: true,
+    lastAccessedTime: 0
+  } ];
+
+  users[0].apps = {
+    __typename: "AppUsersConnection",
+    totalCount: 2,
+    appUsers: [
+      appUsers[0],
+      appUsers[1],
+      appUsers[7]
+    ]
+  }
+  users[1].apps = {
+    __typename: "AppUsersConnection",
+    totalCount: 3,
+    appUsers: [
+      appUsers[2],
+      appUsers[3],
+      appUsers[4]
+    ]
+  }
+  users[5].apps = {
+    __typename: "AppUsersConnection",
+    totalCount: 1,
+    appUsers: [
+      appUsers[5]
+    ]
+  }
+  users[6].apps = {
+    __typename: "AppUsersConnection",
+    totalCount: 1,
+    appUsers: [
+      appUsers[6]
+    ]
+  }
+
+  apps[0].users = {
+    __typename: "AppUsersConnection",
+    totalCount: 2,
+    appUsers: [
+      appUsers[0],
+      appUsers[5]
+    ]
+  }
+  apps[1].users = {
+    __typename: "AppUsersConnection",
+    totalCount: 2,
+    appUsers: [
+      appUsers[0],
+      appUsers[6]
+    ]
+  }
+  apps[2].users = {
+    __typename: "AppUsersConnection",
+    totalCount: 1,
+    appUsers: [
+      appUsers[2]
+    ]
+  }
+  apps[3].users = {
+    __typename: "AppUsersConnection",
+    totalCount: 1,
+    appUsers: [
+      appUsers[3],
+      appUsers[7]
+    ]
+  }
+  apps[4].users = {
+    __typename: "AppUsersConnection",
+    totalCount: 1,
+    appUsers: [
+      appUsers[4]
+    ]
+  }
+
+  spaces[0].apps = {
+    __typename: "SpaceAppsConnection",
+    totalCount: 2,
+    spaceApps: [
+      apps[0],
+      apps[1]
+    ]
+  }
+  spaces[1].apps = {
+    __typename: "SpaceAppsConnection",
+    totalCount: 3,
+    spaceApps: [
+      apps[2],
+      apps[3],
+      apps[4]
+    ]
+  }
+
   return {
     users,
     devices, deviceUsers,
-    spaces, spaceUsers
+    spaces, spaceUsers,
+    apps, appUsers
   };
 }

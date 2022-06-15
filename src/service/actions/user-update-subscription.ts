@@ -14,7 +14,8 @@ import {
 import Provider from '../provider';
 import { 
   GET_USER_DEVICES,
-  GET_USER_SPACES
+  GET_USER_SPACES,
+  GET_USER_APPS
 } from '../actions';
 import {
   UserSpaceStateProps
@@ -46,6 +47,11 @@ export const subscribeEpic = (csProvider: Provider): Epic => {
                 && state$.value.userspace!.spaceUpdatesActive 
                 && state$.value.userspace!.userSpaces.length != data.numSpaces) {
                 update(createAction(GET_USER_SPACES));
+              }
+              if (data.numApps 
+                && state$.value.userspace!.appUpdatesActive 
+                && state$.value.userspace!.userApps.length != data.numApps) {
+                update(createAction(GET_USER_APPS));
               }
               update(createAction<BroadCastPayload>(BROADCAST, { ...data.user! }))  
             } else {

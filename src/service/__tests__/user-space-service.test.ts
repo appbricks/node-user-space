@@ -21,23 +21,23 @@ import {
   SpaceUpdate,
   SpaceUser,
   SpaceUserUpdate,
+  AppUser,
+  AppStatus,
+  AppUpdate,
+  AppUserUpdate
 } from '../../model/types';
 import { 
   DeviceDetail,
-  DeviceUserListItem,
   SpaceDetail,
-  SpaceUserListItem
+  AppDetail
 } from '../../model/display';
 
 import {
   UserSpaceActionProps,
   USER_SEARCH,
-  CLEAR_USER_SEARCH_RESULTS,
   GET_USER_DEVICES,
   SUBSCRIBE_TO_DEVICE_UPDATES,
-  DEVICE_UPDATE,
   SUBSCRIBE_TO_DEVICE_TELEMETRY,
-  DEVICE_TELEMETRY,
   GET_DEVICE_ACCESS_REQUESTS,
   ACTIVATE_USER_ON_DEVICE,
   DELETE_USER_FROM_DEVICE,
@@ -46,7 +46,6 @@ import {
   GET_USER_SPACES,
   SUBSCRIBE_TO_SPACE_UPDATES,
   SUBSCRIBE_TO_SPACE_TELEMETRY,
-  INVITE_USER_TO_SPACE,
   GRANT_USER_ACCESS_TO_SPACE,
   REMOVE_USER_ACCESS_TO_SPACE,
   DELETE_SPACE,
@@ -54,7 +53,8 @@ import {
   ACCEPT_SPACE_INVITATION,
   LEAVE_SPACE,
   GET_USER_APPS,
-  GET_APP_INVITATIONS,
+  SUBSCRIBE_TO_APP_UPDATES,
+  SUBSCRIBE_TO_APP_TELEMETRY
 } from '../actions';
 import { UserSpaceState } from '../state';
 import UserSpaceService from '../user-space-service';
@@ -624,6 +624,93 @@ it('deletes a space', async () => {
   await stateTester.done();
 });
 
+it('retrieves a users list of apps', async () => {
+  mockProvider.setLoggedInUser('bob');
+
+  stateTester.expectStateTest(GET_USER_APPS, ActionResult.pending);
+  stateTester.expectStateTest(
+    GET_USER_APPS, ActionResult.success,
+    (counter, state, status) => {
+      const userApps = <AppUser[]>mockProvider.user!.apps!.appUsers!;
+
+      expect(state.userApps).toEqual(userApps);
+      expect(state.apps).toMatchObject(appsDetail);
+    }
+  );
+  stateTester.expectStateTest(SUBSCRIBE_TO_APP_UPDATES, ActionResult.pending);
+  stateTester.expectStateTest(SUBSCRIBE_TO_APP_TELEMETRY, ActionResult.pending);
+  stateTester.expectStateTest(SUBSCRIBE_TO_APP_UPDATES, ActionResult.success);
+  stateTester.expectStateTest(SUBSCRIBE_TO_APP_TELEMETRY, ActionResult.success);
+  dispatch.userspaceService!.getUserApps();
+  await stateTester.done();
+
+  // send app update
+  let lastSeen = Date.now();
+  stateTester.expectState(1, undefined,
+    (counter, state, status) => {
+
+      // update expected value and compare with actual
+      const appDetail = appsDetail["9371d345-a363-4222-ba95-6840e18453ac"]
+      const appInfoUpdated = {
+        ...appDetail,
+        name: "app #2 in bob's space #1 updated",
+        status: AppStatus.running,
+        version: "0.1.1",
+        lastSeen: dateTimeToLocale(new Date(lastSeen), false),
+      }
+      appsDetail["9371d345-a363-4222-ba95-6840e18453ac"] = appInfoUpdated;
+
+      logger.trace('state.app after device update', JSON.stringify(state.apps, skipRefs, 2));
+      expect(state.apps).toMatchObject(appsDetail);
+    }
+  )
+  mockProvider.pushSubscriptionUpdate(<AppUpdate>{
+    __typename: "AppUpdate",
+    appID: "9371d345-a363-4222-ba95-6840e18453ac",
+    numUsers: 2,
+    app: {
+      __typename: "App",
+      appName: "app #2 in bob's space #1 updated",
+      status: AppStatus.running,
+      version: "0.1.1",
+      lastSeen
+    }
+  }, "9371d345-a363-4222-ba95-6840e18453ac");
+  await stateTester.done();
+
+  // send app telemetry
+  let updateTime = Date.now();
+  stateTester.expectState(1, undefined,
+    (counter, state, status) => {
+
+      // update expected value and compare with actual
+      const detail = appsDetail["9371d345-a363-4222-ba95-6840e18453ac"]
+      const detailUpdated = {
+        ...detail,
+      }
+      detailUpdated.users.find((item, i, users) => {
+        if (item.userID == "a645c56e-f454-460f-8324-eff15357e973") {
+          item.lastAccessedTime = dateTimeToLocale(new Date(updateTime), true);
+          return true;
+        }
+        return false;
+      });
+      appsDetail["9371d345-a363-4222-ba95-6840e18453ac"] = <AppDetail>detailUpdated;
+
+      logger.trace('state.apps after telemetry update', JSON.stringify(state.apps, skipRefs(), 2));
+      expect(state.apps).toMatchObject(appsDetail);
+    }
+  )
+  mockProvider.pushSubscriptionUpdate(<AppUserUpdate>{
+    appID: "9371d345-a363-4222-ba95-6840e18453ac",
+    userID: "a645c56e-f454-460f-8324-eff15357e973",
+    appUser: {
+      lastAccessedTime: updateTime,
+    }
+  }, "9371d345-a363-4222-ba95-6840e18453ac", "a645c56e-f454-460f-8324-eff15357e973");
+  await stateTester.done();
+});
+
 const devicesDetail: { [deviceID: string]: DeviceDetail } = {
   "c5021ecb-7c69-4950-a53c-fd4d5ca73b6f": {
     deviceID: "c5021ecb-7c69-4950-a53c-fd4d5ca73b6f",
@@ -816,11 +903,74 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
   }
 };
 
+const appsDetail: { [appID: string]: AppDetail } = {
+  '6410af20-45e4-4bca-a499-c7680b454491': {
+    appID: '6410af20-45e4-4bca-a499-c7680b454491',
+    name: "app #1 in bob's space #1",
+    status: AppStatus.running,
+    lastSeen: 'never',
+    installedSpace: "bob's space #1",
+    spaceOwner: 'Bobby J. Brown',
+    version: '0.7.5',
+    isOwned: true,
+    users: [
+      {
+        userID: 'd12935f9-55b3-4514-8346-baaf99d6e6fa',
+        userName: 'bob',
+        fullName: 'Bobby J. Brown',
+        lastAccessedTime: 'never'
+      }
+    ]
+  },
+  '9371d345-a363-4222-ba95-6840e18453ac': {
+    appID: '9371d345-a363-4222-ba95-6840e18453ac',
+    name: "app #2 in bob's space #1",
+    status: AppStatus.shutdown,
+    lastSeen: 'never',
+    installedSpace: "bob's space #1",
+    spaceOwner: 'Bobby J. Brown',
+    version: '0.1.0',
+    isOwned: true,
+    users: [
+      {
+        userID: 'd12935f9-55b3-4514-8346-baaf99d6e6fa',
+        userName: 'bob',
+        fullName: 'Bobby J. Brown',
+        lastAccessedTime: 'never'
+      },
+      {
+        userID: 'a645c56e-f454-460f-8324-eff15357e973',
+        userName: 'tom',
+        fullName: 'Thomas T. Bradford',
+        lastAccessedTime: 'never'
+      }
+    ]
+  },
+  'c715cede-091c-4a25-b003-f80123236548': {
+    appID: 'c715cede-091c-4a25-b003-f80123236548',
+    name: "app #3 in bob's space #1",
+    status: AppStatus.shutdown,
+    lastSeen: 'never',
+    installedSpace: "bob's space #1",
+    spaceOwner: 'Bobby J. Brown',
+    version: '0.1.5',
+    isOwned: true,
+    users: [
+      {
+        userID: 'd12935f9-55b3-4514-8346-baaf99d6e6fa',
+        userName: 'bob',
+        fullName: 'Bobby J. Brown',
+        lastAccessedTime: 'never'
+      }
+    ]
+  }
+}
+
 // remove circular reference when stringifying 
 // the device/space detail lists
 const skipRefs = () => {
   return (key: any, value: any) => {
-    if (key == 'deviceUser' || key == 'spaceUser') {
+    if (key == 'deviceUser' || key == 'spaceUser' || key == 'appUser') {
       return;
     }
     return value;
