@@ -23,7 +23,7 @@ import {
 } from '../../model/display';
 
 export const action = 
-  (dispatch: redux.Dispatch<redux.Action>, spaceID: string, spaceKey: Key, version: string, settings: DisplayType) => 
+  (dispatch: redux.Dispatch<redux.Action>, spaceID: string, spaceKey?: Key, version?: string, settings?: DisplayType) => 
     dispatch(createAction<SpaceUpdatePayload>(UPDATE_SPACE, { spaceID, spaceKey, version, settings }));
 
 export const epic = (csProvider: Provider): Epic => {

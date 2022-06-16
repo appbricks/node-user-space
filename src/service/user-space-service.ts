@@ -185,7 +185,7 @@ export default class UserSpaceService {
           deleteUserFromDevice.action(dispatch, deviceID, userID),
         deleteDevice: (deviceID: string) =>
           deleteDevice.action(dispatch, deviceID),
-        updateDevice: (deviceID: string, deviceKey: Key, clientVersion: string, settings: DisplayType) =>
+        updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) =>
           updateDevice.action(dispatch, deviceID, deviceKey, clientVersion, settings),
         unsubscribeFromDeviceUpdates: () => 
           deviceUpdates.unsubscribeAction(dispatch),
@@ -203,7 +203,7 @@ export default class UserSpaceService {
           deleteUserFromSpace.action(dispatch, spaceID, userID),
         deleteSpace: (spaceID: string) =>
           deleteSpace.action(dispatch, spaceID),
-        updateSpace: (spaceID: string, deviceKey: Key, version: string, settings: DisplayType) =>
+        updateSpace: (spaceID: string, deviceKey?: Key, version?: string, settings?: DisplayType) =>
           updateSpace.action(dispatch, spaceID, deviceKey, version, settings),
         updateSpaceUser: (spaceID: string, userID: string, isEgressNode: boolean) =>
           updateSpaceUser.action(dispatch, spaceID, userID, isEgressNode),
@@ -223,7 +223,7 @@ export default class UserSpaceService {
           getUserApps.action(dispatch),
         grantUserAccessToApp: (appID: string, userID: string) => 
           grantUserAccessToApp.action(dispatch, appID, userID),
-        removeUserAccessToApp: (appID: string, userID: string) =>
+        removeUserAccessToApp: (appID: string, userID?: string) =>
           removeUserAccessToApp.action(dispatch, appID, userID),
         deleteApp: (appID: string) => 
           deleteApp.action(dispatch, appID),

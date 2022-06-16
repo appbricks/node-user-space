@@ -34,7 +34,7 @@ export interface UserPayload {
 
 export interface DeviceUserIDPayload {
   deviceID: string
-  userID: string
+  userID?: string
 };
 
 export interface DeviceIDPayload {
@@ -69,9 +69,9 @@ export interface DeviceTelemetrySubscriptionPayload {
 
 export interface DeviceUpdatePayload {
   deviceID: string
-  deviceKey: Key
-  clientVersion: string
-  settings: DisplayType
+  deviceKey?: Key
+  clientVersion?: string
+  settings?: DisplayType
 }
 
 export interface SpaceUserIDPayload {
@@ -117,9 +117,9 @@ export interface SpaceTelemetrySubscriptionPayload {
 
 export interface SpaceUpdatePayload {
   spaceID: string
-  spaceKey: Key
-  version: string
-  settings: DisplayType
+  spaceKey?: Key
+  version?: string
+  settings?: DisplayType
 }
 
 export interface SpaceUserUpdatePayload {
@@ -130,7 +130,7 @@ export interface SpaceUserUpdatePayload {
 
 export interface AppUserIDPayload {
   appID: string
-  userID: string
+  userID?: string
 }
 
 export interface AppIDPayload {
@@ -169,9 +169,9 @@ export interface UserSpaceActionProps {
     getUserDevices: () => actions.Action
     getDeviceAccessRequests: (deviceID: string) => actions.Action
     activateUserOnDevice: (deviceID: string, userID: string) => actions.Action
-    deleteUserFromDevice: (deviceID: string, userID: string) => actions.Action
+    deleteUserFromDevice: (deviceID: string, userID?: string) => actions.Action
     deleteDevice: (deviceID: string) => actions.Action
-    updateDevice: (deviceID: string, deviceKey: Key, clientVersion: string, settings: DisplayType) => actions.Action
+    updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) => actions.Action
     unsubscribeFromDeviceUpdates: () => actions.Action
 
     // space owner actions
@@ -179,9 +179,9 @@ export interface UserSpaceActionProps {
     inviteUserToSpace: (spaceID: string, userID: string, isEgressNode: boolean) => actions.Action
     grantUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
     removeUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
-    deleteUserFromSpace: (spaceID: string, userID: string) => actions.Action
+    deleteUserFromSpace: (spaceID: string, userID?: string) => actions.Action
     deleteSpace: (spaceID: string) => actions.Action
-    updateSpace: (spaceID: string, spaceKey: Key, version: string, settings: DisplayType) => actions.Action
+    updateSpace: (spaceID: string, spaceKey?: Key, version?: string, settings?: DisplayType) => actions.Action
     updateSpaceUser: (spaceID: string, userID: string, isEgressNode: boolean) => actions.Action
     unsubscribeFromSpaceUpdates: () => actions.Action
 
@@ -193,7 +193,7 @@ export interface UserSpaceActionProps {
     // app owner actions
     getUserApps: () => actions.Action
     grantUserAccessToApp: (appID: string, userID: string) => actions.Action
-    removeUserAccessToApp: (appID: string, userID: string) => actions.Action
+    removeUserAccessToApp: (appID: string, userID?: string) => actions.Action
     deleteApp: (appID: string) => actions.Action
     unsubscribeFromAppUpdates: () => actions.Action
   }

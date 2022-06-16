@@ -215,7 +215,7 @@ export default class MockProvider implements ProviderInterface {
     return deviceUserToActivate;
   }
 
-  async deleteDeviceUser(deviceID: string, userID: string) {
+  async deleteDeviceUser(deviceID: string, userID?: string) {
     const deviceUser = this.user!.devices!.deviceUsers!
       .find(deviceUser => deviceUser!.isOwner && deviceUser!.device!.deviceID == deviceID);
     if (!deviceUser) {
@@ -268,7 +268,7 @@ export default class MockProvider implements ProviderInterface {
     });
   }
 
-  async updateDevice(deviceID: string, deviceKey: Key, clientVersion: string, settings: string) {
+  async updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string) {
     const device = this.user!.devices!.deviceUsers!
       .find(deviceUser => deviceUser!.device!.deviceID == deviceID)!.device!;
 
@@ -371,7 +371,7 @@ export default class MockProvider implements ProviderInterface {
     return spaceUserToDeactivate;
   }
 
-  async deleteSpaceUser(spaceID: string, userID: string) {
+  async deleteSpaceUser(spaceID: string, userID?: string) {
     const spaceUser = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
     if (!spaceUser) {
@@ -424,7 +424,7 @@ export default class MockProvider implements ProviderInterface {
     });
   }
 
-  async updateSpace(spaceID: string, spaceKey: Key, version: string, settings: string) {
+  async updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string) {
     const space = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.space!.spaceID == spaceID)!.space!;
 
@@ -511,7 +511,7 @@ export default class MockProvider implements ProviderInterface {
     return appUser;
   }
 
-  async deleteAppUser(appID: string, userID: string) {
+  async deleteAppUser(appID: string, userID?: string) {
 
     let app = this.user!.apps!.appUsers!.find(appUser => appUser!.app!.appID == appID)!.app;
     let deleteAt = app!.users!.appUsers!.findIndex(appUser => appUser!.user!.userID == userID);

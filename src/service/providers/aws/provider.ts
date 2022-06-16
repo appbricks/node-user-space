@@ -483,7 +483,7 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async updateDevice(deviceID: string, deviceKey: Key, clientVersion: string, settings: string) {
+  async updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string) {
 
     const updateDevice = /* GraphQL */ `
       mutation updateDevice($deviceID: ID!, $deviceKey: Key, $clientVersion: String, $settings: String) {
@@ -845,7 +845,7 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async deleteSpaceUser(spaceID: string, userID: string) {
+  async deleteSpaceUser(spaceID: string, userID?: string) {
 
     const deleteSpaceUser = /* GraphQL */ `
       mutation DeleteSpaceUser($spaceID: ID!, $userID: ID) {
@@ -904,7 +904,7 @@ export default class Provider implements ProviderInterface {
       }
   }
 
-  async updateSpace(spaceID: string, spaceKey: Key, version: string, settings: string) {
+  async updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string) {
 
     const updateSpace = /* GraphQL */ `
       mutation updateSpace($spaceID: ID!, $spaceKey: Key, $version: String, $settings: String) {
@@ -1286,12 +1286,12 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async deleteAppUser(appID: string, userID: string) {
+  async deleteAppUser(appID: string, userID?: string) {
 
     const deleteAppUser = /* GraphQL */ `
       mutation DeleteAppUser(
         $appID: ID!
-        $userID: ID!
+        $userID: ID
       ) {
         deleteAppUser(
           appID: $appID
