@@ -4,7 +4,6 @@ import {
   DeviceUser,
   Space,
   SpaceUser,
-  App,
   AppUser,
   UserUpdate,
   DeviceUpdate,

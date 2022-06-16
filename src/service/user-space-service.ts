@@ -20,7 +20,6 @@ import {
   SpaceStatus,
   App,
   AppUser,
-  AppStatus,
   Key
 } from '../model/types';
 

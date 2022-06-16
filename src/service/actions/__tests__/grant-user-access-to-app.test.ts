@@ -2,6 +2,8 @@ import {
   Logger, 
   LOG_LEVEL_TRACE, 
   setLogLevel, 
+  ERROR,
+  ErrorPayload
 } from '@appbricks/utils';
 import { ActionTester } from '@appbricks/test-utils';
 
@@ -16,6 +18,9 @@ import {
   GRANT_USER_ACCESS_TO_APP,
   GET_USER_APPS
 } from '../../actions';
+import {
+  initialUserSpaceState
+} from '../../state';
 
 import { initServiceDispatch } from '../../__tests__/mock-provider';
 
@@ -26,13 +31,16 @@ if (process.env.DEBUG) {
 const logger = new Logger('grant-user-access-to-app.test');
 
 // test reducer validates action flows
-const actionTester = new ActionTester(logger);
+const actionTester = new ActionTester(
+  logger,
+  initialUserSpaceState()
+);
 // test service dispatcher
 const { dispatch, mockProvider } = initServiceDispatch(actionTester);
 
 it('grants a user access to a app', async () => {
 
-  const appID = '9371d345-a363-4222-ba95-6840e18453ac'; // bobs's app #2
+  const appID = 'c715cede-091c-4a25-b003-f80123236548'; // bobs's app #2
   const userID = 'a645c56e-f454-460f-8324-eff15357e973'; // tom
 
   mockProvider.setLoggedInUser('bob');
@@ -41,6 +49,21 @@ it('grants a user access to a app', async () => {
     .find(appUser => appUser!.app!.appID == appID);
   expect(appUser).toBeUndefined();
 
+  actionTester.expectAction(GRANT_USER_ACCESS_TO_APP, <AppUserIDPayload>{ appID, userID })
+    .error(undefined,
+      (counter, state, action) => {
+        expect(action.type).toEqual(ERROR);
+        expect(action.payload!.err.message).toEqual('User needs to be invited to the app\'s space before he/she can be added to the app.');
+        return {
+          ...state,
+          userSpaces: mockProvider.user!.spaces!.spaceUsers,
+          userApps: mockProvider.user!.apps!.appUsers
+        };
+      }
+    );
+  dispatch.userspaceService!.grantUserAccessToApp(appID, userID);
+  await actionTester.done();
+  
   actionTester.expectAction(GRANT_USER_ACCESS_TO_APP, <AppUserIDPayload>{ appID, userID })
     .success<AppUserPayload>({ 
       appUser: {
@@ -58,7 +81,7 @@ it('grants a user access to a app', async () => {
   dispatch.userspaceService!.grantUserAccessToApp(appID, userID);
   await actionTester.done();
   
-  expect(actionTester.actionCounter).toEqual(2);
+  expect(actionTester.actionCounter).toEqual(3);
 
   appUser = <AppUser>mockProvider.user!.apps!.appUsers!
     .find(appUser => appUser!.app!.appID == appID)!

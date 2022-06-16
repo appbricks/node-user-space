@@ -6,6 +6,7 @@ import {
   Action, 
   createAction, 
   createFollowUpAction, 
+  createErrorAction,
   serviceEpicFanOut,
   onSuccessAction
 } from '@appbricks/utils';
@@ -29,8 +30,27 @@ export const epic = (csProvider: Provider): Epic => {
     GRANT_USER_ACCESS_TO_APP, 
     {
       grantUserAccessToApp: async (action, state$, callSync) => {
-        const appUser = await csProvider.addAppUser(action.payload!.appID, action.payload!.userID!);
-        return createFollowUpAction<AppUserPayload>(action, SUCCESS, { appUser });
+        const appID = action.payload!.appID;
+        const userID = action.payload!.userID!;
+
+        // check if user has access app space
+        const app = state$.value.userspace!.
+          userApps.find(au => au.app?.appID == appID)?.app;
+        
+        const spaceUser = state$.value.userspace!.
+          userSpaces.find(su => su.space?.spaceID == app?.space?.spaceID)?.space?.users?.
+          spaceUsers?.find(su => su?.user?.userID == userID);
+
+        if (spaceUser) {
+          const appUser = await csProvider.addAppUser(appID, userID);
+          return createFollowUpAction<AppUserPayload>(action, SUCCESS, { appUser });
+
+        } else {
+          return createErrorAction(
+            new Error('User needs to be invited to the app\'s space before he/she can be added to the app.'), 
+            action
+          );
+        }
       },
       getUserApps: async (action, state$, callSync) => {
         // wait for activation service call to complete

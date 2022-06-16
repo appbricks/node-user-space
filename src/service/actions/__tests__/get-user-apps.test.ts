@@ -125,13 +125,13 @@ it('dispatches an action to retrieve the logged in user toms apps', async () => 
   actionTester.expectAction<AppUserPayload>(APP_TELEMETRY, {
     appUser: {
       __typename: 'AppUser',
-      lastAccessTime: 1111
+      lastAccessedTime: 1111
     }
   });
   actionTester.expectAction<AppUserPayload>(APP_TELEMETRY, {
     appUser: {
       __typename: 'AppUser',
-      lastAccessTime: 2222
+      lastAccessedTime: 2222
     }
   });
 
@@ -194,7 +194,7 @@ it('dispatches an action to retrieve the logged in user toms apps', async () => 
         userID: testSubAppUser1.user!.userID,
         appUser: {
           __typename: 'AppUser',
-          lastAccessTime: 1111
+          lastAccessedTime: 1111
         }
       }, testSubAppUser1.app!.appID!, testSubAppUser1.user!.userID!);
       mockProvider.pushSubscriptionUpdate(<AppUserUpdate>{
@@ -202,7 +202,7 @@ it('dispatches an action to retrieve the logged in user toms apps', async () => 
         userID: testSubAppUser1.user!.userID,
         appUser: {
           __typename: 'AppUser',
-          lastAccessTime: 2222
+          lastAccessedTime: 2222
         }
       }, testSubAppUser1.app!.appID!, testSubAppUser1.user!.userID!);
 
