@@ -13,20 +13,21 @@ import Provider from '../provider';
 import { 
   SpaceUserUpdatePayload,
   SpaceUserPayload,
+  SpaceUserSettings,
   UPDATE_SPACE_USER,
 } from '../actions';
 
 export const action = 
-  (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID: string, isEgressNode: boolean) => 
-    dispatch(createAction<SpaceUserUpdatePayload>(UPDATE_SPACE_USER, { spaceID, userID, isEgressNode }));
+  (dispatch: redux.Dispatch<redux.Action>, spaceID: string, userID: string, settings: SpaceUserSettings) => 
+    dispatch(createAction<SpaceUserUpdatePayload>(UPDATE_SPACE_USER, { spaceID, userID, settings }));
 
 export const epic = (csProvider: Provider): Epic => {
 
   return serviceEpic<SpaceUserUpdatePayload>(
     UPDATE_SPACE_USER, 
     async (action, state$) => {
-      const { spaceID, userID, isEgressNode } = action.payload!;
-      const spaceUser = await csProvider.updateSpaceUser(spaceID, userID, isEgressNode);
+      const { spaceID, userID, settings } = action.payload!;
+      const spaceUser = await csProvider.updateSpaceUser(spaceID, userID, settings);
       return createFollowUpAction<SpaceUserPayload>(action, SUCCESS, { spaceUser });
     }
   );

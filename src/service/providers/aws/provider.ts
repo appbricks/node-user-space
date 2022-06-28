@@ -53,6 +53,10 @@ import {
   ERROR_DELETE_APP
 } from '../../constants';
 
+import {
+  SpaceUserSettings
+} from '../../actions';
+
 /**
  * AWS AppSync User-Space API provider.
  */
@@ -64,21 +68,24 @@ export default class Provider implements ProviderInterface {
 
   private subscriptions: {[id: string]: ZenObservable.Subscription} = {};
 
-  constructor(api?: typeof API) {
+  constructor(api?: typeof API, startSubKA = true) {
     this.logger = new Logger('AwsUserSpaceProvider');
     this.api = api || API;
 
-    // update active subscription timestamps every 30s
-    setInterval(this.touchSubscriptions.bind(this), 30000)
+    if (startSubKA) {
+      // update active subscription timestamps every 30s
+      setInterval(this.touchSubscriptions.bind(this), 30000);
+    }
   }
 
   async touchSubscriptions() {
 
     if (this.subscriptions) {
       let subs = Object.keys(this.subscriptions);
-      this.logger.debug('Updating timestamps of subscriptions:', subs)
 
       if (subs.length) {
+        this.logger.debug('Updating timestamps of subscriptions:', subs);
+
         const touchSubscriptions = /* GraphQL */ `
         mutation TouchSubscriptions($subs: [String!]) {
           touchSubscriptions(subs: $subs)
@@ -528,7 +535,8 @@ export default class Provider implements ProviderInterface {
             spaceUsers {
               isOwner
               isAdmin
-              isEgressNode
+              canUseSpaceForEgress
+              enableSiteBlocking
               status
               bytesUploaded
               bytesDownloaded
@@ -583,7 +591,8 @@ export default class Provider implements ProviderInterface {
                     }
                     isOwner
                     isAdmin
-                    isEgressNode
+                    canUseSpaceForEgress
+                    enableSiteBlocking
                     status
                     bytesUploaded
                     bytesDownloaded
@@ -693,7 +702,9 @@ export default class Provider implements ProviderInterface {
             user {
               userID
             }
-            isEgressNode
+            isAdmin
+            canUseSpaceForEgress
+            enableSiteBlocking
             status
             bytesUploaded
             bytesDownloaded
@@ -724,18 +735,22 @@ export default class Provider implements ProviderInterface {
     await this.unsubscribe(`{"name":"spaceUserUpdates","keys":{"spaceID":"${spaceID}","userID":"${userID}"}}`);
   }
 
-  async inviteSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {
+  async inviteSpaceUser(spaceID: string, userID: string, settings?: SpaceUserSettings) {
 
     const inviteSpaceUser = /* GraphQL */ `
       mutation InviteSpaceUser(
         $spaceID: ID!
         $userID: ID!
-        $isEgressNode: Boolean!
+        $isAdmin: Boolean
+        $canUseSpaceForEgress: Boolean
+        $enableSiteBlocking: Boolean
       ) {
         inviteSpaceUser(
           spaceID: $spaceID
           userID: $userID
-          isEgressNode: $isEgressNode
+          isAdmin: $isAdmin, 
+          canUseSpaceForEgress: $canUseSpaceForEgress, 
+          enableSiteBlocking: $enableSiteBlocking
         ) {
           space {
             spaceID
@@ -747,7 +762,8 @@ export default class Provider implements ProviderInterface {
           }
           isOwner
           isAdmin
-          isEgressNode
+          canUseSpaceForEgress
+          enableSiteBlocking
           status
         }
       }`;
@@ -758,7 +774,9 @@ export default class Provider implements ProviderInterface {
           graphqlOperation(inviteSpaceUser, {
             spaceID,
             userID,
-            isEgressNode
+            isAdmin: settings?.isSpaceAdmin,
+            canUseSpaceForEgress: settings?.canUseSpaceForEgress,
+            enableSiteBlocking: settings?.enableSiteBlocking
           })
         );
       if (result.data) {
@@ -944,14 +962,27 @@ export default class Provider implements ProviderInterface {
     }
   }
 
-  async updateSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {
+  async updateSpaceUser(spaceID: string, userID?: string, settings?: SpaceUserSettings) {
 
     const updateSpaceUser = /* GraphQL */ `
-      mutation updateSpaceUser($spaceID: ID!, $userID: ID, $isEgressNode: Boolean) {
-        updateSpaceUser(spaceID: $spaceID, userID: $userID, isEgressNode: $isEgressNode) {
+      mutation updateSpaceUser(
+        $spaceID: ID!
+        $userID: ID
+        $isAdmin: Boolean
+        $canUseSpaceForEgress: Boolean
+        $enableSiteBlocking: Boolean
+      ) {
+        updateSpaceUser(
+          spaceID: $spaceID
+          userID: $userID
+          isAdmin: $isAdmin
+          canUseSpaceForEgress: $canUseSpaceForEgress
+          enableSiteBlocking: $enableSiteBlocking
+        ) {
           isOwner
           isAdmin
-          isEgressNode
+          canUseSpaceForEgress
+          enableSiteBlocking
           status
         }
       }
@@ -960,7 +991,12 @@ export default class Provider implements ProviderInterface {
     try {
       const result = <GraphQLResult<{ updateSpaceUser: SpaceUser }>>
         await this.api.graphql(
-          graphqlOperation(updateSpaceUser, { spaceID, userID, isEgressNode })
+          graphqlOperation(updateSpaceUser, { 
+            spaceID, userID, 
+            isAdmin: settings?.isSpaceAdmin,
+            canUseSpaceForEgress: settings?.canUseSpaceForEgress,
+            enableSiteBlocking: settings?.enableSiteBlocking
+          })
         );
       if (result.data) {
         const spaceUser = <SpaceUser>result.data.updateSpaceUser;
@@ -989,7 +1025,9 @@ export default class Provider implements ProviderInterface {
             region
             version
           }
-          isEgressNode
+          isAdmin
+          canUseSpaceForEgress
+          enableSiteBlocking
         }
       }`;
 
@@ -1105,6 +1143,7 @@ export default class Provider implements ProviderInterface {
                 region
                 version
                 status
+                lastSeen
                 space {
                   spaceID
                   spaceName

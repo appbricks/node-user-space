@@ -87,7 +87,8 @@ export const getUser = /* GraphQL */ `
         spaceUsers {
           isOwner
           isAdmin
-          isEgressNode
+          canUseSpaceForEgress
+          enableSiteBlocking
           status
           bytesUploaded
           bytesDownloaded
@@ -279,7 +280,8 @@ export const getSpace = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded
@@ -498,7 +500,8 @@ export const getSpaceInvitations = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded

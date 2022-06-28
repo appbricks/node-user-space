@@ -81,6 +81,7 @@ it('dispatches an action to retrieve the logged in user tom\'s devices', async (
         expect(action.payload!).toEqual({deviceUsers});
         return {
           ...state,
+          deviceUpdatesActive: true,
           userDevices: _.cloneDeep(action.payload!.deviceUsers)
         };
       }

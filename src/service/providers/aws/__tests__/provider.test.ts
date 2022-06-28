@@ -7,7 +7,6 @@ import {
   Space,
   SpaceUser,
   App,
-  AppUser,
   AppStatus,
   UserSearchFilterInput,
   UserSearchQuery,
@@ -45,7 +44,8 @@ import Provider from '../provider';
 // https://github.com/aws-amplify/amplify-js/issues/1181
 import 'crypto-js/lib-typedarrays';
 
-import Amplify, { 
+import { 
+  Amplify,
   Auth, 
   API, 
   graphqlOperation,
@@ -93,7 +93,7 @@ if (process.env.DEBUG) {
   setLogLevel(LOG_LEVEL_TRACE);
 }
 
-const provider = new Provider();
+const provider = new Provider(undefined, false);
 
 // The following tests depend on record kept data 
 // in the User-Space database. These tests will
@@ -385,7 +385,8 @@ it('retrieves a user\'s spaces', async () => {
       {
         isOwner: true,
         isAdmin: true,
-        isEgressNode: true,
+        canUseSpaceForEgress: true,
+        enableSiteBlocking: false,
         status: 'active',
         user: { userID: tester1.userID },
         space: space1
@@ -393,7 +394,8 @@ it('retrieves a user\'s spaces', async () => {
       {
         isOwner: true,
         isAdmin: true,
-        isEgressNode: true,
+        canUseSpaceForEgress: true,
+        enableSiteBlocking: false,
         status: 'active',
         user: { userID: tester1.userID },
         space: space2
@@ -408,22 +410,34 @@ it('invites users and takes them through the space association lifecycle', async
   // trim space fields
   const space = trimSpaceProps(space2);
 
-  expect(await provider.inviteSpaceUser(space.spaceID!, tester2.userID!, true))
+  expect(await provider.inviteSpaceUser(space.spaceID!, tester2.userID!, 
+    { 
+      isSpaceAdmin: true,
+      canUseSpaceForEgress: true,
+      enableSiteBlocking: false
+    }))
     .toEqual({
       space,
       user: tester2,
       isOwner: false,
-      isAdmin: false,
-      isEgressNode: true,
+      isAdmin: true,
+      canUseSpaceForEgress: true,
+      enableSiteBlocking: false,
       status: 'pending'
     });
-  expect(await provider.inviteSpaceUser(space.spaceID!, tester3.userID!, true))
+  expect(await provider.inviteSpaceUser(space.spaceID!, tester3.userID!, 
+    { 
+      isSpaceAdmin: false,
+      canUseSpaceForEgress: false,
+      enableSiteBlocking: true
+    }))
     .toEqual({
       space,
       user: tester3,
       isOwner: false,
       isAdmin: false,
-      isEgressNode: true,
+      canUseSpaceForEgress: false,
+      enableSiteBlocking: true,
       status: 'pending'
     });
 
@@ -438,7 +452,9 @@ it('invites users and takes them through the space association lifecycle', async
   expect(await provider.getSpaceInvitations())
     .toEqual([{
       space: spaceInvitedTo,
-      isEgressNode: true,
+      isAdmin: true,
+      canUseSpaceForEgress: true,
+      enableSiteBlocking: false
     }]);
 
   await Auth.signOut();
@@ -447,7 +463,9 @@ it('invites users and takes them through the space association lifecycle', async
     .toMatchObject([
       {
         isOwner: false,
-        isEgressNode: true,
+        isAdmin: false,
+        canUseSpaceForEgress: false,
+        enableSiteBlocking: true,
         status: 'pending',
         user: { userID: tester3.userID },
         space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
@@ -456,7 +474,9 @@ it('invites users and takes them through the space association lifecycle', async
   expect(await provider.getSpaceInvitations())
     .toEqual([{
       space: spaceInvitedTo,
-      isEgressNode: true,
+      isAdmin: false,
+      canUseSpaceForEgress: false,
+      enableSiteBlocking: true
     }]);
   expect(await provider.acceptSpaceUserInvitation(space2.spaceID!))
     .toEqual({
@@ -467,7 +487,9 @@ it('invites users and takes them through the space association lifecycle', async
     .toMatchObject([
       {
         isOwner: false,
-        isEgressNode: true,
+        isAdmin: false,
+        canUseSpaceForEgress: false,
+        enableSiteBlocking: true,
         status: 'active',
         user: { userID: tester3.userID },
         space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
@@ -482,7 +504,9 @@ it('invites users and takes them through the space association lifecycle', async
     .toMatchObject([
       {
         isOwner: false,
-        isEgressNode: true,
+        isAdmin: false,
+        canUseSpaceForEgress: false,
+        enableSiteBlocking: true,
         status: 'inactive',
         user: { userID: tester3.userID },
         space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
@@ -509,7 +533,9 @@ it('deactivates a user associated with a space', async () => {
     .toMatchObject([
       {
         isOwner: false,
-        isEgressNode: true,
+        isAdmin: true,
+        canUseSpaceForEgress: true,
+        enableSiteBlocking: false,
         status: 'inactive',
         user: { userID: tester2.userID },
         space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
@@ -536,10 +562,12 @@ it('activates a user associated with a space', async () => {
     .toMatchObject([
       {
         isOwner: false,
-        isEgressNode: true,
+        isAdmin: true,
+        canUseSpaceForEgress: true,
+        enableSiteBlocking: false,
         status: 'active',
         user: { userID: tester2.userID },
-        space: (s => { return { ...s, admins: [ tester1Ref ]}})(space2)
+        space: (s => { return { ...s, admins: [ tester1Ref, tester2Ref ]}})(space2)
       }
     ]);  
 });
@@ -575,7 +603,6 @@ it('deletes a user\'s space', async () => {
       {
         isOwner: true,
         isAdmin: true,
-        isEgressNode: true,
         status: 'active',
         user: { userID: tester1.userID },
         space: space2
@@ -616,13 +643,17 @@ it('updates a users\'s space association', async () => {
   await provider.updateSpaceUser(
     space2.spaceID!, 
     undefined,
-    true
+    { 
+      canUseSpaceForEgress: false,
+      enableSiteBlocking: true
+    }
   );
 
   // should return remaining device only
   expect((await provider.getUserSpaces()).find(su => su.space!.spaceID == space2.spaceID))
     .toMatchObject({
-      isEgressNode: true
+      canUseSpaceForEgress: false,
+      enableSiteBlocking: true
     });
 });
 
@@ -661,8 +692,8 @@ it('adds an app user to a user\'s space app, deletes the user and then the space
   await Auth.signOut();
   await Auth.signIn('tester1', '@ppBr!cks2020');
 
-  // add user to space
-  await provider.inviteSpaceUser(space2.spaceID!, tester3.userID!, true)
+  // activate user invited to space in previous test
+  // await provider.inviteSpaceUser(space2.spaceID!, tester3.userID!, { isSpaceAdmin: true })
   await provider.activateSpaceUser(space2.spaceID!, tester3.userID)
 
   // add user to app
@@ -983,7 +1014,6 @@ it('subscribes to space user updates', async () => {
       spaceID
       userID
       spaceUser {
-        isEgressNode
         status
         bytesUploaded
         bytesDownloaded
@@ -997,7 +1027,6 @@ it('subscribes to space user updates', async () => {
     JSON.stringify({
       "spaceID": space2.spaceID!,
       "userID": tester1.userID, 
-      "isEgressNode": true,
       "status": "active",
       "bytesUploaded": 150,
       "bytesDownloaded": 150,
@@ -1017,7 +1046,6 @@ it('subscribes to space user updates', async () => {
     (data, updateCount) => {
       expect(data.spaceID).toEqual(space2.spaceID!);
       expect(data.userID).toEqual(tester1.userID);
-      expect(data.spaceUser.isEgressNode).toBeTruthy();
       expect(data.spaceUser.status).toEqual("active");
       expect(data.spaceUser.bytesUploaded).toEqual(150);
       expect(data.spaceUser.bytesDownloaded).toEqual(150);
@@ -1121,13 +1149,13 @@ it('subscribes to app user updates', async () => {
       appID
       userID
       appUser {
-        lastAccessTime
+        lastAccessedTime
       }
     }`, 
     JSON.stringify({
       "appID": app2!.appID!,
       "userID": tester1.userID, 
-      "lastAccessTime": 82378237,
+      "lastAccessedTime": 82378237,
     }), 
     // create valid subscription
     (update: (data: any) => void, error: (error: any) => void) => {
@@ -1142,7 +1170,7 @@ it('subscribes to app user updates', async () => {
     (data, updateCount) => {
       expect(data.appID).toEqual(app2.appID!);
       expect(data.userID).toEqual(tester1.userID);
-      expect(data.appUser.lastAccessTime).toEqual(82378237);
+      expect(data.appUser.lastAccessedTime).toEqual(82378237);
     },
     // unsubscribe
     () => provider.unsubscribeFromAppUserUpdates(app2!.appID!, tester1.userID),
@@ -1203,7 +1231,7 @@ async function validateSubscription(
   execSync(pushCmd)
   
   // wait updates to propagate to subscription
-  await sleep(500);
+  await sleep(1000);
   expect(err).toBeUndefined();
 
   expect(updateCount).toEqual(5);
@@ -1220,7 +1248,7 @@ beforeAll(async() => {
   try {
     await Auth.signIn('tester1', '@ppBr!cks2020');
 
-    device1 = (d => { return { ...d, owner: tester1Ref }})(
+    device1 = (({ managedBy, ...d }) => { return { ...d, owner: tester1Ref }})(
       (<{data: AddDeviceMutation}> await API.graphql(
         graphqlOperation(addDevice, <AddDeviceMutationVariables>{
           deviceName: 'tester1\'s device #1',
@@ -1238,7 +1266,7 @@ beforeAll(async() => {
         }
       ))).data.addDevice!.deviceUser!.device!
     );
-    device2 = (d => { return { ...d, owner: tester1Ref }})(
+    device2 = (({ managedBy, ...d }) => { return { ...d, owner: tester1Ref }})(
       (<{data: AddDeviceMutation}> await API.graphql(
         graphqlOperation(addDevice, <AddDeviceMutationVariables>{
           deviceName: 'tester1\'s device #2',

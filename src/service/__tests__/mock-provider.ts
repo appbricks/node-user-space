@@ -22,7 +22,10 @@ import {
   AppStatus
 } from '../../model/types';
 
-import { UserSpaceActionProps } from '../actions';
+import { 
+  UserSpaceActionProps,
+  SpaceUserSettings
+} from '../actions';
 import UserSpaceService from '../user-space-service';
 
 import { 
@@ -305,7 +308,7 @@ export default class MockProvider implements ProviderInterface {
       .filter(spaceUser => spaceUser!.status == UserAccessStatus.pending);
   }
 
-  async inviteSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {
+  async inviteSpaceUser(spaceID: string, userID: string, settings: SpaceUserSettings) {
     const spaceOwner = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.isOwner && spaceUser!.space!.spaceID == spaceID);
     if (!spaceOwner) {
@@ -324,7 +327,9 @@ export default class MockProvider implements ProviderInterface {
       space: spaceOwner.space,
       user: userToInvite,
       isOwner: false,
-      isEgressNode: isEgressNode,
+      isAdmin: !!settings.isSpaceAdmin,
+      canUseSpaceForEgress: !!settings.canUseSpaceForEgress,
+      enableSiteBlocking: !!settings.enableSiteBlocking,
       status: UserAccessStatus.pending,
       bytesUploaded: '0',
       bytesDownloaded: '0',
@@ -435,12 +440,22 @@ export default class MockProvider implements ProviderInterface {
     return space;
   }
 
-  async updateSpaceUser(spaceID: string, userID: string, isEgressNode: boolean) {
+  async updateSpaceUser(spaceID: string, userID: string, settings: SpaceUserSettings) {
     const spaceUser = this.user!.spaces!.spaceUsers!
       .find(spaceUser => spaceUser!.space!.spaceID == spaceID)!.space!.users!.spaceUsers!
       .find(spaceUser => spaceUser!.user!.userID == userID)!;
 
-    spaceUser.isEgressNode = isEgressNode;
+    const { isSpaceAdmin, canUseSpaceForEgress, enableSiteBlocking } = settings;
+
+    if (isSpaceAdmin != undefined) {
+      spaceUser.isAdmin = isSpaceAdmin;
+    }
+    if (canUseSpaceForEgress != undefined) {
+      spaceUser.canUseSpaceForEgress = canUseSpaceForEgress;
+    }
+    if (enableSiteBlocking) {
+      spaceUser.enableSiteBlocking = enableSiteBlocking;
+    }
     return spaceUser;
   }
 
@@ -872,6 +887,7 @@ function loadMockData() {
     iaas: 'aws',
     region: 'us-east-1',
     version: '2.0.0',
+    isEgressNode: true,
     status: SpaceStatus.running,
     lastSeen: 0,
   }, {
@@ -890,6 +906,7 @@ function loadMockData() {
     iaas: 'aws',
     region: 'us-west-1',
     version: '1.5.0',
+    isEgressNode: true,
     status: SpaceStatus.shutdown,
     lastSeen: 0,
   }, {
@@ -908,6 +925,7 @@ function loadMockData() {
     iaas: 'gcp',
     region: 'us-east1',
     version: '1.2.0',
+    isEgressNode: true,
     status: SpaceStatus.running,
     lastSeen: 0,
   } ];
@@ -923,7 +941,7 @@ function loadMockData() {
     user: users[0],
     isOwner: true,
     isAdmin: true,
-    isEgressNode: true,
+    canUseSpaceForEgress: true,
     status: UserAccessStatus.active,
     bytesUploaded: '9833378',
     bytesDownloaded: '387393',
@@ -934,7 +952,7 @@ function loadMockData() {
     user: users[1],
     isOwner: true,
     isAdmin: true,
-    isEgressNode: true,
+    canUseSpaceForEgress: true,
     status: UserAccessStatus.active,
     bytesUploaded: '33939',
     bytesDownloaded: '33834',
@@ -945,7 +963,7 @@ function loadMockData() {
     user: users[1],
     isOwner: true,
     isAdmin: true,
-    isEgressNode: true,
+    canUseSpaceForEgress: true,
     status: UserAccessStatus.active,
     bytesUploaded: '98333388',
     bytesDownloaded: '89333484',
@@ -956,7 +974,7 @@ function loadMockData() {
     user: users[0],
     isOwner: false,
     isAdmin: false,
-    isEgressNode: true,
+    canUseSpaceForEgress: true,
     status: UserAccessStatus.pending,
     bytesUploaded: '0',
     bytesDownloaded: '0',
@@ -967,7 +985,7 @@ function loadMockData() {
     user: users[0],
     isOwner: false,
     isAdmin: false,
-    isEgressNode: true,
+    canUseSpaceForEgress: true,
     status: UserAccessStatus.active,
     bytesUploaded: '8239884',
     bytesDownloaded: '2389343',
@@ -978,7 +996,7 @@ function loadMockData() {
     user: users[1],
     isOwner: false,
     isAdmin: false,
-    isEgressNode: true,
+    canUseSpaceForEgress: true,
     status: UserAccessStatus.pending,
     bytesUploaded: '0',
     bytesDownloaded: '0',
@@ -989,7 +1007,7 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     isAdmin: false,
-    isEgressNode: true,
+    canUseSpaceForEgress: true,
     status: UserAccessStatus.active,
     bytesUploaded: '3388393',
     bytesDownloaded: '4857729',
@@ -1000,7 +1018,7 @@ function loadMockData() {
     user: users[2],
     isOwner: false,
     isAdmin: false,
-    isEgressNode: true,
+    canUseSpaceForEgress: true,
     status: UserAccessStatus.pending,
     bytesUploaded: '0',
     bytesDownloaded: '0',

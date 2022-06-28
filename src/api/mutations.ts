@@ -39,7 +39,8 @@ export const updateUserKey = /* GraphQL */ `
         spaceUsers {
           isOwner
           isAdmin
-          isEgressNode
+          canUseSpaceForEgress
+          enableSiteBlocking
           status
           bytesUploaded
           bytesDownloaded
@@ -574,7 +575,8 @@ export const addSpace = /* GraphQL */ `
         }
         isOwner
         isAdmin
-        isEgressNode
+        canUseSpaceForEgress
+        enableSiteBlocking
         status
         bytesUploaded
         bytesDownloaded
@@ -601,13 +603,15 @@ export const inviteSpaceUser = /* GraphQL */ `
     $spaceID: ID!
     $userID: ID!
     $isAdmin: Boolean
-    $isEgressNode: Boolean
+    $canUseSpaceForEgress: Boolean
+    $enableSiteBlocking: Boolean
   ) {
     inviteSpaceUser(
       spaceID: $spaceID
       userID: $userID
       isAdmin: $isAdmin
-      isEgressNode: $isEgressNode
+      canUseSpaceForEgress: $canUseSpaceForEgress
+      enableSiteBlocking: $enableSiteBlocking
     ) {
       space {
         spaceID
@@ -673,7 +677,8 @@ export const inviteSpaceUser = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded
@@ -789,7 +794,8 @@ export const activateSpaceUser = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded
@@ -905,7 +911,8 @@ export const deactivateSpaceUser = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded
@@ -1021,7 +1028,8 @@ export const deleteSpaceUser = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded
@@ -1142,7 +1150,8 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded
@@ -1258,7 +1267,8 @@ export const leaveSpaceUser = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded
@@ -1375,7 +1385,8 @@ export const updateSpace = /* GraphQL */ `
         spaceUsers {
           isOwner
           isAdmin
-          isEgressNode
+          canUseSpaceForEgress
+          enableSiteBlocking
           status
           bytesUploaded
           bytesDownloaded
@@ -1388,11 +1399,17 @@ export const updateSpace = /* GraphQL */ `
   }
 `;
 export const updateSpaceUser = /* GraphQL */ `
-  mutation UpdateSpaceUser($spaceID: ID!, $userID: ID, $isEgressNode: Boolean) {
+  mutation UpdateSpaceUser(
+    $spaceID: ID!
+    $userID: ID
+    $canUseSpaceForEgress: Boolean
+    $enableSiteBlocking: Boolean
+  ) {
     updateSpaceUser(
       spaceID: $spaceID
       userID: $userID
-      isEgressNode: $isEgressNode
+      canUseSpaceForEgress: $canUseSpaceForEgress
+      enableSiteBlocking: $enableSiteBlocking
     ) {
       space {
         spaceID
@@ -1458,7 +1475,8 @@ export const updateSpaceUser = /* GraphQL */ `
       }
       isOwner
       isAdmin
-      isEgressNode
+      canUseSpaceForEgress
+      enableSiteBlocking
       status
       bytesUploaded
       bytesDownloaded
@@ -1647,7 +1665,7 @@ export const addAppUser = /* GraphQL */ `
   }
 `;
 export const deleteAppUser = /* GraphQL */ `
-  mutation DeleteAppUser($appID: ID!, $userID: ID!) {
+  mutation DeleteAppUser($appID: ID!, $userID: ID) {
     deleteAppUser(appID: $appID, userID: $userID) {
       app {
         appID
@@ -1940,7 +1958,8 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
         }
         isOwner
         isAdmin
-        isEgressNode
+        canUseSpaceForEgress
+        enableSiteBlocking
         status
         bytesUploaded
         bytesDownloaded

@@ -1,6 +1,8 @@
 import * as redux from 'redux';
 import { Epic } from 'redux-observable';
 
+const _ = require('lodash');
+
 import {
   Action,
   reducerDelegate,
@@ -193,8 +195,8 @@ export default class UserSpaceService {
         // space owner actions
         getUserSpaces: () =>
           getUserSpaces.action(dispatch),
-        inviteUserToSpace: (spaceID: string, userID: string, isEgressNode: boolean) =>
-          inviteUserToSpace.action(dispatch, spaceID, userID, isEgressNode),
+        inviteUserToSpace: (spaceID: string, userID: string, settings: actions.SpaceUserSettings) =>
+          inviteUserToSpace.action(dispatch, spaceID, userID, settings),
         grantUserAccessToSpace: (spaceID: string, userID: string) =>
           grantUserAccessToSpace.action(dispatch, spaceID, userID),
         removeUserAccessToSpace: (spaceID: string, userID: string) =>
@@ -205,8 +207,8 @@ export default class UserSpaceService {
           deleteSpace.action(dispatch, spaceID),
         updateSpace: (spaceID: string, deviceKey?: Key, version?: string, settings?: DisplayType) =>
           updateSpace.action(dispatch, spaceID, deviceKey, version, settings),
-        updateSpaceUser: (spaceID: string, userID: string, isEgressNode: boolean) =>
-          updateSpaceUser.action(dispatch, spaceID, userID, isEgressNode),
+        updateSpaceUser: (spaceID: string, userID: string, settings: actions.SpaceUserSettings) =>
+          updateSpaceUser.action(dispatch, spaceID, userID, settings),
         unsubscribeFromSpaceUpdates: () => 
           spaceUpdates.unsubscribeAction(dispatch),
 
@@ -650,11 +652,15 @@ const updateDeviceUserListItem = (
       // will change as part of this update
       const updatedItem = (
         ({
-          deviceUser,
+          deviceUser: du,
           ...i
         }) => <DeviceUserListItem>{
           ...i,
-          deviceUser: { ...deviceUser }
+          deviceUser: <DeviceUser>_.mergeWith(
+            { ...du }, 
+            deviceUser, 
+            (o: any, s: any) => _.isNull(s) ? o : s
+          )
         }
       )(detail.users[itemIndex]);
       const [ item ] = updatedDetail.users.splice(itemIndex, 1, updatedItem);
@@ -769,8 +775,16 @@ const spaceDetail = (spaceUser: SpaceUser): SpaceDetail => {
     type: space.recipe!,
     location: space.region!,
     version: space.version!,
-    spaceDefaults: space.settings ? JSON.parse(space.settings) : { isEgressNode: false },
+    spaceDefaults: 
+      space.settings 
+        ? JSON.parse(space.settings) 
+        : { 
+            isSpaceAdmin: false,
+            canUseSpaceForEgress: false,
+            enableSiteBlocking: false
+          },
     isOwned: spaceUser.isOwner!,
+    isEgressNode: space.isEgressNode!,
     bytesDownloaded,
     bytesUploaded,
     users: spaceUsers
@@ -800,7 +814,7 @@ const spaceUserListItem = (spaceUser: SpaceUser): SpaceUserListItem => {
     userName,
     fullName: fullName(user!),
     status,
-    egressAllowed: spaceUser.isEgressNode ? 'yes' : 'no',
+    egressAllowed: spaceUser.canUseSpaceForEgress ? 'yes' : 'no',
     dataUsageIn: bytesToSize(parseInt(bytesDownloaded!, 10)),
     dataUsageOut: bytesToSize(parseInt(bytesUploaded!, 10)),
     lastConnectTime: lastConnectTime && lastConnectTime > 0
@@ -823,14 +837,17 @@ const updateSpaceDetail = (
   if (space.version) {
     updatedDetail.version = space.version!;
   }
+  if (space.isEgressNode != null) {
+    updatedDetail.isEgressNode = space.isEgressNode!;
+  }
+  if (space.settings) {
+    updatedDetail.spaceDefaults = JSON.parse(space.settings);
+  }
   if (space.status) {
     updatedDetail.status = space.status!;
   }
   if (space.lastSeen && space.lastSeen > 0) {
     updatedDetail.lastSeen = dateTimeToLocale(new Date(space.lastSeen), false);
-  }
-  if (space.settings) {
-    updatedDetail.spaceDefaults = JSON.parse(space.settings);
   }
 
   return updatedDetail;
@@ -859,11 +876,15 @@ const updateSpaceUserListItem = (
       // will change as part of this update
       const updatedItem = (
         ({
-          spaceUser,
+          spaceUser: su,
           ...i
         }) => <SpaceUserListItem>{
           ...i,
-          spaceUser: { ...spaceUser }
+          spaceUser: <SpaceUser>_.mergeWith(
+            { ...su }, 
+            spaceUser, 
+            (o: any, s: any) => _.isNull(s) ? o : s
+          )
         }
       )(detail.users[itemIndex]);
       const [ item ] = updatedDetail.users.splice(itemIndex, 1, updatedItem);
@@ -874,8 +895,8 @@ const updateSpaceUserListItem = (
         }
         updatedItem.status = spaceUser.status!;
       }
-      if (spaceUser.isEgressNode !== undefined && spaceUser.isEgressNode !== null) {
-        updatedItem.egressAllowed = spaceUser.isEgressNode ? 'yes' : 'no';
+      if (spaceUser.canUseSpaceForEgress !== undefined && spaceUser.canUseSpaceForEgress !== null) {
+        updatedItem.egressAllowed = spaceUser.canUseSpaceForEgress ? 'yes' : 'no';
       }
       if (spaceUser.bytesDownloaded) {
         let bytesDownloaded = parseInt(spaceUser.bytesDownloaded, 10);
@@ -904,8 +925,8 @@ const updateSpaceUserListItem = (
     if (spaceUser.status) {
       updatedDetail.accessStatus = spaceUser.status;
     }
-    if (spaceUser.isEgressNode !== undefined && spaceUser.isEgressNode !== null) {
-      updatedDetail.egressAllowed = spaceUser.isEgressNode ? 'yes' : 'no';
+    if (spaceUser.canUseSpaceForEgress !== undefined && spaceUser.canUseSpaceForEgress !== null) {
+      updatedDetail.egressAllowed = spaceUser.canUseSpaceForEgress ? 'yes' : 'no';
     }
     if (spaceUser.bytesDownloaded) {
       updatedDetail.bytesDownloaded = parseInt(spaceUser.bytesDownloaded, 10);
@@ -1016,11 +1037,15 @@ const updateAppUserListItem = (
       // will change as part of this update
       const updatedItem = (
         ({
-          appUser,
+          appUser: au,
           ...i
         }) => <AppUserListItem>{
           ...i,
-          appUser: { ...appUser }
+          appUser: <AppUser>_.mergeWith(
+            { ...au }, 
+            appUser, 
+            (o: any, s: any) => _.isNull(s) ? o : s
+          )
         }
       )(detail.users[itemIndex]);
       const [ item ] = updatedDetail.users.splice(itemIndex, 1, updatedItem);

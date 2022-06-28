@@ -838,10 +838,13 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
     location: "us-east-1",
     version: "2.0.0",
     isOwned: true,
+    isEgressNode: true,
     bytesDownloaded: 5245122,
     bytesUploaded: 13221771,
     spaceDefaults: {
-      isEgressNode: false
+      isSpaceAdmin: false,
+      canUseSpaceForEgress: false,
+      enableSiteBlocking: false
     },
     users: [
       {
@@ -894,10 +897,13 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
     location: "us-east1",
     version: "1.2.0",
     isOwned: false,
+    isEgressNode: true,
     bytesDownloaded: 2389343,
     bytesUploaded: 8239884,
     spaceDefaults: {
-      isEgressNode: false
+      isSpaceAdmin: false,
+      canUseSpaceForEgress: false,
+      enableSiteBlocking: false
     },
     users: []
   }

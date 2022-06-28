@@ -223,12 +223,17 @@ export type SpaceUser = {
   user?: User,
   isOwner?: boolean | null,
   isAdmin?: boolean | null,
-  // User's that are neither owners or admin can
+  // User's that are niether owners or admin can
   // connect to the space and access only apps
   // they are allowed to access. If this flag
   // is set then they can also use the space
   // as the egress node for internet access.
-  isEgressNode?: boolean | null,
+  canUseSpaceForEgress?: boolean | null,
+  // If this flag is set when the user connects
+  // the connection will be configured to block
+  // sites that server ads as well as adult
+  // content.
+  enableSiteBlocking?: boolean | null,
   status?: UserAccessStatus | null,
   bytesUploaded?: string | null,
   bytesDownloaded?: string | null,
@@ -407,12 +412,17 @@ export type UpdateUserKeyMutation = {
         __typename: "SpaceUser",
         isOwner?: boolean | null,
         isAdmin?: boolean | null,
-        // User's that are neither owners or admin can
+        // User's that are niether owners or admin can
         // connect to the space and access only apps
         // they are allowed to access. If this flag
         // is set then they can also use the space
         // as the egress node for internet access.
-        isEgressNode?: boolean | null,
+        canUseSpaceForEgress?: boolean | null,
+        // If this flag is set when the user connects
+        // the connection will be configured to block
+        // sites that server ads as well as adult
+        // content.
+        enableSiteBlocking?: boolean | null,
         status?: UserAccessStatus | null,
         bytesUploaded?: string | null,
         bytesDownloaded?: string | null,
@@ -1135,12 +1145,17 @@ export type AddSpaceMutation = {
       } | null,
       isOwner?: boolean | null,
       isAdmin?: boolean | null,
-      // User's that are neither owners or admin can
+      // User's that are niether owners or admin can
       // connect to the space and access only apps
       // they are allowed to access. If this flag
       // is set then they can also use the space
       // as the egress node for internet access.
-      isEgressNode?: boolean | null,
+      canUseSpaceForEgress?: boolean | null,
+      // If this flag is set when the user connects
+      // the connection will be configured to block
+      // sites that server ads as well as adult
+      // content.
+      enableSiteBlocking?: boolean | null,
       status?: UserAccessStatus | null,
       bytesUploaded?: string | null,
       bytesDownloaded?: string | null,
@@ -1174,7 +1189,8 @@ export type InviteSpaceUserMutationVariables = {
   spaceID?: string,
   userID?: string,
   isAdmin?: boolean | null,
-  isEgressNode?: boolean | null,
+  canUseSpaceForEgress?: boolean | null,
+  enableSiteBlocking?: boolean | null,
 };
 
 export type InviteSpaceUserMutation = {
@@ -1261,12 +1277,17 @@ export type InviteSpaceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -1427,12 +1448,17 @@ export type ActivateSpaceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -1593,12 +1619,17 @@ export type DeactivateSpaceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -1759,12 +1790,17 @@ export type DeleteSpaceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -1934,12 +1970,17 @@ export type AcceptSpaceUserInvitationMutation = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -2099,12 +2140,17 @@ export type LeaveSpaceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -2257,12 +2303,17 @@ export type UpdateSpaceMutation = {
         __typename: "SpaceUser",
         isOwner?: boolean | null,
         isAdmin?: boolean | null,
-        // User's that are neither owners or admin can
+        // User's that are niether owners or admin can
         // connect to the space and access only apps
         // they are allowed to access. If this flag
         // is set then they can also use the space
         // as the egress node for internet access.
-        isEgressNode?: boolean | null,
+        canUseSpaceForEgress?: boolean | null,
+        // If this flag is set when the user connects
+        // the connection will be configured to block
+        // sites that server ads as well as adult
+        // content.
+        enableSiteBlocking?: boolean | null,
         status?: UserAccessStatus | null,
         bytesUploaded?: string | null,
         bytesDownloaded?: string | null,
@@ -2277,7 +2328,8 @@ export type UpdateSpaceMutation = {
 export type UpdateSpaceUserMutationVariables = {
   spaceID?: string,
   userID?: string | null,
-  isEgressNode?: boolean | null,
+  canUseSpaceForEgress?: boolean | null,
+  enableSiteBlocking?: boolean | null,
 };
 
 export type UpdateSpaceUserMutation = {
@@ -2364,12 +2416,17 @@ export type UpdateSpaceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -2612,7 +2669,7 @@ export type AddAppUserMutation = {
 
 export type DeleteAppUserMutationVariables = {
   appID?: string,
-  userID?: string,
+  userID?: string | null,
 };
 
 export type DeleteAppUserMutation = {
@@ -3019,12 +3076,17 @@ export type PushSpaceUsersUpdateMutation = {
       } | null,
       isOwner?: boolean | null,
       isAdmin?: boolean | null,
-      // User's that are neither owners or admin can
+      // User's that are niether owners or admin can
       // connect to the space and access only apps
       // they are allowed to access. If this flag
       // is set then they can also use the space
       // as the egress node for internet access.
-      isEgressNode?: boolean | null,
+      canUseSpaceForEgress?: boolean | null,
+      // If this flag is set when the user connects
+      // the connection will be configured to block
+      // sites that server ads as well as adult
+      // content.
+      enableSiteBlocking?: boolean | null,
       status?: UserAccessStatus | null,
       bytesUploaded?: string | null,
       bytesDownloaded?: string | null,
@@ -3291,12 +3353,17 @@ export type GetUserQuery = {
         __typename: "SpaceUser",
         isOwner?: boolean | null,
         isAdmin?: boolean | null,
-        // User's that are neither owners or admin can
+        // User's that are niether owners or admin can
         // connect to the space and access only apps
         // they are allowed to access. If this flag
         // is set then they can also use the space
         // as the egress node for internet access.
-        isEgressNode?: boolean | null,
+        canUseSpaceForEgress?: boolean | null,
+        // If this flag is set when the user connects
+        // the connection will be configured to block
+        // sites that server ads as well as adult
+        // content.
+        enableSiteBlocking?: boolean | null,
         status?: UserAccessStatus | null,
         bytesUploaded?: string | null,
         bytesDownloaded?: string | null,
@@ -3557,12 +3624,17 @@ export type GetSpaceQuery = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -3860,12 +3932,17 @@ export type GetSpaceInvitationsQuery = {
     } | null,
     isOwner?: boolean | null,
     isAdmin?: boolean | null,
-    // User's that are neither owners or admin can
+    // User's that are niether owners or admin can
     // connect to the space and access only apps
     // they are allowed to access. If this flag
     // is set then they can also use the space
     // as the egress node for internet access.
-    isEgressNode?: boolean | null,
+    canUseSpaceForEgress?: boolean | null,
+    // If this flag is set when the user connects
+    // the connection will be configured to block
+    // sites that server ads as well as adult
+    // content.
+    enableSiteBlocking?: boolean | null,
     status?: UserAccessStatus | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
@@ -4236,12 +4313,17 @@ export type SpaceUserUpdatesSubscription = {
       } | null,
       isOwner?: boolean | null,
       isAdmin?: boolean | null,
-      // User's that are neither owners or admin can
+      // User's that are niether owners or admin can
       // connect to the space and access only apps
       // they are allowed to access. If this flag
       // is set then they can also use the space
       // as the egress node for internet access.
-      isEgressNode?: boolean | null,
+      canUseSpaceForEgress?: boolean | null,
+      // If this flag is set when the user connects
+      // the connection will be configured to block
+      // sites that server ads as well as adult
+      // content.
+      enableSiteBlocking?: boolean | null,
       status?: UserAccessStatus | null,
       bytesUploaded?: string | null,
       bytesDownloaded?: string | null,

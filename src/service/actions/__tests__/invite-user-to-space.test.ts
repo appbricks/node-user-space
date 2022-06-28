@@ -41,7 +41,7 @@ it('invite a user to a space owned by the logged in user', async () => {
   };
   
   actionTester.expectAction(INVITE_USER_TO_SPACE, 
-    <SpaceInvitationPayload>{ spaceID, userID, isEgressNode: true }
+    <SpaceInvitationPayload>{ spaceID, userID, settings: { canUseSpaceForEgress: true }}
   )
     .success<SpaceUserPayload>(undefined, 
       (counter, state, action) => {
@@ -58,7 +58,7 @@ it('invite a user to a space owned by the logged in user', async () => {
       return state;
     });
 
-  dispatch.userspaceService!.inviteUserToSpace(spaceID, userID, true);
+  dispatch.userspaceService!.inviteUserToSpace(spaceID, userID, { canUseSpaceForEgress: true });
   await actionTester.done();
 
   const spaceUser = <SpaceUser>mockProvider.user!.spaces!.spaceUsers!

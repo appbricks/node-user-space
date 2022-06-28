@@ -81,6 +81,7 @@ it('dispatches an action to retrieve the logged in user tom\'s spaces', async ()
         expect(action.payload!).toEqual({spaceUsers});
         return {
           ...state,
+          spaceUpdatesActive: true,
           userSpaces: _.cloneDeep(action.payload!.spaceUsers)
         };
       }

@@ -220,7 +220,8 @@ export const spaceUserUpdates = /* GraphQL */ `
         }
         isOwner
         isAdmin
-        isEgressNode
+        canUseSpaceForEgress
+        enableSiteBlocking
         status
         bytesUploaded
         bytesDownloaded

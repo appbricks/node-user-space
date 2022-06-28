@@ -71,6 +71,7 @@ export interface SpaceDetail extends DisplayType {
   spaceDefaults: SpaceDefaults
 
   isOwned: boolean
+  isEgressNode: boolean
   bytesDownloaded: number
   bytesUploaded: number
 
@@ -78,7 +79,10 @@ export interface SpaceDetail extends DisplayType {
 }
 
 export interface SpaceDefaults extends DisplayType {
-  isEgressNode: boolean
+  // space user settings
+  isSpaceAdmin?: boolean
+  canUseSpaceForEgress?: boolean
+  enableSiteBlocking?: boolean
 }
 
 export interface SpaceUserListItem extends DisplayType {

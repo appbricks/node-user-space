@@ -35,19 +35,19 @@ it('dispatches an action to update a space user', async () => {
   actionTester.expectAction<SpaceUserUpdatePayload>(UPDATE_SPACE_USER, {
     spaceID: spaceUser.space!.spaceID!, 
     userID: spaceUser.user!.userID!, 
-    isEgressNode: true
+    settings: { canUseSpaceForEgress: false }
   })
     .success<SpaceUserPayload>({ spaceUser });
 
   dispatch.userspaceService!.updateSpaceUser(
     spaceUser.space!.spaceID!, 
     spaceUser.user!.userID!, 
-    true
+    { canUseSpaceForEgress: false }
   );
   await actionTester.done();
 
   expect(spaceUser).toMatchObject(<SpaceUser>{
     ...spaceUser,
-    isEgressNode: true
+    canUseSpaceForEgress: false
   })
 });

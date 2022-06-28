@@ -80,6 +80,7 @@ it('dispatches an action to retrieve the logged in user toms apps', async () => 
         expect(action.payload!).toEqual({appUsers});
         return {
           ...state,
+          appUpdatesActive: true,
           userApps: _.cloneDeep(action.payload!.appUsers)
         };
       }

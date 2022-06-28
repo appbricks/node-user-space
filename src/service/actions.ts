@@ -86,7 +86,7 @@ export interface SpaceIDPayload {
 export interface SpaceInvitationPayload {
   spaceID: string
   userID: string
-  isEgressNode: boolean
+  settings: SpaceUserSettings
 };
 
 export interface SpacePayload {
@@ -125,7 +125,7 @@ export interface SpaceUpdatePayload {
 export interface SpaceUserUpdatePayload {
   spaceID: string
   userID: string
-  isEgressNode: boolean
+  settings: SpaceUserSettings
 }
 
 export interface AppUserIDPayload {
@@ -176,13 +176,13 @@ export interface UserSpaceActionProps {
 
     // space owner actions
     getUserSpaces: () => actions.Action
-    inviteUserToSpace: (spaceID: string, userID: string, isEgressNode: boolean) => actions.Action
+    inviteUserToSpace: (spaceID: string, userID: string, settings: SpaceUserSettings) => actions.Action
     grantUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
     removeUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
     deleteUserFromSpace: (spaceID: string, userID?: string) => actions.Action
     deleteSpace: (spaceID: string) => actions.Action
     updateSpace: (spaceID: string, spaceKey?: Key, version?: string, settings?: DisplayType) => actions.Action
-    updateSpaceUser: (spaceID: string, userID: string, isEgressNode: boolean) => actions.Action
+    updateSpaceUser: (spaceID: string, userID: string, settings: SpaceUserSettings) => actions.Action
     unsubscribeFromSpaceUpdates: () => actions.Action
 
     // space guest actions 
@@ -197,6 +197,14 @@ export interface UserSpaceActionProps {
     deleteApp: (appID: string) => actions.Action
     unsubscribeFromAppUpdates: () => actions.Action
   }
+}
+
+// Common types
+
+export type SpaceUserSettings = {
+  isSpaceAdmin?: boolean
+  canUseSpaceForEgress?: boolean
+  enableSiteBlocking?: boolean
 }
 
 // User-Space action types

@@ -15,6 +15,10 @@ import {
   Key
 } from '../model/types';
 
+import {
+  SpaceUserSettings
+} from './actions';
+
 /**
  * MBaaS User Space Provider interface
  *
@@ -24,7 +28,6 @@ import {
  * the underlying authorization context which is 
  * not available via this interface.
  */
-
 export default interface Provider {
 
   /**
@@ -125,6 +128,12 @@ export default interface Provider {
   unsubscribeFromSpaceUserUpdates(spaceID: string, userID: string): Promise<void>
 
   /**
+   * Invite the a user to a space owned by
+   * the logged in user
+   */
+  inviteSpaceUser(spaceID: string, userID: string, settings?: SpaceUserSettings): Promise<SpaceUser>;
+
+  /**
    * Returns list of space invitations the
    * logged in user has received.
    */
@@ -156,17 +165,11 @@ export default interface Provider {
    */
   updateSpace(spaceID: string, spaceKey?: Key, version?: string, settings?: string): Promise<Space>;
 
-   /**
-    * Updates a space user
-    */
-  updateSpaceUser(spaceID: string, userID: string, isEgressNode: boolean): Promise<SpaceUser>;
- 
   /**
-   * Invite the a user to a space owned by
-   * the logged in user
+   * Updates a space user
    */
-  inviteSpaceUser(spaceID: string, userID: string, isEgressNode: boolean): Promise<SpaceUser>;
-
+  updateSpaceUser(spaceID: string, userID?: string, settings?: SpaceUserSettings): Promise<SpaceUser>;
+ 
   /**
    * Accepts the invitation to the given
    * space.

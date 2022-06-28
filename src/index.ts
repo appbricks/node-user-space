@@ -28,7 +28,7 @@ export {
   DELETE_APP
 } from './service/actions';
 
-export { UserSpaceActionProps } from './service/actions';
+export { UserSpaceActionProps, SpaceUserSettings } from './service/actions';
 export { UserSpaceState, UserSpaceStateProps } from './service/state';
 
 import UserSpaceService from './service/user-space-service';
