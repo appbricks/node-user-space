@@ -659,7 +659,9 @@ const updateDeviceUserListItem = (
           deviceUser: <DeviceUser>_.mergeWith(
             { ...du }, 
             deviceUser, 
-            (o: any, s: any) => _.isNull(s) ? o : s
+            (o: any, s: any) => _.isObject(o) 
+              ? _.mergeWith(o, s) // recursive merge object props
+              : _.isNull(s) ? o : s
           )
         }
       )(detail.users[itemIndex]);
@@ -769,8 +771,8 @@ const spaceDetail = (spaceUser: SpaceUser): SpaceDetail => {
       ? dateTimeToLocale(new Date(space.lastSeen), false)
       : 'never',
     clientsConnected,
-    dataUsageIn: bytesToSize(bytesDownloaded),
-    dataUsageOut: bytesToSize(bytesUploaded),
+    dataUsageIn: bytesToSize(bytesUploaded),
+    dataUsageOut: bytesToSize(bytesDownloaded),
     cloudProvider: space.iaas!,
     type: space.recipe!,
     location: space.region!,
@@ -883,7 +885,9 @@ const updateSpaceUserListItem = (
           spaceUser: <SpaceUser>_.mergeWith(
             { ...su }, 
             spaceUser, 
-            (o: any, s: any) => _.isNull(s) ? o : s
+            (o: any, s: any) => _.isObject(o) 
+              ? _.mergeWith(o, s) // recursive merge object props
+              : _.isNull(s) ? o : s
           )
         }
       )(detail.users[itemIndex]);
@@ -902,15 +906,15 @@ const updateSpaceUserListItem = (
         let bytesDownloaded = parseInt(spaceUser.bytesDownloaded, 10);
         updatedDetail.bytesDownloaded -= parseInt(item.spaceUser!.bytesDownloaded!, 10);
         updatedDetail.bytesDownloaded += bytesDownloaded;
-        updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
-        updatedItem.dataUsageIn = bytesToSize(bytesDownloaded);
+        updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesDownloaded);
+        updatedItem.dataUsageOut = bytesToSize(bytesDownloaded);
       }
       if (spaceUser.bytesUploaded) {
         let bytesUploaded = parseInt(spaceUser.bytesUploaded, 10);
         updatedDetail.bytesUploaded -= parseInt(item.spaceUser!.bytesUploaded!, 10);
         updatedDetail.bytesUploaded += bytesUploaded;
-        updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
-        updatedItem.dataUsageOut = bytesToSize(bytesUploaded);
+        updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesUploaded);
+        updatedItem.dataUsageIn = bytesToSize(bytesUploaded);
       }
       if (spaceUser.lastConnectTime) {
         const dateTime = new Date(spaceUser.lastConnectTime);
@@ -930,11 +934,11 @@ const updateSpaceUserListItem = (
     }
     if (spaceUser.bytesDownloaded) {
       updatedDetail.bytesDownloaded = parseInt(spaceUser.bytesDownloaded, 10);
-      updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesDownloaded);
+      updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesDownloaded);
     }
     if (spaceUser.bytesUploaded) {
       updatedDetail.bytesUploaded = parseInt(spaceUser.bytesUploaded, 10);
-      updatedDetail.dataUsageOut = bytesToSize(updatedDetail.bytesUploaded);
+      updatedDetail.dataUsageIn = bytesToSize(updatedDetail.bytesUploaded);
     }
   }
 

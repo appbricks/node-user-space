@@ -403,16 +403,16 @@ it('retrieves a users list of spaces', async () => {
       const detail = spacesDetail["d83b7d95-5681-427d-a65a-5d8a868d72e9"]
       const detailUpdated = {
         ...detail,
-        dataUsageIn: "5.6 MiB",
-        dataUsageOut: "16.7 MiB",
+        dataUsageIn: "16.7 MiB",
+        dataUsageOut: "5.6 MiB",
         bytesDownloaded: 5819939,
         bytesUploaded: 17487730,
       }
       detailUpdated.users.find((item, i, users) => {
         if (item.userID == "95e579be-a365-4268-bed0-17df80ef3dce") {
           item.status = UserAccessStatus.active;
-          item.dataUsageIn = "5.2 MiB";
-          item.dataUsageOut = "7.3 MiB";
+          item.dataUsageIn = "7.3 MiB";
+          item.dataUsageOut = "5.2 MiB";
           item.lastConnectTime = dateTimeToLocale(new Date(updateTime), true);
           return true;
         }
@@ -831,8 +831,8 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
     ownerAdmin: "Thomas T. Bradford",
     lastSeen: "never",
     clientsConnected: 2,
-    dataUsageIn: "5.0 MiB",
-    dataUsageOut: "12.6 MiB",
+    dataUsageIn: "12.6 MiB",
+    dataUsageOut: "5.0 MiB",
     cloudProvider: "aws",
     type: "recipe #1",
     location: "us-east-1",
@@ -890,8 +890,8 @@ const spacesDetail: { [spaceID: string]: SpaceDetail } = {
     ownerAdmin: "Bobby J. Brown",
     lastSeen: "never",
     clientsConnected: 0,
-    dataUsageIn: "2.3 MiB",
-    dataUsageOut: "7.9 MiB",
+    dataUsageIn: "7.9 MiB",
+    dataUsageOut: "2.3 MiB",
     cloudProvider: "gcp",
     type: "recipe #2",
     location: "us-east1",
