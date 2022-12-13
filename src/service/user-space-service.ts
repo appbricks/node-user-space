@@ -965,8 +965,8 @@ const appDetail = (appUser: AppUser): AppDetail => {
     lastSeen: app.lastSeen && app.lastSeen > 0
       ? dateTimeToLocale(new Date(app.lastSeen), false)
       : 'never',
-    installedSpace: app.space!.spaceName!,
-    spaceOwner: fullName(app.space!.owner!),
+    installedSpace: app.space ? app.space!.spaceName! : "",
+    spaceOwner: app.space ? fullName(app.space!.owner!): "",
     version: app.version!,
     isOwned: appUser.isOwner!,
     users: appUsers

@@ -188,6 +188,7 @@ export const getDevice = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -201,6 +202,8 @@ export const getDevice = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -233,6 +236,7 @@ export const getSpace = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -246,6 +250,8 @@ export const getSpace = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -408,6 +414,7 @@ export const getDeviceAccessRequests = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -421,6 +428,8 @@ export const getDeviceAccessRequests = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -453,6 +462,7 @@ export const getSpaceInvitations = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -466,6 +476,8 @@ export const getSpaceInvitations = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }

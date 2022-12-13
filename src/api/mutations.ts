@@ -112,6 +112,7 @@ export const addDevice = /* GraphQL */ `
         lastConnectSpace {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -125,6 +126,8 @@ export const addDevice = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -210,6 +213,7 @@ export const addDeviceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -223,6 +227,8 @@ export const addDeviceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -313,6 +319,7 @@ export const activateDeviceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -326,6 +333,8 @@ export const activateDeviceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -416,6 +425,7 @@ export const deleteDeviceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -429,6 +439,8 @@ export const deleteDeviceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -525,6 +537,7 @@ export const addSpace = /* GraphQL */ `
   mutation AddSpace(
     $spaceName: String!
     $spaceKey: Key!
+    $cookbook: String!
     $recipe: String!
     $iaas: String!
     $region: String!
@@ -533,6 +546,7 @@ export const addSpace = /* GraphQL */ `
     addSpace(
       spaceName: $spaceName
       spaceKey: $spaceKey
+      cookbook: $cookbook
       recipe: $recipe
       iaas: $iaas
       region: $region
@@ -543,6 +557,7 @@ export const addSpace = /* GraphQL */ `
         space {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -556,6 +571,8 @@ export const addSpace = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -630,6 +647,7 @@ export const inviteSpaceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -643,6 +661,8 @@ export const inviteSpaceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -747,6 +767,7 @@ export const activateSpaceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -760,6 +781,8 @@ export const activateSpaceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -864,6 +887,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -877,6 +901,8 @@ export const deactivateSpaceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -981,6 +1007,7 @@ export const deleteSpaceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -994,6 +1021,8 @@ export const deleteSpaceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -1103,6 +1132,7 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -1116,6 +1146,8 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -1220,6 +1252,7 @@ export const leaveSpaceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -1233,6 +1266,8 @@ export const leaveSpaceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -1346,6 +1381,7 @@ export const updateSpace = /* GraphQL */ `
         middleName
         familyName
       }
+      cookbook
       recipe
       iaas
       region
@@ -1359,6 +1395,8 @@ export const updateSpace = /* GraphQL */ `
       port
       vpnType
       localCARoot
+      meshNetworkType
+      meshNetworkBitmask
       apps {
         pageInfo {
           hasNextPage
@@ -1368,10 +1406,13 @@ export const updateSpace = /* GraphQL */ `
         spaceApps {
           appID
           appName
+          cookbook
           recipe
           iaas
           region
           version
+          publicKey
+          certificate
           status
           lastSeen
         }
@@ -1402,12 +1443,14 @@ export const updateSpaceUser = /* GraphQL */ `
   mutation UpdateSpaceUser(
     $spaceID: ID!
     $userID: ID
+    $isAdmin: Boolean
     $canUseSpaceForEgress: Boolean
     $enableSiteBlocking: Boolean
   ) {
     updateSpaceUser(
       spaceID: $spaceID
       userID: $userID
+      isAdmin: $isAdmin
       canUseSpaceForEgress: $canUseSpaceForEgress
       enableSiteBlocking: $enableSiteBlocking
     ) {
@@ -1428,6 +1471,7 @@ export const updateSpaceUser = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -1441,6 +1485,8 @@ export const updateSpaceUser = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -1528,6 +1574,8 @@ export const updateSpaceUser = /* GraphQL */ `
 export const addApp = /* GraphQL */ `
   mutation AddApp(
     $appName: String!
+    $appKey: Key!
+    $cookbook: String!
     $recipe: String!
     $iaas: String!
     $region: String!
@@ -1535,87 +1583,30 @@ export const addApp = /* GraphQL */ `
   ) {
     addApp(
       appName: $appName
+      appKey: $appKey
+      cookbook: $cookbook
       recipe: $recipe
       iaas: $iaas
       region: $region
       spaceID: $spaceID
     ) {
-      appID
-      appName
-      recipe
-      iaas
-      region
-      version
-      status
-      lastSeen
-      space {
-        spaceID
-        spaceName
-        owner {
-          userID
-          userName
-          firstName
-          middleName
-          familyName
-        }
-        admins {
-          userID
-          userName
-          firstName
-          middleName
-          familyName
-        }
+      idKey
+      app {
+        appID
+        appName
+        cookbook
         recipe
         iaas
         region
         version
         publicKey
         certificate
-        isEgressNode
-        settings
-        ipAddress
-        fqdn
-        port
-        vpnType
-        localCARoot
-        apps {
-          totalCount
-        }
-        users {
-          totalCount
-        }
-        status
-        lastSeen
-      }
-      users {
-        pageInfo {
-          hasNextPage
-          hasPreviousePage
-        }
-        totalCount
-        appUsers {
-          isOwner
-          lastAccessedTime
-        }
-      }
-    }
-  }
-`;
-export const addAppUser = /* GraphQL */ `
-  mutation AddAppUser($appID: ID!, $userID: ID!) {
-    addAppUser(appID: $appID, userID: $userID) {
-      app {
-        appID
-        appName
-        recipe
-        iaas
-        region
-        version
         status
         lastSeen
         space {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -1629,6 +1620,52 @@ export const addAppUser = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
+          status
+          lastSeen
+        }
+        users {
+          totalCount
+        }
+      }
+    }
+  }
+`;
+export const addAppUser = /* GraphQL */ `
+  mutation AddAppUser($appID: ID!, $userID: ID!) {
+    addAppUser(appID: $appID, userID: $userID) {
+      app {
+        appID
+        appName
+        cookbook
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        status
+        lastSeen
+        space {
+          spaceID
+          spaceName
+          cookbook
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -1670,15 +1707,19 @@ export const deleteAppUser = /* GraphQL */ `
       app {
         appID
         appName
+        cookbook
         recipe
         iaas
         region
         version
+        publicKey
+        certificate
         status
         lastSeen
         space {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -1692,6 +1733,8 @@ export const deleteAppUser = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -1849,6 +1892,7 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
         lastConnectSpace {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -1862,6 +1906,8 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -1892,6 +1938,7 @@ export const pushSpacesUpdate = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -1905,6 +1952,8 @@ export const pushSpacesUpdate = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -1926,6 +1975,7 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
         space {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -1939,6 +1989,8 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -1989,15 +2041,19 @@ export const pushAppsUpdate = /* GraphQL */ `
       app {
         appID
         appName
+        cookbook
         recipe
         iaas
         region
         version
+        publicKey
+        certificate
         status
         lastSeen
         space {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -2011,6 +2067,8 @@ export const pushAppsUpdate = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -2030,10 +2088,13 @@ export const pushAppUsersUpdate = /* GraphQL */ `
         app {
           appID
           appName
+          cookbook
           recipe
           iaas
           region
           version
+          publicKey
+          certificate
           status
           lastSeen
         }

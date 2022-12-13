@@ -124,6 +124,7 @@ export type Space = {
   spaceName?: string | null,
   owner?: UserRef,
   admins?:  Array<UserRef | null > | null,
+  cookbook?: string | null,
   recipe?: string | null,
   iaas?: string | null,
   region?: string | null,
@@ -141,11 +142,20 @@ export type Space = {
   port?: number | null,
   vpnType?: string | null,
   localCARoot?: string | null,
+  // space mesh network
+  meshNetworkType?: IPType | null,
+  meshNetworkBitmask?: number | null,
   apps?: SpaceAppsConnection,
   users?: SpaceUsersConnection,
   status?: SpaceStatus | null,
   lastSeen?: number | null,
 };
+
+export enum IPType {
+  IPv4 = "IPv4",
+  IPv6 = "IPv6",
+}
+
 
 export type SpaceAppsConnection = {
   __typename: "SpaceAppsConnection",
@@ -164,10 +174,13 @@ export type App = {
   __typename: "App",
   appID?: string,
   appName?: string | null,
+  cookbook?: string | null,
   recipe?: string | null,
   iaas?: string | null,
   region?: string | null,
   version?: string | null,
+  publicKey?: string | null,
+  certificate?: string | null,
   status?: AppStatus | null,
   lastSeen?: number | null,
   space?: Space,
@@ -269,6 +282,12 @@ export type SpaceII = {
   __typename: "SpaceII",
   idKey?: string,
   spaceUser?: SpaceUser,
+};
+
+export type AppII = {
+  __typename: "AppII",
+  idKey?: string,
+  app?: App,
 };
 
 export type PublishDataInput = {
@@ -519,6 +538,7 @@ export type AddDeviceMutation = {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -536,6 +556,9 @@ export type AddDeviceMutation = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -654,6 +677,7 @@ export type AddDeviceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -671,6 +695,9 @@ export type AddDeviceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -796,6 +823,7 @@ export type ActivateDeviceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -813,6 +841,9 @@ export type ActivateDeviceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -941,6 +972,7 @@ export type DeleteDeviceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -958,6 +990,9 @@ export type DeleteDeviceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1088,6 +1123,7 @@ export type UpdateDeviceMutation = {
 export type AddSpaceMutationVariables = {
   spaceName?: string,
   spaceKey?: Key,
+  cookbook?: string,
   recipe?: string,
   iaas?: string,
   region?: string,
@@ -1105,6 +1141,7 @@ export type AddSpaceMutation = {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -1122,6 +1159,9 @@ export type AddSpaceMutation = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -1217,6 +1257,7 @@ export type InviteSpaceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -1234,6 +1275,9 @@ export type InviteSpaceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1388,6 +1432,7 @@ export type ActivateSpaceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -1405,6 +1450,9 @@ export type ActivateSpaceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1559,6 +1607,7 @@ export type DeactivateSpaceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -1576,6 +1625,9 @@ export type DeactivateSpaceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1730,6 +1782,7 @@ export type DeleteSpaceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -1747,6 +1800,9 @@ export type DeleteSpaceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -1910,6 +1966,7 @@ export type AcceptSpaceUserInvitationMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -1927,6 +1984,9 @@ export type AcceptSpaceUserInvitationMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -2080,6 +2140,7 @@ export type LeaveSpaceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -2097,6 +2158,9 @@ export type LeaveSpaceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -2250,6 +2314,7 @@ export type UpdateSpaceMutation = {
       middleName?: string | null,
       familyName?: string | null,
     } | null > | null,
+    cookbook?: string | null,
     recipe?: string | null,
     iaas?: string | null,
     region?: string | null,
@@ -2267,6 +2332,9 @@ export type UpdateSpaceMutation = {
     port?: number | null,
     vpnType?: string | null,
     localCARoot?: string | null,
+    // space mesh network
+    meshNetworkType?: IPType | null,
+    meshNetworkBitmask?: number | null,
     apps?:  {
       __typename: "SpaceAppsConnection",
       pageInfo:  {
@@ -2281,10 +2349,13 @@ export type UpdateSpaceMutation = {
         __typename: "App",
         appID: string,
         appName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
         version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
         status?: AppStatus | null,
         lastSeen?: number | null,
       } | null > | null,
@@ -2328,6 +2399,7 @@ export type UpdateSpaceMutation = {
 export type UpdateSpaceUserMutationVariables = {
   spaceID?: string,
   userID?: string | null,
+  isAdmin?: boolean | null,
   canUseSpaceForEgress?: boolean | null,
   enableSiteBlocking?: boolean | null,
 };
@@ -2356,6 +2428,7 @@ export type UpdateSpaceUserMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -2373,6 +2446,9 @@ export type UpdateSpaceUserMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -2499,6 +2575,8 @@ export type UpdateSpaceUserMutation = {
 
 export type AddAppMutationVariables = {
   appName?: string,
+  appKey?: Key,
+  cookbook?: string,
   recipe?: string,
   iaas?: string,
   region?: string,
@@ -2508,105 +2586,26 @@ export type AddAppMutationVariables = {
 export type AddAppMutation = {
   // Add new app for the logged in user
   addApp?:  {
-    __typename: "App",
-    appID: string,
-    appName?: string | null,
-    recipe?: string | null,
-    iaas?: string | null,
-    region?: string | null,
-    version?: string | null,
-    status?: AppStatus | null,
-    lastSeen?: number | null,
-    space?:  {
-      __typename: "Space",
-      spaceID: string,
-      spaceName?: string | null,
-      owner?:  {
-        __typename: "UserRef",
-        userID: string,
-        userName?: string | null,
-        firstName?: string | null,
-        middleName?: string | null,
-        familyName?: string | null,
-      } | null,
-      admins?:  Array< {
-        __typename: "UserRef",
-        userID: string,
-        userName?: string | null,
-        firstName?: string | null,
-        middleName?: string | null,
-        familyName?: string | null,
-      } | null > | null,
+    __typename: "AppII",
+    idKey: string,
+    app:  {
+      __typename: "App",
+      appID: string,
+      appName?: string | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
       version?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
-      isEgressNode?: boolean | null,
-      // common configuration associated
-      // with the space such as default
-      // settings for new space users
-      settings?: string | null,
-      // space node
-      ipAddress?: string | null,
-      fqdn?: string | null,
-      port?: number | null,
-      vpnType?: string | null,
-      localCARoot?: string | null,
-      apps?:  {
-        __typename: "SpaceAppsConnection",
-        totalCount?: number | null,
-      } | null,
-      users?:  {
-        __typename: "SpaceUsersConnection",
-        totalCount?: number | null,
-      } | null,
-      status?: SpaceStatus | null,
-      lastSeen?: number | null,
-    } | null,
-    users?:  {
-      __typename: "AppUsersConnection",
-      pageInfo:  {
-        __typename: "PageInfo",
-        // When paginating forwards, are there more items?
-        hasNextPage: boolean,
-        // When paginating backwards, are there more items?
-        hasPreviousePage: boolean,
-      },
-      totalCount?: number | null,
-      appUsers?:  Array< {
-        __typename: "AppUser",
-        isOwner?: boolean | null,
-        lastAccessedTime?: number | null,
-      } | null > | null,
-    } | null,
-  } | null,
-};
-
-export type AddAppUserMutationVariables = {
-  appID?: string,
-  userID?: string,
-};
-
-export type AddAppUserMutation = {
-  // Add app user
-  addAppUser?:  {
-    __typename: "AppUser",
-    app?:  {
-      __typename: "App",
-      appID: string,
-      appName?: string | null,
-      recipe?: string | null,
-      iaas?: string | null,
-      region?: string | null,
-      version?: string | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -2624,6 +2623,67 @@ export type AddAppUserMutation = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      users?:  {
+        __typename: "AppUsersConnection",
+        totalCount?: number | null,
+      } | null,
+    },
+  } | null,
+};
+
+export type AddAppUserMutationVariables = {
+  appID?: string,
+  userID?: string,
+};
+
+export type AddAppUserMutation = {
+  // Add app user
+  addAppUser?:  {
+    __typename: "AppUser",
+    app?:  {
+      __typename: "App",
+      appID: string,
+      appName?: string | null,
+      cookbook?: string | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      status?: AppStatus | null,
+      lastSeen?: number | null,
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName?: string | null,
+        cookbook?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -2680,16 +2740,20 @@ export type DeleteAppUserMutation = {
       __typename: "App",
       appID: string,
       appName?: string | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
       version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -2707,6 +2771,9 @@ export type DeleteAppUserMutation = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -2936,6 +3003,7 @@ export type PushDeviceUsersUpdateMutation = {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -2953,6 +3021,9 @@ export type PushDeviceUsersUpdateMutation = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -2990,6 +3061,7 @@ export type PushSpacesUpdateMutation = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -3007,6 +3079,9 @@ export type PushSpacesUpdateMutation = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -3036,6 +3111,7 @@ export type PushSpaceUsersUpdateMutation = {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -3053,6 +3129,9 @@ export type PushSpaceUsersUpdateMutation = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -3129,16 +3208,20 @@ export type PushAppsUpdateMutation = {
       __typename: "App",
       appID: string,
       appName?: string | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
       version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -3156,6 +3239,9 @@ export type PushAppsUpdateMutation = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -3182,10 +3268,13 @@ export type PushAppUsersUpdateMutation = {
         __typename: "App",
         appID: string,
         appName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
         version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
         status?: AppStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -3504,6 +3593,7 @@ export type GetDeviceQuery = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -3521,6 +3611,9 @@ export type GetDeviceQuery = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -3564,6 +3657,7 @@ export type GetSpaceQuery = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -3581,6 +3675,9 @@ export type GetSpaceQuery = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -3816,6 +3913,7 @@ export type GetDeviceAccessRequestsQuery = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -3833,6 +3931,9 @@ export type GetDeviceAccessRequestsQuery = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -3872,6 +3973,7 @@ export type GetSpaceInvitationsQuery = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -3889,6 +3991,9 @@ export type GetSpaceInvitationsQuery = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -4172,6 +4277,7 @@ export type DeviceUserUpdatesSubscription = {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -4189,6 +4295,9 @@ export type DeviceUserUpdatesSubscription = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -4226,6 +4335,7 @@ export type SpaceUpdatesSubscription = {
         middleName?: string | null,
         familyName?: string | null,
       } | null > | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
@@ -4243,6 +4353,9 @@ export type SpaceUpdatesSubscription = {
       port?: number | null,
       vpnType?: string | null,
       localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
       apps?:  {
         __typename: "SpaceAppsConnection",
         totalCount?: number | null,
@@ -4273,6 +4386,7 @@ export type SpaceUserUpdatesSubscription = {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -4290,6 +4404,9 @@ export type SpaceUserUpdatesSubscription = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -4366,16 +4483,20 @@ export type AppUpdatesSubscription = {
       __typename: "App",
       appID: string,
       appName?: string | null,
+      cookbook?: string | null,
       recipe?: string | null,
       iaas?: string | null,
       region?: string | null,
       version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
         __typename: "Space",
         spaceID: string,
         spaceName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
@@ -4393,6 +4514,9 @@ export type AppUpdatesSubscription = {
         port?: number | null,
         vpnType?: string | null,
         localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -4420,10 +4544,13 @@ export type AppUserUpdatesSubscription = {
         __typename: "App",
         appID: string,
         appName?: string | null,
+        cookbook?: string | null,
         recipe?: string | null,
         iaas?: string | null,
         region?: string | null,
         version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
         status?: AppStatus | null,
         lastSeen?: number | null,
       } | null,

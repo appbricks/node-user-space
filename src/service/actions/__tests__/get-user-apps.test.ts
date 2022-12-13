@@ -181,7 +181,7 @@ it('dispatches an action to retrieve the logged in user toms apps', async () => 
         numUsers: testSubApp2.users!.appUsers!.length,        
       }, testSubApp2.appID!);
 
-    } catch (error) {
+    } catch (error: any) {
       console.log('waiting for subscription:', error.message);
       setTimeout(pushAppUpdates, 500);
     }
@@ -207,7 +207,7 @@ it('dispatches an action to retrieve the logged in user toms apps', async () => 
         }
       }, testSubAppUser1.app!.appID!, testSubAppUser1.user!.userID!);
 
-    } catch (error) {
+    } catch (error: any) {
       console.log('waiting for subscription:', error.message);
       setTimeout(pushAppTelementry, 500);
     }

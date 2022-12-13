@@ -184,7 +184,7 @@ it('dispatches an action to retrieve the logged in user tom\'s devices', async (
         numUsers: testSubDevice2.users!.deviceUsers!.length,        
       }, testSubDevice2.deviceID!);
 
-    } catch (error) {
+    } catch (error: any) {
       console.log('waiting for subscription', error.message);
       setTimeout(pushDeviceUpdates, 500);
     }
@@ -212,7 +212,7 @@ it('dispatches an action to retrieve the logged in user tom\'s devices', async (
         }
       }, testSubDeviceUser1.device!.deviceID!, testSubDeviceUser1.user!.userID!);
 
-    } catch (error) {
+    } catch (error: any) {
       console.log('waiting for subscription', error.message);
       setTimeout(pushDeviceTelementry, 500);
     }

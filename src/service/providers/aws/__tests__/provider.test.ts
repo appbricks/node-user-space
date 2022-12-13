@@ -42,7 +42,7 @@ import Provider from '../provider';
 // runtime.
 
 // https://github.com/aws-amplify/amplify-js/issues/1181
-import 'crypto-js/lib-typedarrays';
+// import 'crypto-js/lib-typedarrays';
 
 import { 
   Amplify,
@@ -1206,22 +1206,22 @@ async function validateSubscription(
 
   const update = (data: any) => {
     updateCount++;
-    // console.log('Update', {data: JSON.stringify(data), updateCount});
+    console.log('Update', {data: JSON.stringify(data), updateCount});
     validateSuccess(data, updateCount);
   };
   const error = (error: any) => {
     err = error;
-    // console.log('Update Error', {data: JSON.stringify(error), updateCount});
+    console.log('Update Error', {data: JSON.stringify(error), updateCount});
   };
 
   // create a good subscription
   await subscribe(update, error);
   // wait for subscription to become active
-  await sleep(500);
+  await sleep(10000);
   expect(err).toBeUndefined();
 
   const pushCmdOut = execSync(pushCmd).toString();
-  // console.log(`**** Begin Push results ****\n\n${pushCmdOut}\n\n**** End Push results ****`)
+  console.log(`**** Begin Push results ****\n\n${pushCmdOut}\n\n**** End Push results ****`)
   
   // wait for updates to propagate to subscription
   await sleep(5000);
@@ -1285,7 +1285,7 @@ beforeAll(async() => {
       ))).data.addDevice!.deviceUser!.device!
     );
 
-    space1 = (({ vpnType, ...s }) => s)(
+    space1 = (({ vpnType, meshNetworkType, meshNetworkBitmask, ...s }) => s)(
       (s => { return { ...s, owner: tester1Ref, admins: [ tester1Ref ] }})(
         (<{data: AddSpaceMutation}> await API.graphql(
           graphqlOperation(addSpace, <AddSpaceMutationVariables>{
@@ -1294,6 +1294,7 @@ beforeAll(async() => {
               certificateRequest: 'csr201',
               publicKey: 'pub201'
             },
+            cookbook: 'cookbook #1',
             recipe: 'recipe #1',
             iaas: 'aws',
             region: 'us-east-1',
@@ -1302,7 +1303,7 @@ beforeAll(async() => {
         ))).data.addSpace!.spaceUser!.space!
       )
     );
-    space2 = (({ vpnType, ...s }) => s)(
+    space2 = (({ vpnType, meshNetworkType, meshNetworkBitmask, ...s }) => s)(
       (s => { return { ...s, owner: tester1Ref, admins: [ tester1Ref ] }})(
         (<{data: AddSpaceMutation}> await API.graphql(
           graphqlOperation(addSpace, <AddSpaceMutationVariables>{
@@ -1311,6 +1312,7 @@ beforeAll(async() => {
               certificateRequest: 'csr202',
               publicKey: 'pub202'
             },
+            cookbook: 'cookbook #1',
             recipe: 'recipe #1',
             iaas: 'gcp',
             region: 'us-east1',
@@ -1324,23 +1326,33 @@ beforeAll(async() => {
       (<{data: AddAppMutation}> await API.graphql(
         graphqlOperation(addApp, <AddAppMutationVariables>{
           appName: 'tester1\'s app #1',
+          appKey: {
+            certificateRequest: 'csr301',
+            publicKey: 'pub301'
+          },
+          cookbook: 'cookbook #2',
           recipe: 'recipe #1',
           iaas: 'aws',
           region: 'us-east-1',
           spaceID: space2.spaceID
         }
-      ))).data.addApp!
+      ))).data.addApp!.app
     );
     app2 = (({ space, users, ...a }) => a)(
       (<{data: AddAppMutation}> await API.graphql(
         graphqlOperation(addApp, <AddAppMutationVariables>{
           appName: 'tester1\'s app #2',
+          appKey: {
+            certificateRequest: 'csr302',
+            publicKey: 'pub302'
+          },
+          cookbook: 'cookbook #2',
           recipe: 'recipe #2',
           iaas: 'aws',
           region: 'us-east-1',
           spaceID: space2.spaceID
         }
-      ))).data.addApp!
+      ))).data.addApp!.app
     );
 
     await Auth.signOut();

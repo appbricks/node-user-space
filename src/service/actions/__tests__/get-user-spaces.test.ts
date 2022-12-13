@@ -184,7 +184,7 @@ it('dispatches an action to retrieve the logged in user tom\'s spaces', async ()
         numUsers: testSubSpace2.users!.spaceUsers!.length,
       }, testSubSpace2.spaceID!);
 
-    } catch (error) {
+    } catch (error: any) {
       console.log('waiting for subscription', error.message);
       setTimeout(pushSpaceUpdates, 500);
     }
@@ -212,7 +212,7 @@ it('dispatches an action to retrieve the logged in user tom\'s spaces', async ()
         }
       }, testSubSpaceUser1.space!.spaceID!, testSubSpaceUser1.user!.userID!);
       
-    } catch (error) {
+    } catch (error: any) {
       console.log('waiting for subscription', error.message);
       setTimeout(pushSpaceTelementry, 500);
     }  

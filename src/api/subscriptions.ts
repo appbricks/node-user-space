@@ -111,6 +111,7 @@ export const deviceUserUpdates = /* GraphQL */ `
         lastConnectSpace {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -124,6 +125,8 @@ export const deviceUserUpdates = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -154,6 +157,7 @@ export const spaceUpdates = /* GraphQL */ `
           middleName
           familyName
         }
+        cookbook
         recipe
         iaas
         region
@@ -167,6 +171,8 @@ export const spaceUpdates = /* GraphQL */ `
         port
         vpnType
         localCARoot
+        meshNetworkType
+        meshNetworkBitmask
         apps {
           totalCount
         }
@@ -188,6 +194,7 @@ export const spaceUserUpdates = /* GraphQL */ `
         space {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -201,6 +208,8 @@ export const spaceUserUpdates = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -251,15 +260,19 @@ export const appUpdates = /* GraphQL */ `
       app {
         appID
         appName
+        cookbook
         recipe
         iaas
         region
         version
+        publicKey
+        certificate
         status
         lastSeen
         space {
           spaceID
           spaceName
+          cookbook
           recipe
           iaas
           region
@@ -273,6 +286,8 @@ export const appUpdates = /* GraphQL */ `
           port
           vpnType
           localCARoot
+          meshNetworkType
+          meshNetworkBitmask
           status
           lastSeen
         }
@@ -292,10 +307,13 @@ export const appUserUpdates = /* GraphQL */ `
         app {
           appID
           appName
+          cookbook
           recipe
           iaas
           region
           version
+          publicKey
+          certificate
           status
           lastSeen
         }

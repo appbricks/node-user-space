@@ -565,6 +565,7 @@ export default class Provider implements ProviderInterface {
                   middleName
                   familyName
                 }
+                cookbook
                 recipe
                 iaas
                 region
@@ -1138,10 +1139,13 @@ export default class Provider implements ProviderInterface {
               app {
                 appID
                 appName
+                cookbook
                 recipe
                 iaas
                 region
                 version
+                publicKey
+                certificate
                 status
                 lastSeen
                 space {
