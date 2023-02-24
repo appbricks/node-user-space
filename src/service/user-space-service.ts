@@ -657,8 +657,8 @@ const updateDeviceUserListItem = (
         }) => <DeviceUserListItem>{
           ...i,
           deviceUser: <DeviceUser>_.mergeWith(
-            { ...du }, 
-            deviceUser, 
+            _.cloneDeep(du), 
+            _.cloneDeep(deviceUser), 
             (o: any, s: any) => _.isObject(o) 
               ? _.mergeWith(o, s) // recursive merge object props
               : _.isNull(s) ? o : s
@@ -883,8 +883,8 @@ const updateSpaceUserListItem = (
         }) => <SpaceUserListItem>{
           ...i,
           spaceUser: <SpaceUser>_.mergeWith(
-            { ...su }, 
-            spaceUser, 
+            _.cloneDeep(su),
+            _.cloneDeep(spaceUser),
             (o: any, s: any) => _.isObject(o) 
               ? _.mergeWith(o, s) // recursive merge object props
               : _.isNull(s) ? o : s
@@ -1046,8 +1046,8 @@ const updateAppUserListItem = (
         }) => <AppUserListItem>{
           ...i,
           appUser: <AppUser>_.mergeWith(
-            { ...au }, 
-            appUser, 
+            _.cloneDeep(au),
+            _.cloneDeep(appUser),
             (o: any, s: any) => _.isNull(s) ? o : s
           )
         }
