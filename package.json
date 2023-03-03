@@ -9,7 +9,7 @@
     "codegen": "PAGER= aws appsync get-introspection-schema --api-id $API_ID --format JSON schema.json && amplify codegen && rm schema.json",
     "build": "tsc",
     "test": "jest",
-    "build-publish": "tsc && npm publish --access public"
+    "build-publish": "npm run codegen && tsc && npm publish --access public"
   },
   "repository": {
     "type": "git",
