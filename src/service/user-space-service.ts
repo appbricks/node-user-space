@@ -12,6 +12,10 @@ import {
 } from '@appbricks/utils';
 
 import {
+  vpnClientURLs
+} from './constants';
+
+import {
   UserRef,
   User,
   UserAccessStatus,
@@ -29,6 +33,7 @@ import {
   DisplayType,
   DeviceDetail,
   DeviceUserListItem,
+  SpaceAccessConfig,
   SpaceDetail,
   SpaceUserListItem,
   AppDetail,
@@ -417,7 +422,7 @@ export default class UserSpaceService {
         // build user lists for devices owned by the current user
         const devices: { [deviceID: string]: DeviceDetail } = {}
         userDevices.forEach(deviceUser => {
-          devices[deviceUser.device!.deviceID!] = deviceDetail(deviceUser)
+          devices[deviceUser.device!.deviceID!] = deviceDetail(deviceUser, state)
         })
         this.logger.trace('Current user\'s device collection: ', devices);
 
@@ -510,7 +515,7 @@ export default class UserSpaceService {
   }
 }
 
-const deviceDetail = (deviceUser: DeviceUser): DeviceDetail => {
+const deviceDetail = (deviceUser: DeviceUser, state: UserSpaceState): DeviceDetail => {
 
   const device = deviceUser.device!;
   const users = device.users!;
@@ -549,6 +554,32 @@ const deviceDetail = (deviceUser: DeviceUser): DeviceDetail => {
     bytesUploaded = parseInt(deviceUser.bytesUploaded!, 10);
   }
 
+  const spaceAccessConfigs: SpaceAccessConfig[] = [];
+  if (deviceUser.spaceConfigs) {
+    // enumerate space configs for device user
+    deviceUser.spaceConfigs.forEach(spaceConfig => {
+
+      const spaceID = spaceConfig!.space!.spaceID!;
+      const userSpace = state.userSpaces.find(us => us.space!.spaceID == spaceID);
+      
+      if (userSpace) {
+        const space = userSpace!.space!;
+        const expireAt = spaceConfig!.wgConfigExpireAt || 0;
+        const inactivityExpireAt = spaceConfig!.wgInactivityExpireAt || 0;
+        spaceAccessConfigs.push({
+          spaceID,
+          spaceName: space.spaceName!,
+          vpnType: space.vpnType!,
+          vpnURL: vpnClientURLs[space.vpnType!] || '',
+          wgConfig: spaceConfig!.wgConfig!,
+          expireAt: dateTimeToLocale(new Date(expireAt)),
+          inactivityExpireAt: dateTimeToLocale(new Date(inactivityExpireAt)),
+          isExpired: Date.now() > expireAt
+        });
+      }
+    });
+  }
+
   const lastAccessedDataTime = new Date(lastAccessedTime || 0);
 
   return {
@@ -570,7 +601,8 @@ const deviceDetail = (deviceUser: DeviceUser): DeviceDetail => {
     bytesDownloaded,
     bytesUploaded,
     lastAccessedTime,
-    users: deviceUsers
+    users: deviceUsers,
+    spaceAccessConfigs
   };
 }
 

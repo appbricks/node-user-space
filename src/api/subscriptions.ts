@@ -105,6 +105,13 @@ export const deviceUserUpdates = /* GraphQL */ `
         }
         isOwner
         status
+        spaceConfigs {
+          wgConfigName
+          wgConfig
+          wgConfigExpireAt
+          wgInactivityExpireAt
+          wgInactivityTimeout
+        }
         bytesUploaded
         bytesDownloaded
         lastAccessTime

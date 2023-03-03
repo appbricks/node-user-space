@@ -2,6 +2,14 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const mycsCloudProps = /* GraphQL */ `
+  query MycsCloudProps {
+    mycsCloudProps {
+      publicKeyID
+      publicKey
+    }
+  }
+`;
 export const userSearch = /* GraphQL */ `
   query UserSearch($filter: UserSearchFilterInput!, $limit: Int) {
     userSearch(filter: $filter, limit: $limit) {
@@ -168,6 +176,35 @@ export const getDevice = /* GraphQL */ `
       }
       isOwner
       status
+      spaceConfigs {
+        space {
+          spaceID
+          spaceName
+          cookbook
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          meshNetworkType
+          meshNetworkBitmask
+          status
+          lastSeen
+        }
+        wgConfigName
+        wgConfig
+        wgConfigExpireAt
+        wgInactivityExpireAt
+        wgInactivityTimeout
+      }
       bytesUploaded
       bytesDownloaded
       lastAccessTime
@@ -394,6 +431,35 @@ export const getDeviceAccessRequests = /* GraphQL */ `
       }
       isOwner
       status
+      spaceConfigs {
+        space {
+          spaceID
+          spaceName
+          cookbook
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          meshNetworkType
+          meshNetworkBitmask
+          status
+          lastSeen
+        }
+        wgConfigName
+        wgConfig
+        wgConfigExpireAt
+        wgInactivityExpireAt
+        wgInactivityTimeout
+      }
       bytesUploaded
       bytesDownloaded
       lastAccessTime

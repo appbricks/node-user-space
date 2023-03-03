@@ -14,7 +14,7 @@ export type Key = {
 
 export type User = {
   __typename: "User",
-  userID?: string,
+  userID: string,
   userName?: string | null,
   firstName?: string | null,
   middleName?: string | null,
@@ -25,9 +25,9 @@ export type User = {
   confirmed?: boolean | null,
   publicKey?: string | null,
   certificate?: string | null,
-  devices?: DeviceUsersConnection,
-  spaces?: SpaceUsersConnection,
-  apps?: AppUsersConnection,
+  devices?: DeviceUsersConnection | null,
+  spaces?: SpaceUsersConnection | null,
+  apps?: AppUsersConnection | null,
   // A user's universal config is an encrypted
   // document containing metadata of all spaces the
   // user owns.
@@ -36,7 +36,7 @@ export type User = {
 
 export type DeviceUsersConnection = {
   __typename: "DeviceUsersConnection",
-  pageInfo?: PageInfo,
+  pageInfo: PageInfo,
   edges?:  Array<DeviceUsersEdge | null > | null,
   totalCount?: number | null,
   deviceUsers?:  Array<DeviceUser | null > | null,
@@ -45,11 +45,11 @@ export type DeviceUsersConnection = {
 export type PageInfo = {
   __typename: "PageInfo",
   // When paginating forwards, are there more items?
-  hasNextPage?: boolean,
+  hasNextPage: boolean,
   // When paginating backwards, are there more items?
-  hasPreviousePage?: boolean,
+  hasPreviousePage: boolean,
   // Cursor used for pagination
-  cursor?: Cursor,
+  cursor?: Cursor | null,
 };
 
 export type Cursor = {
@@ -57,34 +57,35 @@ export type Cursor = {
   // The next page token index. To move to the next
   // page, cursor does not need to be updated. To move
   // to the prev page simply decrement the index by 2.
-  index?: number,
+  index: number,
   // The token to use to retrieve the next page for a
   // given index
-  nextTokens?: Array< string | null >,
+  nextTokens: Array< string | null >,
 };
 
 export type DeviceUsersEdge = {
   __typename: "DeviceUsersEdge",
-  node?: DeviceUser,
+  node: DeviceUser,
 };
 
 export type DeviceUser = {
   __typename: "DeviceUser",
-  device?: Device,
-  user?: User,
+  device?: Device | null,
+  user?: User | null,
   isOwner?: boolean | null,
   status?: UserAccessStatus | null,
+  spaceConfigs?:  Array<DeviceUserSpaceConfig | null > | null,
   bytesUploaded?: string | null,
   bytesDownloaded?: string | null,
   lastAccessTime?: number | null,
-  lastConnectSpace?: Space,
+  lastConnectSpace?: Space | null,
 };
 
 export type Device = {
   __typename: "Device",
-  deviceID?: string,
+  deviceID: string,
   deviceName?: string | null,
-  owner?: UserRef,
+  owner?: UserRef | null,
   // device info
   deviceType?: string | null,
   clientVersion?: string | null,
@@ -99,12 +100,12 @@ export type Device = {
   managedBy?: string | null,
   // managed devices
   managedDevices?:  Array<Device | null > | null,
-  users?: DeviceUsersConnection,
+  users?: DeviceUsersConnection | null,
 };
 
 export type UserRef = {
   __typename: "UserRef",
-  userID?: string,
+  userID: string,
   userName?: string | null,
   firstName?: string | null,
   middleName?: string | null,
@@ -118,11 +119,21 @@ export enum UserAccessStatus {
 }
 
 
+export type DeviceUserSpaceConfig = {
+  __typename: "DeviceUserSpaceConfig",
+  space?: Space | null,
+  wgConfigName?: string | null,
+  wgConfig?: string | null,
+  wgConfigExpireAt?: number | null,
+  wgInactivityExpireAt?: number | null,
+  wgInactivityTimeout?: number | null,
+};
+
 export type Space = {
   __typename: "Space",
-  spaceID?: string,
+  spaceID: string,
   spaceName?: string | null,
-  owner?: UserRef,
+  owner?: UserRef | null,
   admins?:  Array<UserRef | null > | null,
   cookbook?: string | null,
   recipe?: string | null,
@@ -145,8 +156,8 @@ export type Space = {
   // space mesh network
   meshNetworkType?: IPType | null,
   meshNetworkBitmask?: number | null,
-  apps?: SpaceAppsConnection,
-  users?: SpaceUsersConnection,
+  apps?: SpaceAppsConnection | null,
+  users?: SpaceUsersConnection | null,
   status?: SpaceStatus | null,
   lastSeen?: number | null,
 };
@@ -159,7 +170,7 @@ export enum IPType {
 
 export type SpaceAppsConnection = {
   __typename: "SpaceAppsConnection",
-  pageInfo?: PageInfo,
+  pageInfo: PageInfo,
   edges?:  Array<SpaceAppsEdge | null > | null,
   totalCount?: number | null,
   spaceApps?:  Array<App | null > | null,
@@ -167,12 +178,12 @@ export type SpaceAppsConnection = {
 
 export type SpaceAppsEdge = {
   __typename: "SpaceAppsEdge",
-  node?: App,
+  node: App,
 };
 
 export type App = {
   __typename: "App",
-  appID?: string,
+  appID: string,
   appName?: string | null,
   cookbook?: string | null,
   recipe?: string | null,
@@ -183,8 +194,8 @@ export type App = {
   certificate?: string | null,
   status?: AppStatus | null,
   lastSeen?: number | null,
-  space?: Space,
-  users?: AppUsersConnection,
+  space?: Space | null,
+  users?: AppUsersConnection | null,
 };
 
 export enum AppStatus {
@@ -198,7 +209,7 @@ export enum AppStatus {
 
 export type AppUsersConnection = {
   __typename: "AppUsersConnection",
-  pageInfo?: PageInfo,
+  pageInfo: PageInfo,
   edges?:  Array<AppUsersEdge | null > | null,
   totalCount?: number | null,
   appUsers?:  Array<AppUser | null > | null,
@@ -206,20 +217,20 @@ export type AppUsersConnection = {
 
 export type AppUsersEdge = {
   __typename: "AppUsersEdge",
-  node?: AppUser,
+  node: AppUser,
 };
 
 export type AppUser = {
   __typename: "AppUser",
-  app?: App,
-  user?: User,
+  app?: App | null,
+  user?: User | null,
   isOwner?: boolean | null,
   lastAccessedTime?: number | null,
 };
 
 export type SpaceUsersConnection = {
   __typename: "SpaceUsersConnection",
-  pageInfo?: PageInfo,
+  pageInfo: PageInfo,
   edges?:  Array<SpaceUsersEdge | null > | null,
   totalCount?: number | null,
   spaceUsers?:  Array<SpaceUser | null > | null,
@@ -227,13 +238,13 @@ export type SpaceUsersConnection = {
 
 export type SpaceUsersEdge = {
   __typename: "SpaceUsersEdge",
-  node?: SpaceUser,
+  node: SpaceUser,
 };
 
 export type SpaceUser = {
   __typename: "SpaceUser",
-  space?: Space,
-  user?: User,
+  space?: Space | null,
+  user?: User | null,
   isOwner?: boolean | null,
   isAdmin?: boolean | null,
   // User's that are niether owners or admin can
@@ -250,9 +261,9 @@ export type SpaceUser = {
   status?: UserAccessStatus | null,
   bytesUploaded?: string | null,
   bytesDownloaded?: string | null,
-  accessList?: AppUsersConnection,
+  accessList?: AppUsersConnection | null,
   lastConnectTime?: number | null,
-  lastConnectDevice?: Device,
+  lastConnectDevice?: Device | null,
 };
 
 export enum SpaceStatus {
@@ -274,20 +285,28 @@ export type DeviceInfo = {
 
 export type DeviceII = {
   __typename: "DeviceII",
-  idKey?: string,
-  deviceUser?: DeviceUser,
+  idKey: string,
+  deviceUser: DeviceUser,
+};
+
+export type UserAccessConfig = {
+  wgConfigName?: string | null,
+  wgConfig?: string | null,
+  // Timeouts are in hours
+  wgExpirationTimeout?: number | null,
+  wgInactivityTimeout?: number | null,
 };
 
 export type SpaceII = {
   __typename: "SpaceII",
-  idKey?: string,
-  spaceUser?: SpaceUser,
+  idKey: string,
+  spaceUser: SpaceUser,
 };
 
 export type AppII = {
   __typename: "AppII",
-  idKey?: string,
-  app?: App,
+  idKey: string,
+  app: App,
 };
 
 export type PublishDataInput = {
@@ -304,60 +323,66 @@ export enum PublishDataType {
 
 export type PublishResult = {
   __typename: "PublishResult",
-  success?: boolean,
+  success: boolean,
   error?: string | null,
 };
 
 export type UserUpdate = {
   __typename: "UserUpdate",
-  userID?: string,
+  userID: string,
   numDevices?: number | null,
   numSpaces?: number | null,
   numApps?: number | null,
-  user?: User,
+  user: User,
 };
 
 export type DeviceUpdate = {
   __typename: "DeviceUpdate",
-  deviceID?: string,
+  deviceID: string,
   numUsers?: number | null,
-  device?: Device,
+  device: Device,
 };
 
 export type DeviceUserUpdate = {
   __typename: "DeviceUserUpdate",
-  deviceID?: string,
-  userID?: string,
-  deviceUser?: DeviceUser,
+  deviceID: string,
+  userID: string,
+  deviceUser: DeviceUser,
 };
 
 export type SpaceUpdate = {
   __typename: "SpaceUpdate",
-  spaceID?: string,
+  spaceID: string,
   numUsers?: number | null,
   numApps?: number | null,
-  space?: Space,
+  space: Space,
 };
 
 export type SpaceUserUpdate = {
   __typename: "SpaceUserUpdate",
-  spaceID?: string,
-  userID?: string,
-  spaceUser?: SpaceUser,
+  spaceID: string,
+  userID: string,
+  spaceUser: SpaceUser,
 };
 
 export type AppUpdate = {
   __typename: "AppUpdate",
-  appID?: string,
+  appID: string,
   numUsers?: number | null,
-  app?: App,
+  app: App,
 };
 
 export type AppUserUpdate = {
   __typename: "AppUserUpdate",
-  appID?: string,
-  userID?: string,
-  appUser?: AppUser,
+  appID: string,
+  userID: string,
+  appUser: AppUser,
+};
+
+export type MyCSCloudProps = {
+  __typename: "MyCSCloudProps",
+  publicKeyID?: string | null,
+  publicKey?: string | null,
 };
 
 export type UserSearchFilterInput = {
@@ -367,8 +392,8 @@ export type UserSearchFilterInput = {
 
 export type DeviceAuth = {
   __typename: "DeviceAuth",
-  accessType?: AccessType,
-  device?: Device,
+  accessType: AccessType,
+  device?: Device | null,
 };
 
 export enum AccessType {
@@ -380,7 +405,7 @@ export enum AccessType {
 
 
 export type UpdateUserKeyMutationVariables = {
-  userKey?: Key,
+  userKey: Key,
 };
 
 export type UpdateUserKeyMutation = {
@@ -472,8 +497,8 @@ export type UpdateUserKeyMutation = {
 };
 
 export type UpdateUserConfigMutationVariables = {
-  universalConfig?: string,
-  asOf?: string,
+  universalConfig: string,
+  asOf: string,
 };
 
 export type UpdateUserConfigMutation = {
@@ -482,9 +507,9 @@ export type UpdateUserConfigMutation = {
 };
 
 export type AddDeviceMutationVariables = {
-  deviceName?: string,
-  deviceInfo?: DeviceInfo,
-  deviceKey?: Key,
+  deviceName: string,
+  deviceInfo: DeviceInfo,
+  deviceKey: Key,
 };
 
 export type AddDeviceMutation = {
@@ -531,6 +556,14 @@ export type AddDeviceMutation = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
+      spaceConfigs?:  Array< {
+        __typename: "DeviceUserSpaceConfig",
+        wgConfigName?: string | null,
+        wgConfig?: string | null,
+        wgConfigExpireAt?: number | null,
+        wgInactivityExpireAt?: number | null,
+        wgInactivityTimeout?: number | null,
+      } | null > | null,
       bytesUploaded?: string | null,
       bytesDownloaded?: string | null,
       lastAccessTime?: number | null,
@@ -567,7 +600,7 @@ export type AddDeviceMutation = {
 };
 
 export type AddDeviceUserMutationVariables = {
-  deviceID?: string,
+  deviceID: string,
   userID?: string | null,
 };
 
@@ -654,6 +687,42 @@ export type AddDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
+    spaceConfigs?:  Array< {
+      __typename: "DeviceUserSpaceConfig",
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName?: string | null,
+        cookbook?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      wgConfigName?: string | null,
+      wgConfig?: string | null,
+      wgConfigExpireAt?: number | null,
+      wgInactivityExpireAt?: number | null,
+      wgInactivityTimeout?: number | null,
+    } | null > | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
@@ -713,12 +782,12 @@ export type AddDeviceUserMutation = {
 };
 
 export type ActivateDeviceUserMutationVariables = {
-  deviceID?: string,
-  userID?: string,
+  deviceID: string,
+  userID: string,
 };
 
 export type ActivateDeviceUserMutation = {
-  // Activate a users access to a device
+  // Activate a user's access to a device
   activateDeviceUser?:  {
     __typename: "DeviceUser",
     device?:  {
@@ -800,6 +869,42 @@ export type ActivateDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
+    spaceConfigs?:  Array< {
+      __typename: "DeviceUserSpaceConfig",
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName?: string | null,
+        cookbook?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      wgConfigName?: string | null,
+      wgConfig?: string | null,
+      wgConfigExpireAt?: number | null,
+      wgInactivityExpireAt?: number | null,
+      wgInactivityTimeout?: number | null,
+    } | null > | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
@@ -859,7 +964,7 @@ export type ActivateDeviceUserMutation = {
 };
 
 export type DeleteDeviceUserMutationVariables = {
-  deviceID?: string,
+  deviceID: string,
   userID?: string | null,
 };
 
@@ -949,6 +1054,42 @@ export type DeleteDeviceUserMutation = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
+    spaceConfigs?:  Array< {
+      __typename: "DeviceUserSpaceConfig",
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName?: string | null,
+        cookbook?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      wgConfigName?: string | null,
+      wgConfig?: string | null,
+      wgConfigExpireAt?: number | null,
+      wgInactivityExpireAt?: number | null,
+      wgInactivityTimeout?: number | null,
+    } | null > | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
@@ -1008,7 +1149,7 @@ export type DeleteDeviceUserMutation = {
 };
 
 export type DeleteDeviceMutationVariables = {
-  deviceID?: string,
+  deviceID: string,
 };
 
 export type DeleteDeviceMutation = {
@@ -1018,9 +1159,9 @@ export type DeleteDeviceMutation = {
 };
 
 export type UpdateDeviceMutationVariables = {
-  deviceID?: string,
+  deviceID: string,
+  deviceInfo: DeviceInfo,
   deviceKey?: Key | null,
-  clientVersion?: string | null,
   settings?: string | null,
 };
 
@@ -1120,14 +1261,154 @@ export type UpdateDeviceMutation = {
   } | null,
 };
 
+export type SetDeviceUserSpaceConfigMutationVariables = {
+  userID?: string | null,
+  deviceID: string,
+  spaceID: string,
+  config: UserAccessConfig,
+};
+
+export type SetDeviceUserSpaceConfigMutation = {
+  // Sets user's config for accessing a space with a particular device
+  setDeviceUserSpaceConfig?:  {
+    __typename: "DeviceUserSpaceConfig",
+    space?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName?: string | null,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      cookbook?: string | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
+    wgConfigName?: string | null,
+    wgConfig?: string | null,
+    wgConfigExpireAt?: number | null,
+    wgInactivityExpireAt?: number | null,
+    wgInactivityTimeout?: number | null,
+  } | null,
+};
+
+export type DeleteDeviceUserSpaceConfigMutationVariables = {
+  userID?: string | null,
+  deviceID: string,
+  spaceID: string,
+};
+
+export type DeleteDeviceUserSpaceConfigMutation = {
+  deleteDeviceUserSpaceConfig?:  {
+    __typename: "DeviceUserSpaceConfig",
+    space?:  {
+      __typename: "Space",
+      spaceID: string,
+      spaceName?: string | null,
+      owner?:  {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null,
+      admins?:  Array< {
+        __typename: "UserRef",
+        userID: string,
+        userName?: string | null,
+        firstName?: string | null,
+        middleName?: string | null,
+        familyName?: string | null,
+      } | null > | null,
+      cookbook?: string | null,
+      recipe?: string | null,
+      iaas?: string | null,
+      region?: string | null,
+      version?: string | null,
+      publicKey?: string | null,
+      certificate?: string | null,
+      isEgressNode?: boolean | null,
+      // common configuration associated
+      // with the space such as default
+      // settings for new space users
+      settings?: string | null,
+      // space node
+      ipAddress?: string | null,
+      fqdn?: string | null,
+      port?: number | null,
+      vpnType?: string | null,
+      localCARoot?: string | null,
+      // space mesh network
+      meshNetworkType?: IPType | null,
+      meshNetworkBitmask?: number | null,
+      apps?:  {
+        __typename: "SpaceAppsConnection",
+        totalCount?: number | null,
+      } | null,
+      users?:  {
+        __typename: "SpaceUsersConnection",
+        totalCount?: number | null,
+      } | null,
+      status?: SpaceStatus | null,
+      lastSeen?: number | null,
+    } | null,
+    wgConfigName?: string | null,
+    wgConfig?: string | null,
+    wgConfigExpireAt?: number | null,
+    wgInactivityExpireAt?: number | null,
+    wgInactivityTimeout?: number | null,
+  } | null,
+};
+
 export type AddSpaceMutationVariables = {
-  spaceName?: string,
-  spaceKey?: Key,
-  cookbook?: string,
-  recipe?: string,
-  iaas?: string,
-  region?: string,
-  isEgressNode?: boolean,
+  spaceName: string,
+  spaceKey: Key,
+  cookbook: string,
+  recipe: string,
+  iaas: string,
+  region: string,
+  isEgressNode: boolean,
 };
 
 export type AddSpaceMutation = {
@@ -1226,8 +1507,8 @@ export type AddSpaceMutation = {
 };
 
 export type InviteSpaceUserMutationVariables = {
-  spaceID?: string,
-  userID?: string,
+  spaceID: string,
+  userID: string,
   isAdmin?: boolean | null,
   canUseSpaceForEgress?: boolean | null,
   enableSiteBlocking?: boolean | null,
@@ -1403,8 +1684,8 @@ export type InviteSpaceUserMutation = {
 };
 
 export type ActivateSpaceUserMutationVariables = {
-  spaceID?: string,
-  userID?: string,
+  spaceID: string,
+  userID: string,
 };
 
 export type ActivateSpaceUserMutation = {
@@ -1578,8 +1859,8 @@ export type ActivateSpaceUserMutation = {
 };
 
 export type DeactivateSpaceUserMutationVariables = {
-  spaceID?: string,
-  userID?: string,
+  spaceID: string,
+  userID: string,
 };
 
 export type DeactivateSpaceUserMutation = {
@@ -1753,7 +2034,7 @@ export type DeactivateSpaceUserMutation = {
 };
 
 export type DeleteSpaceUserMutationVariables = {
-  spaceID?: string,
+  spaceID: string,
   userID?: string | null,
 };
 
@@ -1928,7 +2209,7 @@ export type DeleteSpaceUserMutation = {
 };
 
 export type DeleteSpaceMutationVariables = {
-  spaceID?: string,
+  spaceID: string,
 };
 
 export type DeleteSpaceMutation = {
@@ -1938,7 +2219,7 @@ export type DeleteSpaceMutation = {
 };
 
 export type AcceptSpaceUserInvitationMutationVariables = {
-  spaceID?: string,
+  spaceID: string,
 };
 
 export type AcceptSpaceUserInvitationMutation = {
@@ -2112,7 +2393,7 @@ export type AcceptSpaceUserInvitationMutation = {
 };
 
 export type LeaveSpaceUserMutationVariables = {
-  spaceID?: string,
+  spaceID: string,
 };
 
 export type LeaveSpaceUserMutation = {
@@ -2286,7 +2567,7 @@ export type LeaveSpaceUserMutation = {
 };
 
 export type UpdateSpaceMutationVariables = {
-  spaceID?: string,
+  spaceID: string,
   spaceKey?: Key | null,
   version?: string | null,
   settings?: string | null,
@@ -2397,7 +2678,7 @@ export type UpdateSpaceMutation = {
 };
 
 export type UpdateSpaceUserMutationVariables = {
-  spaceID?: string,
+  spaceID: string,
   userID?: string | null,
   isAdmin?: boolean | null,
   canUseSpaceForEgress?: boolean | null,
@@ -2574,13 +2855,13 @@ export type UpdateSpaceUserMutation = {
 };
 
 export type AddAppMutationVariables = {
-  appName?: string,
-  appKey?: Key,
-  cookbook?: string,
-  recipe?: string,
-  iaas?: string,
-  region?: string,
-  spaceID?: string,
+  appName: string,
+  appKey: Key,
+  cookbook: string,
+  recipe: string,
+  iaas: string,
+  region: string,
+  spaceID: string,
 };
 
 export type AddAppMutation = {
@@ -2638,8 +2919,8 @@ export type AddAppMutation = {
 };
 
 export type AddAppUserMutationVariables = {
-  appID?: string,
-  userID?: string,
+  appID: string,
+  userID: string,
 };
 
 export type AddAppUserMutation = {
@@ -2728,7 +3009,7 @@ export type AddAppUserMutation = {
 };
 
 export type DeleteAppUserMutationVariables = {
-  appID?: string,
+  appID: string,
   userID?: string | null,
 };
 
@@ -2818,7 +3099,7 @@ export type DeleteAppUserMutation = {
 };
 
 export type DeleteAppMutationVariables = {
-  appID?: string,
+  appID: string,
 };
 
 export type DeleteAppMutation = {
@@ -2827,7 +3108,7 @@ export type DeleteAppMutation = {
 };
 
 export type PublishDataMutationVariables = {
-  data?: Array< PublishDataInput >,
+  data: Array< PublishDataInput >,
 };
 
 export type PublishDataMutation = {
@@ -2842,7 +3123,7 @@ export type PublishDataMutation = {
 };
 
 export type PushUsersUpdateMutationVariables = {
-  data?: string,
+  data: string,
 };
 
 export type PushUsersUpdateMutation = {
@@ -2890,7 +3171,7 @@ export type PushUsersUpdateMutation = {
 };
 
 export type PushDevicesUpdateMutationVariables = {
-  data?: string,
+  data: string,
 };
 
 export type PushDevicesUpdateMutation = {
@@ -2949,7 +3230,7 @@ export type PushDevicesUpdateMutation = {
 };
 
 export type PushDeviceUsersUpdateMutationVariables = {
-  data?: string,
+  data: string,
 };
 
 export type PushDeviceUsersUpdateMutation = {
@@ -2996,6 +3277,14 @@ export type PushDeviceUsersUpdateMutation = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
+      spaceConfigs?:  Array< {
+        __typename: "DeviceUserSpaceConfig",
+        wgConfigName?: string | null,
+        wgConfig?: string | null,
+        wgConfigExpireAt?: number | null,
+        wgInactivityExpireAt?: number | null,
+        wgInactivityTimeout?: number | null,
+      } | null > | null,
       bytesUploaded?: string | null,
       bytesDownloaded?: string | null,
       lastAccessTime?: number | null,
@@ -3032,7 +3321,7 @@ export type PushDeviceUsersUpdateMutation = {
 };
 
 export type PushSpacesUpdateMutationVariables = {
-  data?: string,
+  data: string,
 };
 
 export type PushSpacesUpdateMutation = {
@@ -3097,7 +3386,7 @@ export type PushSpacesUpdateMutation = {
 };
 
 export type PushSpaceUsersUpdateMutationVariables = {
-  data?: string,
+  data: string,
 };
 
 export type PushSpaceUsersUpdateMutation = {
@@ -3196,7 +3485,7 @@ export type PushSpaceUsersUpdateMutation = {
 };
 
 export type PushAppsUpdateMutationVariables = {
-  data?: string,
+  data: string,
 };
 
 export type PushAppsUpdateMutation = {
@@ -3254,7 +3543,7 @@ export type PushAppsUpdateMutation = {
 };
 
 export type PushAppUsersUpdateMutationVariables = {
-  data?: string,
+  data: string,
 };
 
 export type PushAppUsersUpdateMutation = {
@@ -3311,8 +3600,16 @@ export type TouchSubscriptionsMutation = {
   touchSubscriptions?: number | null,
 };
 
+export type MycsCloudPropsQuery = {
+  mycsCloudProps?:  {
+    __typename: "MyCSCloudProps",
+    publicKeyID?: string | null,
+    publicKey?: string | null,
+  } | null,
+};
+
 export type UserSearchQueryVariables = {
-  filter?: UserSearchFilterInput,
+  filter: UserSearchFilterInput,
   limit?: number | null,
 };
 
@@ -3330,7 +3627,7 @@ export type UserSearchQuery = {
 };
 
 export type AuthDeviceQueryVariables = {
-  idKey?: string,
+  idKey: string,
 };
 
 export type AuthDeviceQuery = {
@@ -3483,7 +3780,7 @@ export type GetUserQuery = {
 };
 
 export type GetDeviceQueryVariables = {
-  deviceID?: string,
+  deviceID: string,
 };
 
 export type GetDeviceQuery = {
@@ -3570,6 +3867,42 @@ export type GetDeviceQuery = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
+    spaceConfigs?:  Array< {
+      __typename: "DeviceUserSpaceConfig",
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName?: string | null,
+        cookbook?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      wgConfigName?: string | null,
+      wgConfig?: string | null,
+      wgConfigExpireAt?: number | null,
+      wgInactivityExpireAt?: number | null,
+      wgInactivityTimeout?: number | null,
+    } | null > | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
@@ -3629,7 +3962,7 @@ export type GetDeviceQuery = {
 };
 
 export type GetSpaceQueryVariables = {
-  spaceID?: string,
+  spaceID: string,
 };
 
 export type GetSpaceQuery = {
@@ -3803,7 +4136,7 @@ export type GetSpaceQuery = {
 };
 
 export type GetDeviceAccessRequestsQueryVariables = {
-  deviceID?: string,
+  deviceID: string,
 };
 
 export type GetDeviceAccessRequestsQuery = {
@@ -3890,6 +4223,42 @@ export type GetDeviceAccessRequestsQuery = {
     } | null,
     isOwner?: boolean | null,
     status?: UserAccessStatus | null,
+    spaceConfigs?:  Array< {
+      __typename: "DeviceUserSpaceConfig",
+      space?:  {
+        __typename: "Space",
+        spaceID: string,
+        spaceName?: string | null,
+        cookbook?: string | null,
+        recipe?: string | null,
+        iaas?: string | null,
+        region?: string | null,
+        version?: string | null,
+        publicKey?: string | null,
+        certificate?: string | null,
+        isEgressNode?: boolean | null,
+        // common configuration associated
+        // with the space such as default
+        // settings for new space users
+        settings?: string | null,
+        // space node
+        ipAddress?: string | null,
+        fqdn?: string | null,
+        port?: number | null,
+        vpnType?: string | null,
+        localCARoot?: string | null,
+        // space mesh network
+        meshNetworkType?: IPType | null,
+        meshNetworkBitmask?: number | null,
+        status?: SpaceStatus | null,
+        lastSeen?: number | null,
+      } | null,
+      wgConfigName?: string | null,
+      wgConfig?: string | null,
+      wgConfigExpireAt?: number | null,
+      wgInactivityExpireAt?: number | null,
+      wgInactivityTimeout?: number | null,
+    } | null > | null,
     bytesUploaded?: string | null,
     bytesDownloaded?: string | null,
     lastAccessTime?: number | null,
@@ -4119,7 +4488,7 @@ export type GetSpaceInvitationsQuery = {
 };
 
 export type UserUpdatesSubscriptionVariables = {
-  userID?: string,
+  userID: string,
 };
 
 export type UserUpdatesSubscription = {
@@ -4163,7 +4532,7 @@ export type UserUpdatesSubscription = {
 };
 
 export type DeviceUpdatesSubscriptionVariables = {
-  deviceID?: string,
+  deviceID: string,
 };
 
 export type DeviceUpdatesSubscription = {
@@ -4222,8 +4591,8 @@ export type DeviceUpdatesSubscription = {
 };
 
 export type DeviceUserUpdatesSubscriptionVariables = {
-  deviceID?: string,
-  userID?: string,
+  deviceID: string,
+  userID: string,
 };
 
 export type DeviceUserUpdatesSubscription = {
@@ -4270,6 +4639,14 @@ export type DeviceUserUpdatesSubscription = {
       } | null,
       isOwner?: boolean | null,
       status?: UserAccessStatus | null,
+      spaceConfigs?:  Array< {
+        __typename: "DeviceUserSpaceConfig",
+        wgConfigName?: string | null,
+        wgConfig?: string | null,
+        wgConfigExpireAt?: number | null,
+        wgInactivityExpireAt?: number | null,
+        wgInactivityTimeout?: number | null,
+      } | null > | null,
       bytesUploaded?: string | null,
       bytesDownloaded?: string | null,
       lastAccessTime?: number | null,
@@ -4306,7 +4683,7 @@ export type DeviceUserUpdatesSubscription = {
 };
 
 export type SpaceUpdatesSubscriptionVariables = {
-  spaceID?: string,
+  spaceID: string,
 };
 
 export type SpaceUpdatesSubscription = {
@@ -4371,8 +4748,8 @@ export type SpaceUpdatesSubscription = {
 };
 
 export type SpaceUserUpdatesSubscriptionVariables = {
-  spaceID?: string,
-  userID?: string,
+  spaceID: string,
+  userID: string,
 };
 
 export type SpaceUserUpdatesSubscription = {
@@ -4471,7 +4848,7 @@ export type SpaceUserUpdatesSubscription = {
 };
 
 export type AppUpdatesSubscriptionVariables = {
-  appID?: string,
+  appID: string,
 };
 
 export type AppUpdatesSubscription = {
@@ -4529,8 +4906,8 @@ export type AppUpdatesSubscription = {
 };
 
 export type AppUserUpdatesSubscriptionVariables = {
-  appID?: string,
-  userID?: string,
+  appID: string,
+  userID: string,
 };
 
 export type AppUserUpdatesSubscription = {

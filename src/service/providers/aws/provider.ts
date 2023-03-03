@@ -202,6 +202,14 @@ export default class Provider implements ProviderInterface {
             deviceUsers {
               isOwner
               status
+              spaceConfigs {
+                space {
+                  spaceID
+                }
+                wgConfig
+                wgConfigExpireAt
+                wgInactivityExpireAt
+              }
               bytesUploaded
               bytesDownloaded
               lastAccessTime

@@ -106,6 +106,13 @@ export const addDevice = /* GraphQL */ `
         }
         isOwner
         status
+        spaceConfigs {
+          wgConfigName
+          wgConfig
+          wgConfigExpireAt
+          wgInactivityExpireAt
+          wgInactivityTimeout
+        }
         bytesUploaded
         bytesDownloaded
         lastAccessTime
@@ -193,6 +200,35 @@ export const addDeviceUser = /* GraphQL */ `
       }
       isOwner
       status
+      spaceConfigs {
+        space {
+          spaceID
+          spaceName
+          cookbook
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          meshNetworkType
+          meshNetworkBitmask
+          status
+          lastSeen
+        }
+        wgConfigName
+        wgConfig
+        wgConfigExpireAt
+        wgInactivityExpireAt
+        wgInactivityTimeout
+      }
       bytesUploaded
       bytesDownloaded
       lastAccessTime
@@ -299,6 +335,35 @@ export const activateDeviceUser = /* GraphQL */ `
       }
       isOwner
       status
+      spaceConfigs {
+        space {
+          spaceID
+          spaceName
+          cookbook
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          meshNetworkType
+          meshNetworkBitmask
+          status
+          lastSeen
+        }
+        wgConfigName
+        wgConfig
+        wgConfigExpireAt
+        wgInactivityExpireAt
+        wgInactivityTimeout
+      }
       bytesUploaded
       bytesDownloaded
       lastAccessTime
@@ -405,6 +470,35 @@ export const deleteDeviceUser = /* GraphQL */ `
       }
       isOwner
       status
+      spaceConfigs {
+        space {
+          spaceID
+          spaceName
+          cookbook
+          recipe
+          iaas
+          region
+          version
+          publicKey
+          certificate
+          isEgressNode
+          settings
+          ipAddress
+          fqdn
+          port
+          vpnType
+          localCARoot
+          meshNetworkType
+          meshNetworkBitmask
+          status
+          lastSeen
+        }
+        wgConfigName
+        wgConfig
+        wgConfigExpireAt
+        wgInactivityExpireAt
+        wgInactivityTimeout
+      }
       bytesUploaded
       bytesDownloaded
       lastAccessTime
@@ -461,14 +555,14 @@ export const deleteDevice = /* GraphQL */ `
 export const updateDevice = /* GraphQL */ `
   mutation UpdateDevice(
     $deviceID: ID!
+    $deviceInfo: DeviceInfo!
     $deviceKey: Key
-    $clientVersion: String
     $settings: String
   ) {
     updateDevice(
       deviceID: $deviceID
+      deviceInfo: $deviceInfo
       deviceKey: $deviceKey
-      clientVersion: $clientVersion
       settings: $settings
     ) {
       deviceID
@@ -530,6 +624,130 @@ export const updateDevice = /* GraphQL */ `
           lastAccessTime
         }
       }
+    }
+  }
+`;
+export const setDeviceUserSpaceConfig = /* GraphQL */ `
+  mutation SetDeviceUserSpaceConfig(
+    $userID: ID
+    $deviceID: ID!
+    $spaceID: ID!
+    $config: UserAccessConfig!
+  ) {
+    setDeviceUserSpaceConfig(
+      userID: $userID
+      deviceID: $deviceID
+      spaceID: $spaceID
+      config: $config
+    ) {
+      space {
+        spaceID
+        spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        cookbook
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        settings
+        ipAddress
+        fqdn
+        port
+        vpnType
+        localCARoot
+        meshNetworkType
+        meshNetworkBitmask
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
+      wgConfigName
+      wgConfig
+      wgConfigExpireAt
+      wgInactivityExpireAt
+      wgInactivityTimeout
+    }
+  }
+`;
+export const deleteDeviceUserSpaceConfig = /* GraphQL */ `
+  mutation DeleteDeviceUserSpaceConfig(
+    $userID: ID
+    $deviceID: ID!
+    $spaceID: ID!
+  ) {
+    deleteDeviceUserSpaceConfig(
+      userID: $userID
+      deviceID: $deviceID
+      spaceID: $spaceID
+    ) {
+      space {
+        spaceID
+        spaceName
+        owner {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        admins {
+          userID
+          userName
+          firstName
+          middleName
+          familyName
+        }
+        cookbook
+        recipe
+        iaas
+        region
+        version
+        publicKey
+        certificate
+        isEgressNode
+        settings
+        ipAddress
+        fqdn
+        port
+        vpnType
+        localCARoot
+        meshNetworkType
+        meshNetworkBitmask
+        apps {
+          totalCount
+        }
+        users {
+          totalCount
+        }
+        status
+        lastSeen
+      }
+      wgConfigName
+      wgConfig
+      wgConfigExpireAt
+      wgInactivityExpireAt
+      wgInactivityTimeout
     }
   }
 `;
@@ -1886,6 +2104,13 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
         }
         isOwner
         status
+        spaceConfigs {
+          wgConfigName
+          wgConfig
+          wgConfigExpireAt
+          wgInactivityExpireAt
+          wgInactivityTimeout
+        }
         bytesUploaded
         bytesDownloaded
         lastAccessTime

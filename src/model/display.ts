@@ -38,6 +38,8 @@ export interface DeviceDetail extends DisplayType {
   lastAccessedTime: number
 
   users: DeviceUserListItem[]
+
+  spaceAccessConfigs: SpaceAccessConfig[]
 }
 
 export interface DeviceUserListItem extends DisplayType {
@@ -51,6 +53,17 @@ export interface DeviceUserListItem extends DisplayType {
   lastSpaceConnectedTo?: string
 
   deviceUser?: DeviceUser
+}
+
+export interface SpaceAccessConfig extends DisplayType {
+  spaceID: string
+  spaceName: string
+  vpnType: string
+  vpnURL: string
+  wgConfig: string
+  expireAt: string
+  inactivityExpireAt: string
+  isExpired: boolean
 }
 
 export interface SpaceDetail extends DisplayType {

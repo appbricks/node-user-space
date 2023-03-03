@@ -28,3 +28,8 @@ export const ERROR_DELETE_APP = 'deleteAppAPIError';
 
 // subscription termination error pattern
 export const SUBSCRIPTION_FATAL_ERROR = new RegExp('.*AppSync Realtime subscription init error.*');
+
+// vpn client download links
+export const vpnClientURLs: { [ vpnType: string ]: string} = {
+  'wireguard': 'https://www.wireguard.com/install/',
+}
