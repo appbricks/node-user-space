@@ -10,6 +10,7 @@ export const ERROR_ACTIVATE_DEVICE_USER = 'activateDeviceUserAPIError';
 export const ERROR_DELETE_DEVICE_USER = 'deleteDeviceUserAPIError';
 export const ERROR_DELETE_DEVICE = 'deleteDeviceAPIError';
 export const ERROR_UPDATE_DEVICE = 'updateDeviceAPIError';
+export const ERROR_SET_DEVICE_USER_SPACE_CONFIG = 'setDeviceUserSpaceConfigAPIError';
 export const ERROR_GET_USER_SPACES = 'getUserSpacesAPIError';
 export const ERROR_INVITE_SPACE_USER = 'inviteSpaceUserAPIError';
 export const ERROR_ACTIVATE_SPACE_USER = 'activateSpaceUserAPIError';

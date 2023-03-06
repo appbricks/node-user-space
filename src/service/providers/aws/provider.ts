@@ -36,6 +36,7 @@ import {
   ERROR_DELETE_DEVICE_USER,
   ERROR_DELETE_DEVICE,
   ERROR_UPDATE_DEVICE,
+  ERROR_SET_DEVICE_USER_SPACE_CONFIG,
   ERROR_GET_USER_SPACES,
   ERROR_INVITE_SPACE_USER,
   ERROR_ACTIVATE_SPACE_USER,
@@ -207,6 +208,7 @@ export default class Provider implements ProviderInterface {
                   spaceID
                 }
                 wgConfig
+                viewed
                 wgConfigExpireAt
                 wgInactivityExpireAt
               }
@@ -530,6 +532,33 @@ export default class Provider implements ProviderInterface {
     } catch (error) {
       this.logger.error('updateDevice API call returned error: ', error);
       throw new Error(ERROR_UPDATE_DEVICE, error);
+    }
+  }
+
+  async setDeviceSpaceAccessConfig(deviceID: string, spaceID: string, viewed: boolean): Promise<void> {
+
+    const setDeviceUserSpaceConfig = /* GraphQL */ `
+      mutation setDeviceUserSpaceConfig($deviceID: ID!, $spaceID: ID!, $viewed: Boolean) {
+        setDeviceUserSpaceConfig(deviceID: $deviceID, spaceID: $spaceID, config: { viewed: $viewed }) {
+          viewed
+        }
+      }
+    `;
+
+    try {
+      const result = <GraphQLResult>
+        await this.api.graphql(
+          graphqlOperation(setDeviceUserSpaceConfig, { deviceID, spaceID, viewed })
+        );
+      if (result.data) {
+        this.logger.debug('Set device user space config read flag.');
+      } else {
+        throw this.handleErrorResponse(result, ERROR_SET_DEVICE_USER_SPACE_CONFIG, 'setDeviceUserSpaceConfig')
+      }
+
+    } catch (error) {
+      this.logger.error('setDeviceUserSpaceConfig API call returned error: ', error);
+      throw new Error(ERROR_SET_DEVICE_USER_SPACE_CONFIG, error);
     }
   }
 

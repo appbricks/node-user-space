@@ -19,7 +19,8 @@ import {
   AppUpdate,
   AppUserUpdate,
   Key,
-  AppStatus
+  AppStatus,
+  PageInfo
 } from '../../model/types';
 
 import { 
@@ -95,6 +96,8 @@ export default class MockProvider implements ProviderInterface {
   appUsers: AppUser[];
 
   subscriptionMap: { [id: string]: { update: (data: any) => void, error: (err: any) => void} } = {}
+
+  spaceAccessConfigViewedFlag?: boolean;
 
   // logged in user
   user?: User;
@@ -280,6 +283,21 @@ export default class MockProvider implements ProviderInterface {
     device.settings = settings;
 
     return device;
+  }
+
+  async setDeviceSpaceAccessConfig(deviceID: string, spaceID: string, viewed: boolean) {
+    const deviceUser = this.user!.devices!.deviceUsers!
+      .find(deviceUser => deviceUser!.device!.deviceID == deviceID);
+    if (!deviceUser) {
+      throw new Error(`user is not associated with device ID ${deviceID}`);
+    }
+    const spaceUser = this.user!.spaces!.spaceUsers!
+      .find(spaceUser => spaceUser!.space!.spaceID == spaceID);
+    if (!spaceUser) {
+      throw new Error(`user is not associated with space ID ${spaceID}`);
+    }
+
+    this.spaceAccessConfigViewedFlag = viewed;
   }
 
   async getUserSpaces() {
@@ -564,6 +582,12 @@ export default class MockProvider implements ProviderInterface {
 // Mock Data
 function loadMockData() {
 
+  const pageInfo = <PageInfo>{
+    __typename: "PageInfo",
+    hasNextPage: false,
+    hasPreviousePage: false
+  }
+
   const users: User[] = [ {
     __typename: 'User',
     userID: 'a645c56e-f454-460f-8324-eff15357e973',
@@ -807,6 +831,7 @@ function loadMockData() {
 
   devices[0].users = {
     __typename: "DeviceUsersConnection",
+    pageInfo,
     totalCount: 2,
     deviceUsers: [
       deviceUsers[0],
@@ -815,6 +840,7 @@ function loadMockData() {
   };
   devices[1].users = {
     __typename: "DeviceUsersConnection",
+    pageInfo,
     totalCount: 3,
     deviceUsers: [
       deviceUsers[1],
@@ -824,6 +850,7 @@ function loadMockData() {
   };
   devices[2].users = {
     __typename: "DeviceUsersConnection",
+    pageInfo,
     totalCount: 3,
     deviceUsers: [
       deviceUsers[2],
@@ -833,6 +860,7 @@ function loadMockData() {
   };
   devices[3].users = {
     __typename: "DeviceUsersConnection",
+    pageInfo,
     totalCount: 3,
     deviceUsers: [
       deviceUsers[8],
@@ -843,6 +871,7 @@ function loadMockData() {
 
   users[0].devices = {
     __typename: "DeviceUsersConnection",
+    pageInfo,
     totalCount: 4,
     deviceUsers: [
       deviceUsers[0],
@@ -853,6 +882,7 @@ function loadMockData() {
   };
   users[1].devices = {
     __typename: "DeviceUsersConnection",
+    pageInfo,
     totalCount: 3,
     deviceUsers: [
       deviceUsers[2],
@@ -862,6 +892,7 @@ function loadMockData() {
   };
   users[2].devices = {
     __typename: "DeviceUsersConnection",
+    pageInfo,
     totalCount: 4,
     deviceUsers: [
       deviceUsers[5],
@@ -1027,6 +1058,7 @@ function loadMockData() {
 
   spaces[0].users = {
     __typename: "SpaceUsersConnection",
+    pageInfo,
     totalCount: 3,
     spaceUsers: [
       spaceUsers[0],
@@ -1036,6 +1068,7 @@ function loadMockData() {
   };
   spaces[1].users = {
     __typename: "SpaceUsersConnection",
+    pageInfo,
     totalCount: 3,
     spaceUsers: [
       spaceUsers[1],
@@ -1044,6 +1077,7 @@ function loadMockData() {
   };
   spaces[2].users = {
     __typename: "SpaceUsersConnection",
+    pageInfo,
     totalCount: 3,
     spaceUsers: [
       spaceUsers[2],
@@ -1054,6 +1088,7 @@ function loadMockData() {
 
   users[0].spaces = {
     __typename: "SpaceUsersConnection",
+    pageInfo,
     totalCount: 3,
     spaceUsers: [
       spaceUsers[0],
@@ -1063,6 +1098,7 @@ function loadMockData() {
   };
   users[1].spaces = {
     __typename: "SpaceUsersConnection",
+    pageInfo,
     totalCount: 3,
     spaceUsers: [
       spaceUsers[1],
@@ -1072,6 +1108,7 @@ function loadMockData() {
   };
   users[2].spaces = {
     __typename: "SpaceUsersConnection",
+    pageInfo,
     totalCount: 3,
     spaceUsers: [
       spaceUsers[6],
@@ -1183,6 +1220,7 @@ function loadMockData() {
 
   users[0].apps = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 2,
     appUsers: [
       appUsers[0],
@@ -1192,6 +1230,7 @@ function loadMockData() {
   }
   users[1].apps = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 3,
     appUsers: [
       appUsers[2],
@@ -1201,6 +1240,7 @@ function loadMockData() {
   }
   users[5].apps = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 1,
     appUsers: [
       appUsers[5]
@@ -1208,6 +1248,7 @@ function loadMockData() {
   }
   users[6].apps = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 1,
     appUsers: [
       appUsers[6]
@@ -1216,6 +1257,7 @@ function loadMockData() {
 
   apps[0].users = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 2,
     appUsers: [
       appUsers[0],
@@ -1224,6 +1266,7 @@ function loadMockData() {
   }
   apps[1].users = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 2,
     appUsers: [
       appUsers[0],
@@ -1232,6 +1275,7 @@ function loadMockData() {
   }
   apps[2].users = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 1,
     appUsers: [
       appUsers[2]
@@ -1239,6 +1283,7 @@ function loadMockData() {
   }
   apps[3].users = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 1,
     appUsers: [
       appUsers[3],
@@ -1247,6 +1292,7 @@ function loadMockData() {
   }
   apps[4].users = {
     __typename: "AppUsersConnection",
+    pageInfo,
     totalCount: 1,
     appUsers: [
       appUsers[4]
@@ -1255,6 +1301,7 @@ function loadMockData() {
 
   spaces[0].apps = {
     __typename: "SpaceAppsConnection",
+    pageInfo,
     totalCount: 2,
     spaceApps: [
       apps[0],
@@ -1263,6 +1310,7 @@ function loadMockData() {
   }
   spaces[1].apps = {
     __typename: "SpaceAppsConnection",
+    pageInfo,
     totalCount: 3,
     spaceApps: [
       apps[2],

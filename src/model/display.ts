@@ -61,6 +61,7 @@ export interface SpaceAccessConfig extends DisplayType {
   vpnType: string
   vpnURL: string
   wgConfig: string
+  viewed: boolean
   expireAt: string
   inactivityExpireAt: string
   isExpired: boolean

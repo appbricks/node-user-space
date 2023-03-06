@@ -122,6 +122,7 @@ export enum UserAccessStatus {
 export type DeviceUserSpaceConfig = {
   __typename: "DeviceUserSpaceConfig",
   space?: Space | null,
+  viewed?: boolean | null,
   wgConfigName?: string | null,
   wgConfig?: string | null,
   wgConfigExpireAt?: number | null,
@@ -292,6 +293,9 @@ export type DeviceII = {
 export type UserAccessConfig = {
   wgConfigName?: string | null,
   wgConfig?: string | null,
+  // whether the access config
+  // has been viewed by the user
+  viewed?: boolean | null,
   // Timeouts are in hours
   wgExpirationTimeout?: number | null,
   wgInactivityTimeout?: number | null,
@@ -558,6 +562,7 @@ export type AddDeviceMutation = {
       status?: UserAccessStatus | null,
       spaceConfigs?:  Array< {
         __typename: "DeviceUserSpaceConfig",
+        viewed?: boolean | null,
         wgConfigName?: string | null,
         wgConfig?: string | null,
         wgConfigExpireAt?: number | null,
@@ -717,6 +722,7 @@ export type AddDeviceUserMutation = {
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
+      viewed?: boolean | null,
       wgConfigName?: string | null,
       wgConfig?: string | null,
       wgConfigExpireAt?: number | null,
@@ -899,6 +905,7 @@ export type ActivateDeviceUserMutation = {
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
+      viewed?: boolean | null,
       wgConfigName?: string | null,
       wgConfig?: string | null,
       wgConfigExpireAt?: number | null,
@@ -1084,6 +1091,7 @@ export type DeleteDeviceUserMutation = {
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
+      viewed?: boolean | null,
       wgConfigName?: string | null,
       wgConfig?: string | null,
       wgConfigExpireAt?: number | null,
@@ -1324,6 +1332,7 @@ export type SetDeviceUserSpaceConfigMutation = {
       status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
+    viewed?: boolean | null,
     wgConfigName?: string | null,
     wgConfig?: string | null,
     wgConfigExpireAt?: number | null,
@@ -1393,6 +1402,7 @@ export type DeleteDeviceUserSpaceConfigMutation = {
       status?: SpaceStatus | null,
       lastSeen?: number | null,
     } | null,
+    viewed?: boolean | null,
     wgConfigName?: string | null,
     wgConfig?: string | null,
     wgConfigExpireAt?: number | null,
@@ -3279,6 +3289,7 @@ export type PushDeviceUsersUpdateMutation = {
       status?: UserAccessStatus | null,
       spaceConfigs?:  Array< {
         __typename: "DeviceUserSpaceConfig",
+        viewed?: boolean | null,
         wgConfigName?: string | null,
         wgConfig?: string | null,
         wgConfigExpireAt?: number | null,
@@ -3897,6 +3908,7 @@ export type GetDeviceQuery = {
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
+      viewed?: boolean | null,
       wgConfigName?: string | null,
       wgConfig?: string | null,
       wgConfigExpireAt?: number | null,
@@ -4253,6 +4265,7 @@ export type GetDeviceAccessRequestsQuery = {
         status?: SpaceStatus | null,
         lastSeen?: number | null,
       } | null,
+      viewed?: boolean | null,
       wgConfigName?: string | null,
       wgConfig?: string | null,
       wgConfigExpireAt?: number | null,
@@ -4641,6 +4654,7 @@ export type DeviceUserUpdatesSubscription = {
       status?: UserAccessStatus | null,
       spaceConfigs?:  Array< {
         __typename: "DeviceUserSpaceConfig",
+        viewed?: boolean | null,
         wgConfigName?: string | null,
         wgConfig?: string | null,
         wgConfigExpireAt?: number | null,

@@ -199,6 +199,7 @@ export const getDevice = /* GraphQL */ `
           status
           lastSeen
         }
+        viewed
         wgConfigName
         wgConfig
         wgConfigExpireAt
@@ -454,6 +455,7 @@ export const getDeviceAccessRequests = /* GraphQL */ `
           status
           lastSeen
         }
+        viewed
         wgConfigName
         wgConfig
         wgConfigExpireAt

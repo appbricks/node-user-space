@@ -102,6 +102,12 @@ export default interface Provider {
   updateDevice(deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: string): Promise<Device>;
 
   /**
+   * Sets device user space access config 
+   * viewed flag
+   */
+  setDeviceSpaceAccessConfig(deviceID: string, spaceID: string, viewed: boolean): Promise<void>;
+
+  /**
    * Returns list of spaces the current
    * logged in user can connect to.
    */

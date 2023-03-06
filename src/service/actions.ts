@@ -74,6 +74,12 @@ export interface DeviceUpdatePayload {
   settings?: DisplayType
 }
 
+export interface DeviceSpaceAccessConfigPayload {
+  deviceID: string
+  spaceID: string
+  viewed: boolean
+}
+
 export interface SpaceUserIDPayload {
   spaceID: string
   userID?: string
@@ -165,7 +171,7 @@ export interface UserSpaceActionProps {
     userSearch: (namePrefix: string, limit?: number) => actions.Action
     clearUserSearchResults: () => actions.Action
 
-    // device owner actions
+    // device actions
     getUserDevices: () => actions.Action
     getDeviceAccessRequests: (deviceID: string) => actions.Action
     activateUserOnDevice: (deviceID: string, userID: string) => actions.Action
@@ -173,8 +179,9 @@ export interface UserSpaceActionProps {
     deleteDevice: (deviceID: string) => actions.Action
     updateDevice: (deviceID: string, deviceKey?: Key, clientVersion?: string, settings?: DisplayType) => actions.Action
     unsubscribeFromDeviceUpdates: () => actions.Action
+    setDeviceSpaceAccessConfig: (deviceID: string, spaceID: string, viewed: boolean) => actions.Action
 
-    // space owner actions
+    // space actions
     getUserSpaces: () => actions.Action
     inviteUserToSpace: (spaceID: string, userID: string, settings: SpaceUserSettings) => actions.Action
     grantUserAccessToSpace: (spaceID: string, userID: string) => actions.Action
@@ -221,6 +228,7 @@ export const UPDATE_DEVICE = 'userspace/UPDATE_DEVICE';
 export const SUBSCRIBE_TO_DEVICE_UPDATES = 'userspace/SUBSCRIBE_TO_DEVICE_UPDATES';
 export const UNSUBSCRIBE_FROM_DEVICE_UPDATES = 'userspace/UNSUBSCRIBE_FROM_DEVICE_UPDATES';
 export const DEVICE_UPDATE = 'userspace/DEVICE_UPDATE';
+export const SET_DEVICE_SPACE_ACCESS_CONFIG = 'userspace/SET_DEVICE_SPACE_ACCESS_CONFIG';
 export const SUBSCRIBE_TO_DEVICE_TELEMETRY = 'userspace/SUBSCRIBE_TO_DEVICE_TELEMETRY';
 export const DEVICE_TELEMETRY = 'userspace/DEVICE_TELEMETRY';
 

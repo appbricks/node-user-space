@@ -61,6 +61,7 @@ import * as activateUserOnDevice from './actions/activate-user-on-device';
 import * as deleteUserFromDevice from './actions/delete-user-from-device';
 import * as deleteDevice from './actions/delete-device';
 import * as updateDevice from './actions/update-device';
+import * as setDeviceSpaceAccessConfig from './actions/set-device-space-access-config';
 import * as getUserSpaces from './actions/get-user-spaces';
 import * as spaceUpdates from './actions/space-updates-subscription';
 import * as spaceTelemetry from './actions/space-telemetry-subscription';
@@ -140,6 +141,7 @@ export default class UserSpaceService {
       .add(actions.SUBSCRIBE_TO_DEVICE_UPDATES)
       .add(actions.SUBSCRIBE_TO_DEVICE_TELEMETRY)
       .add(actions.UNSUBSCRIBE_FROM_DEVICE_UPDATES)
+      .add(actions.SET_DEVICE_SPACE_ACCESS_CONFIG)
       .add(actions.GET_USER_SPACES)
       .add(actions.INVITE_USER_TO_SPACE)
       .add(actions.GRANT_USER_ACCESS_TO_SPACE)
@@ -196,6 +198,8 @@ export default class UserSpaceService {
           updateDevice.action(dispatch, deviceID, deviceKey, clientVersion, settings),
         unsubscribeFromDeviceUpdates: () => 
           deviceUpdates.unsubscribeAction(dispatch),
+        setDeviceSpaceAccessConfig: (deviceID: string, spaceID: string, viewed: boolean) => 
+          setDeviceSpaceAccessConfig.action(dispatch, deviceID, spaceID, viewed),
 
         // space owner actions
         getUserSpaces: () =>
@@ -253,6 +257,7 @@ export default class UserSpaceService {
       deviceUpdates.subscribeEpic(this.csProvider),
       deviceTelemetry.subscribeEpic(this.csProvider),
       deviceUpdates.unsubscribeEpic(this.csProvider),
+      setDeviceSpaceAccessConfig.epic(this.csProvider),
       getUserSpaces.epic(this.csProvider),
       inviteUserToSpace.epic(this.csProvider),
       grantUserAccessToSpace.epic(this.csProvider),
@@ -451,6 +456,31 @@ export default class UserSpaceService {
         }
         break;
       }
+      case actions.SET_DEVICE_SPACE_ACCESS_CONFIG: {
+        const payload = <actions.DeviceSpaceAccessConfigPayload>relatedAction.payload!;
+        const deviceID = payload.deviceID;
+        const spaceID = payload.spaceID;
+        const viewed = payload.viewed;
+
+        const device = state.devices[deviceID];
+        if (device) {
+          state = {
+            ...state,
+            devices: {
+                ...state.devices,
+                [deviceID]: {
+                    ...device,
+                    spaceAccessConfigs: device.spaceAccessConfigs.map(
+                      c => c.spaceID == spaceID
+                        ? { ...c, viewed }
+                        : { ... c }
+                    )
+                }
+            }
+          }
+        }
+        break;
+      }
       case actions.GET_USER_SPACES: {
         const userSpaces = (<actions.SpaceUsersPayload>action.payload!).spaceUsers;
         this.logger.trace('Loaded current user\'s spaces', userSpaces);
@@ -572,6 +602,7 @@ const deviceDetail = (deviceUser: DeviceUser, state: UserSpaceState): DeviceDeta
           vpnType: space.vpnType!,
           vpnURL: vpnClientURLs[space.vpnType!] || '',
           wgConfig: spaceConfig!.wgConfig!,
+          viewed: !!spaceConfig!.viewed,
           expireAt: dateTimeToLocale(new Date(expireAt)),
           inactivityExpireAt: dateTimeToLocale(new Date(inactivityExpireAt)),
           isExpired: Date.now() > expireAt

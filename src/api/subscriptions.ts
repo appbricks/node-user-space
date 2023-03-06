@@ -106,6 +106,7 @@ export const deviceUserUpdates = /* GraphQL */ `
         isOwner
         status
         spaceConfigs {
+          viewed
           wgConfigName
           wgConfig
           wgConfigExpireAt

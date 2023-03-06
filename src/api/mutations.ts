@@ -107,6 +107,7 @@ export const addDevice = /* GraphQL */ `
         isOwner
         status
         spaceConfigs {
+          viewed
           wgConfigName
           wgConfig
           wgConfigExpireAt
@@ -223,6 +224,7 @@ export const addDeviceUser = /* GraphQL */ `
           status
           lastSeen
         }
+        viewed
         wgConfigName
         wgConfig
         wgConfigExpireAt
@@ -358,6 +360,7 @@ export const activateDeviceUser = /* GraphQL */ `
           status
           lastSeen
         }
+        viewed
         wgConfigName
         wgConfig
         wgConfigExpireAt
@@ -493,6 +496,7 @@ export const deleteDeviceUser = /* GraphQL */ `
           status
           lastSeen
         }
+        viewed
         wgConfigName
         wgConfig
         wgConfigExpireAt
@@ -682,6 +686,7 @@ export const setDeviceUserSpaceConfig = /* GraphQL */ `
         status
         lastSeen
       }
+      viewed
       wgConfigName
       wgConfig
       wgConfigExpireAt
@@ -743,6 +748,7 @@ export const deleteDeviceUserSpaceConfig = /* GraphQL */ `
         status
         lastSeen
       }
+      viewed
       wgConfigName
       wgConfig
       wgConfigExpireAt
@@ -2105,6 +2111,7 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
         isOwner
         status
         spaceConfigs {
+          viewed
           wgConfigName
           wgConfig
           wgConfigExpireAt
