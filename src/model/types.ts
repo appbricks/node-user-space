@@ -152,6 +152,7 @@ export type Space = {
   ipAddress?: string | null,
   fqdn?: string | null,
   port?: number | null,
+  domainName?: string | null,
   vpnType?: string | null,
   localCARoot?: string | null,
   // space mesh network
@@ -193,6 +194,9 @@ export type App = {
   version?: string | null,
   publicKey?: string | null,
   certificate?: string | null,
+  // app node
+  domainName?: string | null,
+  port?: number | null,
   status?: AppStatus | null,
   lastSeen?: number | null,
   space?: Space | null,
@@ -592,6 +596,7 @@ export type AddDeviceMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -714,6 +719,7 @@ export type AddDeviceUserMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -768,6 +774,7 @@ export type AddDeviceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -897,6 +904,7 @@ export type ActivateDeviceUserMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -951,6 +959,7 @@ export type ActivateDeviceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -1083,6 +1092,7 @@ export type DeleteDeviceUserMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -1137,6 +1147,7 @@ export type DeleteDeviceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -1316,6 +1327,7 @@ export type SetDeviceUserSpaceConfigMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -1386,6 +1398,7 @@ export type DeleteDeviceUserSpaceConfigMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -1448,6 +1461,7 @@ export type AddSpaceMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -1564,6 +1578,7 @@ export type InviteSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -1739,6 +1754,7 @@ export type ActivateSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -1914,6 +1930,7 @@ export type DeactivateSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -2089,6 +2106,7 @@ export type DeleteSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -2273,6 +2291,7 @@ export type AcceptSpaceUserInvitationMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -2447,6 +2466,7 @@ export type LeaveSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -2621,6 +2641,7 @@ export type UpdateSpaceMutation = {
     ipAddress?: string | null,
     fqdn?: string | null,
     port?: number | null,
+    domainName?: string | null,
     vpnType?: string | null,
     localCARoot?: string | null,
     // space mesh network
@@ -2647,6 +2668,9 @@ export type UpdateSpaceMutation = {
         version?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // app node
+        domainName?: string | null,
+        port?: number | null,
         status?: AppStatus | null,
         lastSeen?: number | null,
       } | null > | null,
@@ -2735,6 +2759,7 @@ export type UpdateSpaceUserMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -2890,6 +2915,9 @@ export type AddAppMutation = {
       version?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // app node
+      domainName?: string | null,
+      port?: number | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
@@ -2912,6 +2940,7 @@ export type AddAppMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -2948,6 +2977,9 @@ export type AddAppUserMutation = {
       version?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // app node
+      domainName?: string | null,
+      port?: number | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
@@ -2970,6 +3002,7 @@ export type AddAppUserMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -3038,6 +3071,9 @@ export type DeleteAppUserMutation = {
       version?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // app node
+      domainName?: string | null,
+      port?: number | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
@@ -3060,6 +3096,7 @@ export type DeleteAppUserMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -3319,6 +3356,7 @@ export type PushDeviceUsersUpdateMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -3377,6 +3415,7 @@ export type PushSpacesUpdateMutation = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -3427,6 +3466,7 @@ export type PushSpaceUsersUpdateMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -3515,6 +3555,9 @@ export type PushAppsUpdateMutation = {
       version?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // app node
+      domainName?: string | null,
+      port?: number | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
@@ -3537,6 +3580,7 @@ export type PushAppsUpdateMutation = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -3575,6 +3619,9 @@ export type PushAppUsersUpdateMutation = {
         version?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // app node
+        domainName?: string | null,
+        port?: number | null,
         status?: AppStatus | null,
         lastSeen?: number | null,
       } | null,
@@ -3900,6 +3947,7 @@ export type GetDeviceQuery = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -3954,6 +4002,7 @@ export type GetDeviceQuery = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -4018,6 +4067,7 @@ export type GetSpaceQuery = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -4257,6 +4307,7 @@ export type GetDeviceAccessRequestsQuery = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -4311,6 +4362,7 @@ export type GetDeviceAccessRequestsQuery = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -4371,6 +4423,7 @@ export type GetSpaceInvitationsQuery = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -4684,6 +4737,7 @@ export type DeviceUserUpdatesSubscription = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -4742,6 +4796,7 @@ export type SpaceUpdatesSubscription = {
       ipAddress?: string | null,
       fqdn?: string | null,
       port?: number | null,
+      domainName?: string | null,
       vpnType?: string | null,
       localCARoot?: string | null,
       // space mesh network
@@ -4793,6 +4848,7 @@ export type SpaceUserUpdatesSubscription = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -4881,6 +4937,9 @@ export type AppUpdatesSubscription = {
       version?: string | null,
       publicKey?: string | null,
       certificate?: string | null,
+      // app node
+      domainName?: string | null,
+      port?: number | null,
       status?: AppStatus | null,
       lastSeen?: number | null,
       space?:  {
@@ -4903,6 +4962,7 @@ export type AppUpdatesSubscription = {
         ipAddress?: string | null,
         fqdn?: string | null,
         port?: number | null,
+        domainName?: string | null,
         vpnType?: string | null,
         localCARoot?: string | null,
         // space mesh network
@@ -4942,6 +5002,9 @@ export type AppUserUpdatesSubscription = {
         version?: string | null,
         publicKey?: string | null,
         certificate?: string | null,
+        // app node
+        domainName?: string | null,
+        port?: number | null,
         status?: AppStatus | null,
         lastSeen?: number | null,
       } | null,

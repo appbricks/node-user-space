@@ -192,6 +192,7 @@ export const getDevice = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -238,6 +239,7 @@ export const getDevice = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -286,6 +288,7 @@ export const getSpace = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -448,6 +451,7 @@ export const getDeviceAccessRequests = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -494,6 +498,7 @@ export const getDeviceAccessRequests = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -542,6 +547,7 @@ export const getSpaceInvitations = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType

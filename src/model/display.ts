@@ -122,6 +122,9 @@ export interface AppDetail extends DisplayType {
   installedSpace: string
   spaceOwner: string
 
+  domainName: string
+  ports: string
+
   isOwned: boolean
 
   users: AppUserListItem[]

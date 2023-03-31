@@ -131,6 +131,7 @@ export const deviceUserUpdates = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -177,6 +178,7 @@ export const spaceUpdates = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -214,6 +216,7 @@ export const spaceUserUpdates = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -275,6 +278,8 @@ export const appUpdates = /* GraphQL */ `
         version
         publicKey
         certificate
+        domainName
+        port
         status
         lastSeen
         space {
@@ -292,6 +297,7 @@ export const appUpdates = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -322,6 +328,8 @@ export const appUserUpdates = /* GraphQL */ `
           version
           publicKey
           certificate
+          domainName
+          port
           status
           lastSeen
         }

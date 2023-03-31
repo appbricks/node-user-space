@@ -132,6 +132,7 @@ export const addDevice = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -217,6 +218,7 @@ export const addDeviceUser = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -263,6 +265,7 @@ export const addDeviceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -353,6 +356,7 @@ export const activateDeviceUser = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -399,6 +403,7 @@ export const activateDeviceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -489,6 +494,7 @@ export const deleteDeviceUser = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -535,6 +541,7 @@ export const deleteDeviceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -673,6 +680,7 @@ export const setDeviceUserSpaceConfig = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -735,6 +743,7 @@ export const deleteDeviceUserSpaceConfig = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -793,6 +802,7 @@ export const addSpace = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -883,6 +893,7 @@ export const inviteSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -1003,6 +1014,7 @@ export const activateSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -1123,6 +1135,7 @@ export const deactivateSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -1243,6 +1256,7 @@ export const deleteSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -1368,6 +1382,7 @@ export const acceptSpaceUserInvitation = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -1488,6 +1503,7 @@ export const leaveSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -1617,6 +1633,7 @@ export const updateSpace = /* GraphQL */ `
       ipAddress
       fqdn
       port
+      domainName
       vpnType
       localCARoot
       meshNetworkType
@@ -1637,6 +1654,8 @@ export const updateSpace = /* GraphQL */ `
           version
           publicKey
           certificate
+          domainName
+          port
           status
           lastSeen
         }
@@ -1707,6 +1726,7 @@ export const updateSpaceUser = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -1825,6 +1845,8 @@ export const addApp = /* GraphQL */ `
         version
         publicKey
         certificate
+        domainName
+        port
         status
         lastSeen
         space {
@@ -1842,6 +1864,7 @@ export const addApp = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -1869,6 +1892,8 @@ export const addAppUser = /* GraphQL */ `
         version
         publicKey
         certificate
+        domainName
+        port
         status
         lastSeen
         space {
@@ -1886,6 +1911,7 @@ export const addAppUser = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -1938,6 +1964,8 @@ export const deleteAppUser = /* GraphQL */ `
         version
         publicKey
         certificate
+        domainName
+        port
         status
         lastSeen
         space {
@@ -1955,6 +1983,7 @@ export const deleteAppUser = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -2136,6 +2165,7 @@ export const pushDeviceUsersUpdate = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -2182,6 +2212,7 @@ export const pushSpacesUpdate = /* GraphQL */ `
         ipAddress
         fqdn
         port
+        domainName
         vpnType
         localCARoot
         meshNetworkType
@@ -2219,6 +2250,7 @@ export const pushSpaceUsersUpdate = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -2280,6 +2312,8 @@ export const pushAppsUpdate = /* GraphQL */ `
         version
         publicKey
         certificate
+        domainName
+        port
         status
         lastSeen
         space {
@@ -2297,6 +2331,7 @@ export const pushAppsUpdate = /* GraphQL */ `
           ipAddress
           fqdn
           port
+          domainName
           vpnType
           localCARoot
           meshNetworkType
@@ -2327,6 +2362,8 @@ export const pushAppUsersUpdate = /* GraphQL */ `
           version
           publicKey
           certificate
+          domainName
+          port
           status
           lastSeen
         }

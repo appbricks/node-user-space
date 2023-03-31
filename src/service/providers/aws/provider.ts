@@ -1183,6 +1183,8 @@ export default class Provider implements ProviderInterface {
                 version
                 publicKey
                 certificate
+                domainName
+                port
                 status
                 lastSeen
                 space {
