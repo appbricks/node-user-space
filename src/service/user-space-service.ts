@@ -25,6 +25,7 @@ import {
   SpaceUser,
   SpaceStatus,
   App,
+  AppStatus,
   AppUser,
   Key
 } from '../model/types';
@@ -824,15 +825,28 @@ const spaceDetail = (spaceUser: SpaceUser): SpaceDetail => {
     bytesUploaded = parseInt(spaceUser.bytesUploaded!, 10);
   }
 
+  // if space status is running but it was last seen 
+  // over 5 minutes ago then set status to unknown
+  let status = space.status!;
+  let lastSeen = 'never';
+
+  const spaceLastSeen = space.lastSeen;
+  if (spaceLastSeen && spaceLastSeen > 0) {
+    lastSeen = dateTimeToLocale(new Date(spaceLastSeen), false)
+    
+    if ( status == SpaceStatus.running && 
+      spaceLastSeen < (Date.now() - 300000 /* <5m */) ) {      
+      status = SpaceStatus.unknown;
+    } 
+  }
+
   return {
     spaceID: space.spaceID!,
     name: space.spaceName!,
     accessStatus: spaceUser.status!,
-    status: space.status!,
+    status,
     ownerAdmin: fullName(space.owner!),
-    lastSeen: space.lastSeen && space.lastSeen > 0
-      ? dateTimeToLocale(new Date(space.lastSeen), false)
-      : 'never',
+    lastSeen,
     clientsConnected,
     dataUsageIn: bytesToSize(bytesUploaded),
     dataUsageOut: bytesToSize(bytesDownloaded),
@@ -1021,13 +1035,26 @@ const appDetail = (appUser: AppUser): AppDetail => {
     });  
   }
 
+  // if app status is running but it was last seen 
+  // over 5 minutes ago then set status to unknown
+  let status = app.status!;
+  let lastSeen = 'never';
+
+  const appLastSeen = app.lastSeen;
+  if (appLastSeen && appLastSeen > 0) {
+    lastSeen = dateTimeToLocale(new Date(appLastSeen), false)
+    
+    if ( status == AppStatus.running && 
+      appLastSeen < (Date.now() - 300000 /* <5m */) ) {      
+      status = AppStatus.unknown;
+    } 
+  }
+
   return {
     appID: app.appID!,
     name: app.appName!,
-    status: app.status!,
-    lastSeen: app.lastSeen && app.lastSeen > 0
-      ? dateTimeToLocale(new Date(app.lastSeen), false)
-      : 'never',
+    status,
+    lastSeen,
     installedSpace: app.space ? app.space!.spaceName! : "",
     spaceOwner: app.space ? fullName(app.space!.owner!): "",
     version: app.version!,
