@@ -1253,11 +1253,16 @@ export default class Provider implements ProviderInterface {
           app {
             appID
             appName
+            cookbook
             recipe
             iaas
             region
             version
+            description
+            domainName
+            port
             status
+            lastSeen
           }
         }
       }`;
