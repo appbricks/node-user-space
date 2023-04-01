@@ -122,6 +122,7 @@ export interface AppDetail extends DisplayType {
   installedSpace: string
   spaceOwner: string
 
+  description: string
   domainName: string
   ports: string
 

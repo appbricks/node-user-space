@@ -1654,6 +1654,7 @@ export const updateSpace = /* GraphQL */ `
           version
           publicKey
           certificate
+          description
           domainName
           port
           status
@@ -1845,6 +1846,7 @@ export const addApp = /* GraphQL */ `
         version
         publicKey
         certificate
+        description
         domainName
         port
         status
@@ -1892,6 +1894,7 @@ export const addAppUser = /* GraphQL */ `
         version
         publicKey
         certificate
+        description
         domainName
         port
         status
@@ -1964,6 +1967,7 @@ export const deleteAppUser = /* GraphQL */ `
         version
         publicKey
         certificate
+        description
         domainName
         port
         status
@@ -2312,6 +2316,7 @@ export const pushAppsUpdate = /* GraphQL */ `
         version
         publicKey
         certificate
+        description
         domainName
         port
         status
@@ -2362,6 +2367,7 @@ export const pushAppUsersUpdate = /* GraphQL */ `
           version
           publicKey
           certificate
+          description
           domainName
           port
           status

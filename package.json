@@ -1,6 +1,6 @@
 {
   "name": "@appbricks/user-space",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "description": "MyCloudSpace User-Space client module",
   "main": "lib/index.js",
   "scripts": {

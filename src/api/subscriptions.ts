@@ -278,6 +278,7 @@ export const appUpdates = /* GraphQL */ `
         version
         publicKey
         certificate
+        description
         domainName
         port
         status
@@ -328,6 +329,7 @@ export const appUserUpdates = /* GraphQL */ `
           version
           publicKey
           certificate
+          description
           domainName
           port
           status

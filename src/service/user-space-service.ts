@@ -1058,6 +1058,7 @@ const appDetail = (appUser: AppUser): AppDetail => {
     installedSpace: app.space ? app.space!.spaceName! : "",
     spaceOwner: app.space ? fullName(app.space!.owner!): "",
     version: app.version!,
+    description: app.description!,
     domainName: app.domainName!,
     ports: !app.port || app.port == 0 ? "" : app.port!.toString(),
     isOwned: appUser.isOwner!,

@@ -195,6 +195,7 @@ export type App = {
   publicKey?: string | null,
   certificate?: string | null,
   // app node
+  description?: string | null,
   domainName?: string | null,
   port?: number | null,
   status?: AppStatus | null,
@@ -2669,6 +2670,7 @@ export type UpdateSpaceMutation = {
         publicKey?: string | null,
         certificate?: string | null,
         // app node
+        description?: string | null,
         domainName?: string | null,
         port?: number | null,
         status?: AppStatus | null,
@@ -2916,6 +2918,7 @@ export type AddAppMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       // app node
+      description?: string | null,
       domainName?: string | null,
       port?: number | null,
       status?: AppStatus | null,
@@ -2978,6 +2981,7 @@ export type AddAppUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       // app node
+      description?: string | null,
       domainName?: string | null,
       port?: number | null,
       status?: AppStatus | null,
@@ -3072,6 +3076,7 @@ export type DeleteAppUserMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       // app node
+      description?: string | null,
       domainName?: string | null,
       port?: number | null,
       status?: AppStatus | null,
@@ -3556,6 +3561,7 @@ export type PushAppsUpdateMutation = {
       publicKey?: string | null,
       certificate?: string | null,
       // app node
+      description?: string | null,
       domainName?: string | null,
       port?: number | null,
       status?: AppStatus | null,
@@ -3620,6 +3626,7 @@ export type PushAppUsersUpdateMutation = {
         publicKey?: string | null,
         certificate?: string | null,
         // app node
+        description?: string | null,
         domainName?: string | null,
         port?: number | null,
         status?: AppStatus | null,
@@ -4938,6 +4945,7 @@ export type AppUpdatesSubscription = {
       publicKey?: string | null,
       certificate?: string | null,
       // app node
+      description?: string | null,
       domainName?: string | null,
       port?: number | null,
       status?: AppStatus | null,
@@ -5003,6 +5011,7 @@ export type AppUserUpdatesSubscription = {
         publicKey?: string | null,
         certificate?: string | null,
         // app node
+        description?: string | null,
         domainName?: string | null,
         port?: number | null,
         status?: AppStatus | null,
