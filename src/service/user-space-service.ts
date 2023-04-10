@@ -1101,6 +1101,15 @@ const updateAppDetail = (
   if (app.version) {
     updatedDetail.version = app.version!;
   }
+  if (app.description) {
+    updatedDetail.description = app.description!;
+  }
+  if (app.domainName) {
+    updatedDetail.domainName = app.domainName!;
+  }
+  if (app.port) {
+    updatedDetail.ports = app.port == 0 ? "" : app.port!.toString();
+  }
   if (app.status) {
     updatedDetail.status = app.status!;
   }
